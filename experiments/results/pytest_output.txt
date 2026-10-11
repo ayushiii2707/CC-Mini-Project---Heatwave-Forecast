@@ -19,4 +19,4 @@ tests/test_api.py::test_observed_outside_data_range_404 PASSED           [ 84%]
 tests/test_api.py::test_severity_rules PASSED                            [ 92%]
 tests/test_api.py::test_day_of_year_aligns_leap_and_non_leap PASSED      [100%]
 
-============================== 13 passed in 1.59s ==============================
+============================== 13 passed in 1.21s ==============================

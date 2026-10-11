@@ -87,6 +87,7 @@ def test_severity_rules():
     assert classify(47.0, 44.0)["level"] == "Severe heatwave"   # absolute >= 47
     assert classify(38.0, 33.0, coastal=True)["level"] == "Heatwave"  # coastal 37 C threshold
     assert classify(45.5, 43.0, coastal=True)["level"] == "Normal"    # absolute rule not for coast
+    assert classify(45.0, 37.0, coastal=True)["level"] == "Heatwave"  # coast: no severe category
 
 
 def test_day_of_year_aligns_leap_and_non_leap():

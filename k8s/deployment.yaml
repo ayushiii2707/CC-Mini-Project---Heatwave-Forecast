@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: heatguard
-          image: docker.io/DOCKERHUB_USER/heatguard:1.0
+          image: docker.io/DOCKERHUB_USER/heatguard:1.1
           imagePullPolicy: Always
           ports:
             - containerPort: 8000

@@ -1,0 +1,42 @@
+# v1.1: IMD coastal-station rule corrected (no Severe category for coastal stations). v1.0 left unchanged on Docker Hub.
+$ docker buildx build --platform linux/arm64,linux/amd64 -t ayushiranjan27/heatguard:1.1 -t ayushiranjan27/heatguard:latest --push .
+#1 DONE 0.0s
+#3 DONE 0.0s
+#4 DONE 1.2s
+#2 DONE 1.2s
+#5 DONE 0.0s
+#6 DONE 0.0s
+#7 DONE 0.0s
+#8 DONE 0.0s
+#15 DONE 0.0s
+#16 DONE 0.0s
+#17 DONE 0.0s
+#18 DONE 0.0s
+#19 DONE 0.0s
+#20 DONE 0.0s
+#21 DONE 0.4s
+#22 DONE 0.5s
+#23 naming to docker.io/ayushiranjan27/heatguard:1.1 done
+#23 naming to docker.io/ayushiranjan27/heatguard:latest done
+#23 pushing layers
+#24 DONE 0.0s
+#23 pushing layers 4.7s done
+#23 pushing manifest for docker.io/ayushiranjan27/heatguard:1.1@sha256:27f3bc3384aed2e9ace380878a8c60c4bc401c8d3f5a596d8a000582b28c8e6a
+#23 pushing manifest for docker.io/ayushiranjan27/heatguard:1.1@sha256:27f3bc3384aed2e9ace380878a8c60c4bc401c8d3f5a596d8a000582b28c8e6a 5.2s done
+#23 pushing layers
+#23 pushing layers 1.5s done
+#23 pushing manifest for docker.io/ayushiranjan27/heatguard:latest@sha256:27f3bc3384aed2e9ace380878a8c60c4bc401c8d3f5a596d8a000582b28c8e6a
+#23 pushing manifest for docker.io/ayushiranjan27/heatguard:latest@sha256:27f3bc3384aed2e9ace380878a8c60c4bc401c8d3f5a596d8a000582b28c8e6a 3.7s done
+#23 DONE 15.3s
+
+$ docker buildx imagetools inspect ayushiranjan27/heatguard:1.1
+Name:      docker.io/ayushiranjan27/heatguard:1.1
+  Name:        docker.io/ayushiranjan27/heatguard:1.1@sha256:b03ddc3b2c5f54e0fa752639b8c1074a44da379c46e1f8b815cb4259cc616145
+  Platform:    linux/arm64
+  Name:        docker.io/ayushiranjan27/heatguard:1.1@sha256:eea4c939058a2e0bf753a11550245a999d7152f3667d472dc9e4c630e4a1812c
+  Platform:    linux/amd64
+  Name:        docker.io/ayushiranjan27/heatguard:1.1@sha256:3ce4204f3c5c1ec3249e5f9337b1985ec15a72ee20d0a9bf67c3cfb4d3ea0249
+  Platform:    unknown/unknown
+  Name:        docker.io/ayushiranjan27/heatguard:1.1@sha256:ef050b89b430d7da436853ed8988a40bb4a044cb9f376556a37646da4dd1843d
+  Platform:    unknown/unknown
+sha256:5bb82e27d8982804439e13c3f709461b7b9c4c266912b45685688d2e37cd411a

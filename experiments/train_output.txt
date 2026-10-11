@@ -30,7 +30,7 @@ samples: train=32800 val=3650 test=3660  features=13
       "MAE": 0.902,
       "RMSE": 1.248
     },
-    "train_seconds": 1.18
+    "train_seconds": 1.47
   }
 }
 selected model (lowest validation MAE): ridge_regression
@@ -65,17 +65,17 @@ alert margin chosen on validation: 1.25 C
         ],
         [
           5,
-          35,
-          3
+          37,
+          2
         ],
         [
           0,
-          4,
+          3,
           1
         ]
       ]
     },
-    "accuracy": 0.9877,
+    "accuracy": 0.9883,
     "heatwave_days_actual": 48,
     "heatwave_recall": 0.896,
     "heatwave_precision": 0.566,
@@ -96,12 +96,12 @@ alert margin chosen on validation: 1.25 C
           0
         ],
         [
-          32,
+          33,
           11,
           0
         ],
         [
-          2,
+          1,
           3,
           0
         ]
@@ -129,17 +129,17 @@ alert margin chosen on validation: 1.25 C
         ],
         [
           15,
-          24,
-          4
+          26,
+          3
         ],
         [
           0,
-          4,
+          3,
           1
         ]
       ]
     },
-    "accuracy": 0.9888,
+    "accuracy": 0.9893,
     "heatwave_days_actual": 48,
     "heatwave_recall": 0.688,
     "heatwave_precision": 0.647,

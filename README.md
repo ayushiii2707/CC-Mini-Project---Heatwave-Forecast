@@ -14,7 +14,7 @@ image on Docker Hub, deployed on Kubernetes, and right-sized and cost-compared w
 
 | | |
 |---|---|
-| Docker Hub image | [`ayushiranjan27/heatguard:1.0`](https://hub.docker.com/r/ayushiranjan27/heatguard) (linux/arm64 + linux/amd64) |
+| Docker Hub image | [`ayushiranjan27/heatguard:1.1`](https://hub.docker.com/r/ayushiranjan27/heatguard) (linux/arm64 + linux/amd64). Exp 7/8 measured `1.0`; `1.1` only corrects the coastal heatwave rule. |
 | Data | IMD Pune 1°×1° daily gridded max temperature, 2014–2024 ([source](https://www.imdpune.gov.in/cmpg/Griddata/Max_1_Bin.html)) |
 | AI | Ridge regression next-day Tmax forecaster (ML) + IMD heatwave rules (rule-based) |
 | Experiments | 2 Docker & Docker Hub · 3 Kubernetes · 7 Right-sizing · 8 FinOps instance comparison |
@@ -43,7 +43,7 @@ IMD .GRD files ─► scripts/prepare_data.py ─► city_tmax.csv ─► script
 | Tests | 13/13 pytest passed (incl. 5 invalid-input/failure cases) |
 | Exp 7 right-sizing | 2 vCPU/2 GB → 0.75 vCPU/192 MiB: est. cost/hour **−65.2%**, throughput −10.7%, p95 +10.9%, 0 errors |
 | Exp 8 FinOps | cheapest config meeting p95 ≤ 150 ms & 0 errors: **0.25 vCPU / 0.5 GB** (USD 0.0064 per 1M predictions, estimate) |
-| Exp 3 Kubernetes | Hub image pulled, 2→3 replicas, deleted pod recreated in ~16 s, bad image rolled back with no downtime |
+| Exp 3 Kubernetes | Hub image pulled, 2→3 replicas, deleted pod recreated in ~16 s, bad image blocked and rolled back while old pods kept serving, rolling update 1.0→1.1 (39/40 health checks OK during rollout) |
 
 Costs are **estimates**, not charges: AWS Fargate Linux/ARM, Mumbai (ap-south-1), USD 0.02383 per vCPU-hour +
 USD 0.00261 per GB-hour, from the AWS public price list published 2026-09-11 (saved in `experiments/pricing/`).
@@ -58,7 +58,7 @@ USD 0.00261 per GB-hour, from the AWS public price list published 2026-09-11 (sa
 ## Quick start: run the published image
 
 ```bash
-docker run -d --name heatguard -p 8000:8000 ayushiranjan27/heatguard:1.0
+docker run -d --name heatguard -p 8000:8000 ayushiranjan27/heatguard:1.1
 ```
 Open http://localhost:8000 (example with a forecast already run:
 http://localhost:8000/?city=Delhi&date=2024-05-27&auto=1).
@@ -68,7 +68,7 @@ http://localhost:8000/?city=Delhi&date=2024-05-27&auto=1).
 ```bash
 # 1. Python environment
 python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements-dev.txt matplotlib
+pip install -r requirements-dev.txt
 
 # 2. Data (IMD server is slow; the script retries). Raw files are not in the repo.
 bash scripts/download_imd.sh 2014 2024
@@ -157,3 +157,14 @@ costs are estimates. No personal data is processed.
 This project was developed with assistance from Claude (Anthropic), used as a coding and documentation
 assistant. All code was executed, and all results, logs and screenshots in this repository come from
 real runs on the author's machine.
+
+## Deliverables
+
+| Deliverable | Location |
+|---|---|
+| Consolidated report (PDF) | `docs/16014223028_AyushiRanjan_CC_UseCase_Report.pdf` (rebuild: `python docs/build_report.py`) |
+| Requirement-to-test checklist | `docs/CHECKLIST.md` |
+| 5-minute demo plan + viva questions | `docs/DEMO_PLAN.md` |
+| Design | `docs/DESIGN.md` |
+| Screenshots and charts | `docs/screenshots/` |
+| Raw logs and measurements | `experiments/results/` |

@@ -183,3 +183,36 @@ INFO:     10.244.0.1:37142 - "GET /health HTTP/1.1" 200 OK
 INFO:     10.244.0.1:33768 - "GET /health HTTP/1.1" 200 OK
 INFO:     10.244.0.1:33774 - "GET /health HTTP/1.1" 200 OK
 INFO:     10.244.0.1:33780 - "GET /health HTTP/1.1" 200 OK
+
+### 7. Rolling update 1.0 -> 1.1 (coastal heatwave rule fix), with availability check during rollout
+$ kubectl set image deployment/heatguard heatguard=docker.io/ayushiranjan27/heatguard:1.1
+deployment.apps/heatguard image updated
+$ kubectl rollout status deployment/heatguard
+Waiting for deployment "heatguard" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "heatguard" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "heatguard" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "heatguard" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "heatguard" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "heatguard" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "heatguard" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "heatguard" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "heatguard" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "heatguard" rollout to finish: 1 old replicas are pending termination...
+deployment "heatguard" successfully rolled out
+# availability during rollout: 39/40 health checks returned HTTP 200 (non-200: 1)
+$ kubectl get pods -o wide
+NAME                        READY   STATUS    RESTARTS   AGE   IP            NODE                      NOMINATED NODE   READINESS GATES
+heatguard-df89b7b5f-7msn6   1/1     Running   0          33s   10.244.0.12   heatguard-control-plane   <none>           <none>
+heatguard-df89b7b5f-czgdj   1/1     Running   0          14s   10.244.0.14   heatguard-control-plane   <none>           <none>
+heatguard-df89b7b5f-p2ck5   1/1     Running   0          21s   10.244.0.13   heatguard-control-plane   <none>           <none>
+$ kubectl rollout history deployment/heatguard
+deployment.apps/heatguard 
+REVISION  CHANGE-CAUSE
+2         <none>
+3         <none>
+4         <none>
+
+$ kubectl get deployment heatguard -o jsonpath="{.spec.template.spec.containers[0].image}"
+docker.io/ayushiranjan27/heatguard:1.1
+# coastal check through the Service (Chennai, hottest 2024 week)
+[35.3, 37.2, 38.0, 39.0, 39.3, 40.8, 41.1]

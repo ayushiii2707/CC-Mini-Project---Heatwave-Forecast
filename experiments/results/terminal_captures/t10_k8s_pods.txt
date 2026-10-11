@@ -1,0 +1,7 @@
+# captured 2026-10-11 22:59:17
+$ kubectl get pods -o wide
+NAME                             READY   STATUS    RESTARTS   AGE    IP            NODE                      NOMINATED NODE   READINESS GATES
+heatguard-api-658cd79f5b-ljn7h   1/1     Running   0          142m   10.244.0.15   heatguard-control-plane   <none>           <none>
+heatguard-api-658cd79f5b-tz2xv   1/1     Running   0          2m7s   10.244.0.25   heatguard-control-plane   <none>           <none>
+heatguard-web-5ccd8856c5-b5k2t   1/1     Running   0          22m    10.244.0.22   heatguard-control-plane   <none>           <none>
+heatguard-web-5ccd8856c5-ns2hd   1/1     Running   0          22m    10.244.0.23   heatguard-control-plane   <none>           <none>

@@ -1,0 +1,13 @@
+# captured 2026-10-11 22:59:20
+$ kubectl delete pod $(kubectl get pods -l app=heatguard-api -o jsonpath='{.items[0].metadata.name}') --wait=false
+pod "heatguard-api-658cd79f5b-ljn7h" deleted from default namespace
+$ kubectl get pods -l app=heatguard-api
+NAME                             READY   STATUS              RESTARTS   AGE
+heatguard-api-658cd79f5b-ljn7h   1/1     Terminating         0          142m
+heatguard-api-658cd79f5b-nqx7h   0/1     ContainerCreating   0          0s
+heatguard-api-658cd79f5b-tz2xv   1/1     Running             0          2m10s
+$ sleep 12
+$ kubectl get pods -l app=heatguard-api
+NAME                             READY   STATUS    RESTARTS   AGE
+heatguard-api-658cd79f5b-nqx7h   1/1     Running   0          12s
+heatguard-api-658cd79f5b-tz2xv   1/1     Running   0          2m22s

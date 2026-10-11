@@ -1,0 +1,12 @@
+# captured 2026-10-11 22:59:12
+$ curl -s localhost:8080/api/health
+{"status":"ok","version":"2.0","model":"ridge_regression","horizons":7,"pod":"93522a4f6406"}
+$ V=$(curl -s 'localhost:8080/api/observed?city=Delhi&date=2024-05-27' | python3 -c 'import json,sys;print(json.load(sys.stdin)["recent_tmax"])'); curl -s -X POST localhost:8080/api/predict -H 'Content-Type: application/json' -d "{\"city\":\"Delhi\",\"date\":\"2024-05-27\",\"recent_tmax\":$V}" | python3 experiments/show.py predict
+highest alert: Heatwave | validated: Heatwave | first alert day: 1 | served by 93522a4f6406 in 23.98 ms
+  day 1 2024-05-28   44.1 C (+/-0.888)  alert basis  45.3 C  Heatwave         validated
+  day 2 2024-05-29   43.2 C (+/-1.299)  alert basis  45.9 C  Heatwave         validated
+  day 3 2024-05-30   42.5 C (+/-1.515)  alert basis  45.5 C  Heatwave         validated
+  day 4 2024-05-31   42.1 C (+/-1.645)  alert basis  45.4 C  Heatwave         validated
+  day 5 2024-06-01   42.0 C (+/-1.715)  alert basis  45.7 C  Heatwave         low
+  day 6 2024-06-02   41.9 C (+/-1.761)  alert basis  45.1 C  Heatwave         low
+  day 7 2024-06-03   41.8 C (+/-1.79)  alert basis  45.3 C  Heatwave         low

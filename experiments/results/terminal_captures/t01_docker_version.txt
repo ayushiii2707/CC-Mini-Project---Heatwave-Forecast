@@ -1,0 +1,5 @@
+# captured 2026-10-11 22:58:56
+$ docker version --format 'Client {{.Client.Version}} | Server {{.Server.Version}} ({{.Server.Os}}/{{.Server.Arch}})'
+Client 29.7.2 | Server 29.7.2 (linux/arm64)
+$ docker compose version
+Docker Compose version v5.4.0

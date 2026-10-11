@@ -1,0 +1,12 @@
+# captured 2026-10-11 22:59:51
+$ .venv/bin/python docs/tools/print_results.py
+== exp7 (mean of 3 runs, 15000 requests each) ==
+config             vCPU   mem cpu peak%  %limit  mem MiB   req/s  p50 ms  p95 ms  err   USD/h  USD/1M
+over-provisioned    2.0    2g      85.7    42.8    113.9   416.8    21.6   162.1    0  0.0529  0.0353
+right-sized        1.25  192m      99.1    79.3    106.5   436.4    26.3   152.1    0  0.0303  0.0193
+
+== exp8 (mean of 3 runs, 15000 requests each) ==
+config             vCPU   mem cpu peak%  %limit  mem MiB   req/s  p50 ms  p95 ms  err   USD/h  USD/1M  target
+low                0.25  512m      27.1   108.4    119.7    62.9   289.4   869.6    0  0.0073   0.032  FAIL
+medium              0.5    1g      50.8   101.7    118.3   302.7    76.3   109.2    0  0.0145  0.0133  PASS
+high                1.0    2g      83.1    83.1    114.5   435.7    22.2   153.0    0   0.029  0.0185  PASS

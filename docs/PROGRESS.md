@@ -12,7 +12,8 @@
 | Exp 3 v2: two tiers, scaling, self-healing, rollback, rolling updates 89/89 + 114/114 | Verified | `exp3_kubernetes.log`, screenshot 05 |
 | Frontend 2.1: animated landing page + redesigned dashboard; pushed and rolled out (248/248 OK) | Verified | `frontend_2.1_release.log`, screenshots 01–08 |
 | Report PDF, README, checklist, demo plan, ZIP, GitHub push | Done | `docs/` |
-| Demonstration video | To be recorded by student; link goes in `docs/video_link.txt` | `docs/DEMO_PLAN.md` |
+| Demonstration video | Recorded by student, public Drive link | `docs/video_link.txt` |
+| Report redone: experiment map, 5 new diagrams, 19 live terminal captures, Docker Hub pages | Done | `docs/` |
 
 ## Known issues
 - IMD server is slow; bare domain times out, `www.` works.

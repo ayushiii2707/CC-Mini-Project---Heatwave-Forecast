@@ -1,0 +1,30 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_style.css"></head><body>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="520" viewBox="0 0 1400 520">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#333"/></marker></defs>
+<text x="700" y="34" text-anchor="middle" class="t">Experiments 7 and 8: how the backend was measured, right-sized and costed</text>
+<text x="700" y="58" text-anchor="middle" class="st">Identical workload and conditions for every configuration (brief: "use the same workload and comparable test conditions")</text>
+<rect x="30" y="90" width="250" height="170" rx="10" class="box"/><text x="155" y="116" text-anchor="middle" class="h">loadtest/loadtest.py</text>
+<text x="155" y="142" text-anchor="middle" class="b">15,000 POST /predict</text><text x="155" y="162" text-anchor="middle" class="b">real IMD 2024 windows</text><text x="155" y="182" text-anchor="middle" class="b">20 concurrent clients</text><text x="155" y="202" text-anchor="middle" class="b">100 warm-up, seed 7</text><text x="155" y="230" text-anchor="middle" class="s">→ throughput, p50, p95, errors</text>
+<rect x="330" y="90" width="300" height="170" rx="10" class="cloud"/><text x="480" y="116" text-anchor="middle" class="h">docker run heatguard:2.0</text>
+<text x="480" y="142" text-anchor="middle" class="b">--cpus X --memory Y</text><text x="480" y="162" text-anchor="middle" class="b">(emulates an instance size)</text><text x="480" y="186" text-anchor="middle" class="b">3 repeats per configuration</text><text x="480" y="214" text-anchor="middle" class="s">experiments/run_config.py</text><text x="480" y="232" text-anchor="middle" class="s">records OOM kills and health</text>
+<rect x="680" y="90" width="300" height="170" rx="10" class="box"/><text x="830" y="116" text-anchor="middle" class="h">docker stats sampler</text>
+<text x="830" y="142" text-anchor="middle" class="b">every ~1 s during the load</text><text x="830" y="162" text-anchor="middle" class="b">CPU % (100% = 1 core)</text><text x="830" y="182" text-anchor="middle" class="b">memory MiB vs limit</text><text x="830" y="210" text-anchor="middle" class="s">*_docker_stats.csv per run</text><text x="830" y="228" text-anchor="middle" class="s">runs.jsonl summary per run</text>
+<rect x="1030" y="90" width="340" height="170" rx="10" class="box"/><text x="1200" y="116" text-anchor="middle" class="h">Cost model (estimate)</text>
+<text x="1200" y="142" text-anchor="middle" class="b">AWS Fargate Linux/ARM, Mumbai</text><text x="1200" y="162" text-anchor="middle" class="b">USD 0.02383 / vCPU-hour</text><text x="1200" y="182" text-anchor="middle" class="b">USD 0.00261 / GB-hour</text><text x="1200" y="206" text-anchor="middle" class="s">price list published 2026-09-11</text><text x="1200" y="226" text-anchor="middle" class="s">cost / 1M = hourly ÷ (req/s × 3600) × 10⁶</text>
+<g><line x1="280" y1="175" x2="328" y2="175" class="arr" marker-end="url(#a)"/><line x1="630" y1="175" x2="678" y2="175" class="arr" marker-end="url(#a)"/><line x1="980" y1="175" x2="1028" y2="175" class="arr" marker-end="url(#a)"/></g>
+<rect x="30" y="300" width="640" height="190" rx="12" class="e7"/><text x="48" y="326" class="exp c7">EXPERIMENT 7 · RIGHT-SIZING</text>
+<text x="48" y="352" class="b">1. Over-provisioned: 2 vCPU / 2 GB → peak 0.868 cores, 118.2 MiB (peaks = 42.8% of CPU limit, 5.6% of memory limit; mean of 3 runs)</text>
+<text x="48" y="376" class="b">2. experiments/rightsize.py: CPU = peak × 1.25 ↑0.25; memory = peak × 1.5 ↑64 MiB</text>
+<text x="48" y="400" class="b">3. Right-sized: 1.25 vCPU / 192 MiB, same load, 3 repeats</text>
+<text x="48" y="428" class="h">−42.7% est. hourly cost · throughput +4.7% · p95 −6.2% · p50 +21.8%</text>
+<text x="48" y="452" class="s">The new limits become resources.limits of heatguard-api in Kubernetes (Exp 3).</text>
+<text x="48" y="472" class="s">Evidence: experiments/results/exp7/, rightsizing_decision.json, summary.md</text>
+<rect x="710" y="300" width="660" height="190" rx="12" class="e8"/><text x="728" y="326" class="exp c8">EXPERIMENT 8 · FINOPS INSTANCE COMPARISON</text>
+<text x="728" y="352" class="b">1. Target written first (exp8_configs.json): ≥ 300 req/s, p95 ≤ 250 ms, 0 errors</text>
+<text x="728" y="376" class="b">2. low 0.25/0.5 GB · medium 0.5/1 GB · high 1/2 GB (Fargate-valid sizes)</text>
+<text x="728" y="400" class="b">3. experiments/summarize.py: mean ± std, target check, cost per 1M predictions</text>
+<text x="728" y="428" class="h">medium passes cheapest (USD 0.0133 / 1M, borderline 2 of 3 runs)</text>
+<text x="728" y="452" class="s">low fails (63 req/s, p95 870 ms); high +44% throughput at +39% cost per prediction</text>
+<text x="728" y="472" class="s">Evidence: experiments/results/exp8/, exp8_configs.json, summary.md</text>
+<path d="M480 260 L480 298" class="arr" marker-end="url(#a)"/><path d="M1200 260 L1200 298" class="arr" marker-end="url(#a)"/>
+</svg></body></html>

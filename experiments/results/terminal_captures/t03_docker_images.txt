@@ -1,0 +1,11 @@
+# captured 2026-10-11 22:59:02
+$ docker images --filter 'reference=ayushiranjan27/*'
+IMAGE                                 ID             DISK USAGE   CONTENT SIZE   EXTRA
+ayushiranjan27/heatguard-web:2.0      9506d9745862       97.9MB         43.1MB        
+ayushiranjan27/heatguard-web:2.1      115c2d8ab304       98.3MB         43.4MB   U    
+ayushiranjan27/heatguard-web:latest   115c2d8ab304       98.3MB         43.4MB   U    
+ayushiranjan27/heatguard:1.0          7ac1187626db       1.23GB          273MB        
+ayushiranjan27/heatguard:1.1          27f3bc3384ae        771MB          273MB        
+ayushiranjan27/heatguard:2.0          8eebf471058f        771MB          273MB   U    
+ayushiranjan27/heatguard:latest       8eebf471058f        771MB          273MB   U    
+ayushiranjan27/nginx-exp2:1.0         f9ea18bfa4fa        261MB           65MB        

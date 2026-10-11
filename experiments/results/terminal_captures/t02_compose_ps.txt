@@ -1,0 +1,5 @@
+# captured 2026-10-11 22:59:01
+$ docker compose ps
+NAME              IMAGE                              COMMAND                  SERVICE   CREATED          STATUS                    PORTS
+heatguard-api-1   ayushiranjan27/heatguard:2.0       "uvicorn app.main:ap…"   api       41 seconds ago   Up 37 seconds (healthy)   0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp
+heatguard-web-1   ayushiranjan27/heatguard-web:2.1   "/docker-entrypoint.…"   web       38 seconds ago   Up 31 seconds (healthy)   0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp

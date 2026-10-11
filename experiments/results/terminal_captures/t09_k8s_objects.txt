@@ -1,0 +1,18 @@
+# captured 2026-10-11 22:59:16
+$ kubectl get deployments,replicasets,services -o wide
+NAME                            READY   UP-TO-DATE   AVAILABLE   AGE    CONTAINERS   IMAGES                                       SELECTOR
+deployment.apps/heatguard-api   2/2     2            2           144m   api          docker.io/ayushiranjan27/heatguard:2.0       app=heatguard-api
+deployment.apps/heatguard-web   2/2     2            2           144m   web          docker.io/ayushiranjan27/heatguard-web:2.1   app=heatguard-web
+
+NAME                                       DESIRED   CURRENT   READY   AGE    CONTAINERS   IMAGES                                              SELECTOR
+replicaset.apps/heatguard-api-658cd79f5b   2         2         2       142m   api          docker.io/ayushiranjan27/heatguard:2.0              app=heatguard-api,pod-template-hash=658cd79f5b
+replicaset.apps/heatguard-api-6b55ff974c   0         0         0       143m   api          docker.io/ayushiranjan27/heatguard:does-not-exist   app=heatguard-api,pod-template-hash=6b55ff974c
+replicaset.apps/heatguard-api-8c955c984    0         0         0       144m   api          docker.io/ayushiranjan27/heatguard:2.0              app=heatguard-api,pod-template-hash=8c955c984
+replicaset.apps/heatguard-web-5ccd8856c5   2         2         2       22m    web          docker.io/ayushiranjan27/heatguard-web:2.1          app=heatguard-web,pod-template-hash=5ccd8856c5
+replicaset.apps/heatguard-web-66cf47486d   0         0         0       144m   web          docker.io/ayushiranjan27/heatguard-web:2.0          app=heatguard-web,pod-template-hash=66cf47486d
+replicaset.apps/heatguard-web-6f8bd4c886   0         0         0       142m   web          docker.io/ayushiranjan27/heatguard-web:2.0          app=heatguard-web,pod-template-hash=6f8bd4c886
+
+NAME                    TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE    SELECTOR
+service/heatguard-api   ClusterIP   10.96.212.217   <none>        8000/TCP       144m   app=heatguard-api
+service/heatguard-web   NodePort    10.96.57.17     <none>        80:30080/TCP   144m   app=heatguard-web
+service/kubernetes      ClusterIP   10.96.0.1       <none>        443/TCP        144m   <none>

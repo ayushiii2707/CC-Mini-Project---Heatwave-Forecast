@@ -1,0 +1,14 @@
+# captured 2026-10-11 22:59:49
+$ kubectl get events --sort-by=.lastTimestamp | tail -12
+15s         Normal    Pulling             pod/heatguard-web-5ccd8856c5-cp5lk    Pulling image "docker.io/ayushiranjan27/heatguard-web:2.1"
+13s         Normal    Pulled              pod/heatguard-web-5ccd8856c5-jxpvt    Successfully pulled image "docker.io/ayushiranjan27/heatguard-web:2.1" in 1.463s (1.463s including waiting). Image size: 22135330 bytes.
+13s         Normal    Created             pod/heatguard-web-5ccd8856c5-jxpvt    Container created
+13s         Normal    Started             pod/heatguard-web-5ccd8856c5-jxpvt    Container started
+12s         Normal    Pulled              pod/heatguard-web-5ccd8856c5-cp5lk    Successfully pulled image "docker.io/ayushiranjan27/heatguard-web:2.1" in 1.384s (2.818s including waiting). Image size: 22135330 bytes.
+12s         Normal    Created             pod/heatguard-web-5ccd8856c5-cp5lk    Container created
+12s         Normal    Started             pod/heatguard-web-5ccd8856c5-cp5lk    Container started
+6s          Normal    SuccessfulDelete    replicaset/heatguard-web-5ccd8856c5   Deleted pod: heatguard-web-5ccd8856c5-jxpvt
+6s          Normal    SuccessfulDelete    replicaset/heatguard-web-5ccd8856c5   Deleted pod: heatguard-web-5ccd8856c5-cp5lk
+6s          Normal    Killing             pod/heatguard-web-5ccd8856c5-jxpvt    Stopping container web
+6s          Normal    ScalingReplicaSet   deployment/heatguard-web              Scaled down replica set heatguard-web-5ccd8856c5 from 4 to 2
+6s          Normal    Killing             pod/heatguard-web-5ccd8856c5-cp5lk    Stopping container web

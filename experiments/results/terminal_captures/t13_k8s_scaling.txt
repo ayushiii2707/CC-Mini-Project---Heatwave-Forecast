@@ -1,0 +1,15 @@
+# captured 2026-10-11 22:59:34
+$ kubectl scale deployment heatguard-web --replicas=4
+deployment.apps/heatguard-web scaled
+$ kubectl rollout status deployment/heatguard-web --timeout=120s
+Waiting for deployment "heatguard-web" rollout to finish: 2 of 4 updated replicas are available...
+Waiting for deployment "heatguard-web" rollout to finish: 3 of 4 updated replicas are available...
+deployment "heatguard-web" successfully rolled out
+$ kubectl get pods -l app=heatguard-web
+NAME                             READY   STATUS    RESTARTS   AGE
+heatguard-web-5ccd8856c5-b5k2t   1/1     Running   0          23m
+heatguard-web-5ccd8856c5-cp5lk   1/1     Running   0          9s
+heatguard-web-5ccd8856c5-jxpvt   1/1     Running   0          9s
+heatguard-web-5ccd8856c5-ns2hd   1/1     Running   0          22m
+$ kubectl scale deployment heatguard-web --replicas=2
+deployment.apps/heatguard-web scaled

@@ -1,0 +1,20 @@
+# captured 2026-10-11 22:59:50
+$ .venv/bin/python experiments/rightsize.py
+{
+  "allocated": {
+    "cpus": 2.0,
+    "memory": "2g"
+  },
+  "observed_peak": {
+    "cpu_cores": 0.868,
+    "memory_mib": 118.2
+  },
+  "buffer": {
+    "cpu": 1.25,
+    "memory": 1.5
+  },
+  "right_sized": {
+    "cpus": 1.25,
+    "memory": "192m"
+  }
+}

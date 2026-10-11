@@ -1,0 +1,32 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_style.css"></head><body>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="640" viewBox="0 0 1400 640">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#333"/></marker></defs>
+<text x="700" y="34" text-anchor="middle" class="t">Request flow: what happens when a user opens the dashboard for a city and date</text>
+<text x="700" y="58" text-anchor="middle" class="st">Same path under Docker Compose (localhost:8080) and Kubernetes (localhost:30080, through the Services)</text>
+<!-- lifelines -->
+<g>
+<rect x="40" y="80" width="190" height="56" rx="8" class="box"/><text x="135" y="104" text-anchor="middle" class="h">Browser</text><text x="135" y="124" text-anchor="middle" class="s">landing / dashboard JS</text>
+<rect x="330" y="80" width="230" height="56" rx="8" class="cloud"/><text x="445" y="104" text-anchor="middle" class="h">heatguard-web (nginx)</text><text x="445" y="124" text-anchor="middle" class="s">static files + /api/ proxy</text>
+<rect x="660" y="80" width="230" height="56" rx="8" class="cloud"/><text x="775" y="104" text-anchor="middle" class="h">heatguard-api (FastAPI)</text><text x="775" y="124" text-anchor="middle" class="s">validation, endpoints</text>
+<rect x="990" y="80" width="170" height="56" rx="8" class="ai"/><text x="1075" y="104" text-anchor="middle" class="h">7 ML models</text><text x="1075" y="124" text-anchor="middle" class="s">ridge, day 1..7</text>
+<rect x="1220" y="80" width="150" height="56" rx="8" class="ai" stroke-dasharray="5 3"/><text x="1295" y="104" text-anchor="middle" class="h">IMD rules</text><text x="1295" y="124" text-anchor="middle" class="s">rule-based</text>
+<g stroke="#aaa" stroke-dasharray="4 4"><line x1="135" y1="136" x2="135" y2="610"/><line x1="445" y1="136" x2="445" y2="610"/><line x1="775" y1="136" x2="775" y2="610"/><line x1="1075" y1="136" x2="1075" y2="610"/><line x1="1295" y1="136" x2="1295" y2="610"/></g>
+</g>
+<g class="b">
+<line x1="135" y1="170" x2="443" y2="170" class="arr" marker-end="url(#a)"/><text x="145" y="163">① GET /dashboard → HTML, CSS, JS, fonts</text>
+<line x1="135" y1="215" x2="443" y2="215" class="arr" marker-end="url(#a)"/><text x="145" y="208">② GET /api/observed?city&amp;date&amp;days=30</text>
+<line x1="445" y1="232" x2="773" y2="232" class="arr" marker-end="url(#a)"/><text x="455" y="226" class="s">proxy_pass ${API_URL} (Service DNS name)</text>
+<line x1="775" y1="252" x2="137" y2="252" class="arr dash" marker-end="url(#a)"/><text x="470" y="270" class="s">30 days of IMD Tmax + normals + actual next 7 days</text>
+<line x1="135" y1="305" x2="443" y2="305" class="arr" marker-end="url(#a)"/><text x="145" y="298">③ POST /api/predict {city, date, recent_tmax[7]}</text>
+<line x1="445" y1="322" x2="773" y2="322" class="arr" marker-end="url(#a)"/>
+<text x="785" y="345" class="s">validate: city known, 7 values, −10..55 °C (else 404 / 422)</text>
+<line x1="775" y1="372" x2="1073" y2="372" class="arr" marker-end="url(#a)"/><text x="790" y="365" class="s">13 features × 7 horizons</text>
+<line x1="1075" y1="392" x2="777" y2="392" class="arr dash" marker-end="url(#a)"/><text x="860" y="410" class="s">7 forecasts (°C) ± typical error</text>
+<line x1="775" y1="438" x2="1293" y2="438" class="arr" marker-end="url(#a)"/><text x="900" y="431" class="s">forecast + per-day margin vs normal, plains/coastal thresholds</text>
+<line x1="1295" y1="458" x2="777" y2="458" class="arr dash" marker-end="url(#a)"/><text x="980" y="476" class="s">alert level + confidence per day + advisory</text>
+<line x1="775" y1="505" x2="137" y2="505" class="arr dash" marker-end="url(#a)"/><text x="300" y="498" class="s">JSON: 7 days, highest alert, peak, pod name, inference ms (~2–17 ms)</text>
+<line x1="135" y1="545" x2="443" y2="545" class="arr" marker-end="url(#a)"/><text x="145" y="538">④ GET /api/outlook?date (sent in parallel with ②) → 10 cities</text>
+<rect x="40" y="565" width="400" height="44" rx="6" fill="#f7f7f7" stroke="#bbb"/>
+<text x="55" y="592" class="b">⑤ Browser renders bulletin, 7-day table, chart, map, ranking</text>
+</g>
+</svg></body></html>

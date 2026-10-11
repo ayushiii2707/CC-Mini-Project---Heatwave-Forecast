@@ -1,0 +1,5 @@
+# captured 2026-10-11 22:59:09
+$ docker stats --no-stream heatguard-api-1 heatguard-web-1
+CONTAINER ID   NAME              CPU %     MEM USAGE / LIMIT     MEM %     NET I/O           BLOCK I/O         PIDS
+93522a4f6406   heatguard-api-1   0.24%     171.7MiB / 3.825GiB   4.38%     2.6kB / 822B      72.9MB / 0B       20
+fc4c8908393c   heatguard-web-1   0.00%     10.07MiB / 3.825GiB   0.26%     2.78kB / 1.88kB   3.24MB / 12.3kB   9

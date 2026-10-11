@@ -1,0 +1,11 @@
+# captured 2026-10-11 22:59:13
+$ docker compose logs --tail 4 api
+api-1  | INFO:     127.0.0.1:53638 - "GET /health HTTP/1.1" 200 OK
+api-1  | INFO:     172.19.0.3:38194 - "GET /health HTTP/1.0" 200 OK
+api-1  | INFO:     172.19.0.3:38206 - "GET /observed?city=Delhi&date=2024-05-27 HTTP/1.0" 200 OK
+api-1  | INFO:     172.19.0.3:38212 - "POST /predict HTTP/1.0" 200 OK
+$ docker compose logs --tail 4 web
+web-1  | 172.19.0.1 - - [11/Oct/2026:17:28:31 +0000] "GET /api/health HTTP/1.1" 200 92 "http://localhost:8080/?city=Chennai&date=2021-06-29" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Claude/2.19675.1 Chrome/152.0.7977.130 Safari/537.36" "-"
+web-1  | 172.19.0.1 - - [11/Oct/2026:17:29:12 +0000] "GET /api/health HTTP/1.1" 200 92 "-" "curl/8.7.1" "-"
+web-1  | 172.19.0.1 - - [11/Oct/2026:17:29:12 +0000] "GET /api/observed?city=Delhi&date=2024-05-27 HTTP/1.1" 200 766 "-" "curl/8.7.1" "-"
+web-1  | 172.19.0.1 - - [11/Oct/2026:17:29:12 +0000] "POST /api/predict HTTP/1.1" 200 2354 "-" "curl/8.7.1" "-"

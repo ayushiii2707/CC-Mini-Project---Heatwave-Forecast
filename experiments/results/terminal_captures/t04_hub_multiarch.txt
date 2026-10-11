@@ -1,0 +1,17 @@
+# captured 2026-10-11 22:59:03
+$ docker buildx imagetools inspect ayushiranjan27/heatguard:2.0 | grep -E 'Name:|Platform:' | grep -v unknown
+Name:      docker.io/ayushiranjan27/heatguard:2.0
+  Name:        docker.io/ayushiranjan27/heatguard:2.0@sha256:1c2993c23b6aed6a5fea5c0eca4c3b00c8b52aa649a5f9f2fe8ba3be720b7306
+  Platform:    linux/arm64
+  Name:        docker.io/ayushiranjan27/heatguard:2.0@sha256:ab19372b0cbad1c9cf78c8dcb34011988c5187404e9a09767812af764d384cb9
+  Platform:    linux/amd64
+  Name:        docker.io/ayushiranjan27/heatguard:2.0@sha256:0b2c3976a12d1d051726d7f05cb0336400b731eee9129b9ec09b47ff71d66b54
+  Name:        docker.io/ayushiranjan27/heatguard:2.0@sha256:af83d1174e9a8cff33c1469b200662b8aff7145d45c4dc07b38c89db766b14e3
+$ docker buildx imagetools inspect ayushiranjan27/heatguard-web:2.1 | grep -E 'Name:|Platform:' | grep -v unknown
+Name:      docker.io/ayushiranjan27/heatguard-web:2.1
+  Name:        docker.io/ayushiranjan27/heatguard-web:2.1@sha256:135272c209e2c60b40107c5c4518ed3c97a8962639a531355e48cc242ce57ce9
+  Platform:    linux/arm64
+  Name:        docker.io/ayushiranjan27/heatguard-web:2.1@sha256:aac28a6b3c5a05a86148c475af59d2c3608e23e8bd4ab69011a3fb6f5fe35bd1
+  Platform:    linux/amd64
+  Name:        docker.io/ayushiranjan27/heatguard-web:2.1@sha256:592b6603d4944cd78a1a0bb362d6ebdf4b38ac13bd61d0bf4cd5310a6bd1f783
+  Name:        docker.io/ayushiranjan27/heatguard-web:2.1@sha256:75728401591bbb79395cdc0cd7f8290b4eac7946a87ad08f71bfc6dc251af61a

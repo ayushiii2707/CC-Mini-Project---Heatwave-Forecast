@@ -1,0 +1,17 @@
+# captured 2026-10-11 22:59:47
+$ kubectl rollout history deployment/heatguard-api
+deployment.apps/heatguard-api 
+REVISION  CHANGE-CAUSE
+2         <none>
+3         <none>
+4         <none>
+$ kubectl rollout history deployment/heatguard-web
+deployment.apps/heatguard-web 
+REVISION  CHANGE-CAUSE
+1         <none>
+2         <none>
+3         <none>
+$ kubectl get deployments -o custom-columns=NAME:.metadata.name,READY:.status.readyReplicas,IMAGE:.spec.template.spec.containers[0].image
+NAME            READY   IMAGE
+heatguard-api   2       docker.io/ayushiranjan27/heatguard:2.0
+heatguard-web   2       docker.io/ayushiranjan27/heatguard-web:2.1

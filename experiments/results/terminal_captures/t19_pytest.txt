@@ -1,0 +1,4 @@
+# captured 2026-10-11 22:59:52
+$ .venv/bin/python -m pytest -q -p no:warnings
+..................                                                                                                                             [100%]
+18 passed in 1.75s

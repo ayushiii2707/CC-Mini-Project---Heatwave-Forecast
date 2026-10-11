@@ -1,0 +1,11 @@
+# captured 2026-10-11 22:59:45
+$ for p in / /dashboard /api/health /api/docs; do curl -s -o /dev/null -w "HTTP %{http_code}  $p\n" localhost:30080$p; done
+HTTP 200  /
+HTTP 200  /dashboard
+HTTP 200  /api/health
+HTTP 200  /api/docs
+$ for i in 1 2 3 4; do curl -s localhost:30080/api/health; echo; done
+{"status":"ok","version":"2.0","model":"ridge_regression","horizons":7,"pod":"heatguard-api-658cd79f5b-tz2xv"}
+{"status":"ok","version":"2.0","model":"ridge_regression","horizons":7,"pod":"heatguard-api-658cd79f5b-nqx7h"}
+{"status":"ok","version":"2.0","model":"ridge_regression","horizons":7,"pod":"heatguard-api-658cd79f5b-nqx7h"}
+{"status":"ok","version":"2.0","model":"ridge_regression","horizons":7,"pod":"heatguard-api-658cd79f5b-nqx7h"}

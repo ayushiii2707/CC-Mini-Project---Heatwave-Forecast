@@ -1,0 +1,84 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="_style.css"></head><body>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="760" viewBox="0 0 1400 760">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="#333"/></marker></defs>
+<text x="700" y="34" text-anchor="middle" class="t">Where each Cloud Computing experiment comes into play in HeatGuard</text>
+<text x="700" y="58" text-anchor="middle" class="st">One artifact flows through all four experiments: the same two images are packaged, published, deployed, measured and sized</text>
+<!-- lane labels -->
+<text x="30" y="108" class="exp" fill="#2e7d32">AI / DATA (not an experiment)</text>
+<rect x="30" y="118" width="300" height="120" rx="10" class="data"/>
+<text x="180" y="146" text-anchor="middle" class="h">1 · IMD data → 7 ML models</text>
+<text x="180" y="170" text-anchor="middle" class="b">IMD gridded Tmax 2014–2024</text>
+<text x="180" y="190" text-anchor="middle" class="b">train.py: one ridge model per day</text>
+<text x="180" y="210" text-anchor="middle" class="b">+ IMD rules, margins, confidence</text>
+<text x="180" y="230" text-anchor="middle" class="s">output: model.joblib, metrics.json</text>
+<!-- Exp 2 -->
+<rect x="380" y="90" width="460" height="230" rx="12" class="e2"/>
+<text x="398" y="114" class="exp c2">EXPERIMENT 2 · CONTAINERIZATION, DOCKER &amp; DOCKER HUB</text>
+<text x="398" y="138" class="h">Question it answers: how do we ship HeatGuard so it runs anywhere?</text>
+<rect x="398" y="152" width="200" height="150" rx="8" class="box"/>
+<text x="498" y="174" text-anchor="middle" class="h">2a · Package</text>
+<text x="498" y="196" text-anchor="middle" class="b">Dockerfile (backend)</text>
+<text x="498" y="215" text-anchor="middle" class="b">frontend/Dockerfile (nginx)</text>
+<text x="498" y="234" text-anchor="middle" class="b">docker-compose.yml</text>
+<text x="498" y="258" text-anchor="middle" class="s">run both together, test,</text>
+<text x="498" y="275" text-anchor="middle" class="s">failure cases (404/422/504)</text>
+<rect x="622" y="152" width="200" height="150" rx="8" class="box"/>
+<text x="722" y="174" text-anchor="middle" class="h">2b · Publish</text>
+<text x="722" y="196" text-anchor="middle" class="b">docker buildx --push</text>
+<text x="722" y="215" text-anchor="middle" class="b">linux/arm64 + linux/amd64</text>
+<text x="722" y="234" text-anchor="middle" class="b">Docker Hub registry</text>
+<text x="722" y="258" text-anchor="middle" class="s">heatguard:2.0</text>
+<text x="722" y="275" text-anchor="middle" class="s">heatguard-web:2.1</text>
+<line x1="598" y1="227" x2="620" y2="227" class="arr" marker-end="url(#a)"/>
+<path d="M330 200 L360 200 L360 250 L396 250" class="arr" marker-end="url(#a)"/>
+<text x="300" y="262" class="s">model baked</text><text x="300" y="276" class="s">into image</text>
+<!-- Exp 3 -->
+<rect x="890" y="90" width="480" height="300" rx="12" class="e3"/>
+<text x="908" y="114" class="exp c3">EXPERIMENT 3 · APPLICATION DEPLOYMENT USING KUBERNETES</text>
+<text x="908" y="138" class="h">Question it answers: how do we keep the warning service up?</text>
+<text x="908" y="166" class="b">• kind cluster pulls both images from Docker Hub</text>
+<text x="908" y="188" class="b">• Deployment heatguard-api (ClusterIP, internal)</text>
+<text x="908" y="210" class="b">• Deployment heatguard-web (NodePort 30080, public entry)</text>
+<text x="908" y="232" class="b">• probes on /health and /healthz, 2 replicas each</text>
+<text x="908" y="254" class="b">• scaling 2→4, self-healing of deleted pods</text>
+<text x="908" y="276" class="b">• bad image → ImagePullBackOff → rollout undo</text>
+<text x="908" y="298" class="b">• rolling updates: maxUnavailable 0 + preStop 5 s</text>
+<text x="908" y="326" class="h">Measured: 89/89, 114/114 and 248/248 requests OK</text>
+<text x="908" y="346" class="s">during rollouts (zero downtime)</text>
+<text x="908" y="372" class="s">backend limits = Exp 7 result (1250m CPU / 192Mi)</text>
+<line x1="840" y1="227" x2="888" y2="227" class="arr" marker-end="url(#a)"/>
+<text x="846" y="218" class="s">docker pull</text>
+<!-- Exp 7 -->
+<rect x="200" y="400" width="520" height="300" rx="12" class="e7"/>
+<text x="218" y="424" class="exp c7">EXPERIMENT 7 · COST OPTIMIZATION THROUGH RIGHT-SIZING</text>
+<text x="218" y="448" class="h">Question it answers: how much CPU/memory does the API really need?</text>
+<text x="218" y="476" class="b">• same backend image run with 2 vCPU / 2 GB (over-provisioned)</text>
+<text x="218" y="498" class="b">• fixed load: 15,000 real-IMD forecast requests, 20 clients</text>
+<text x="218" y="520" class="b">• docker stats every ~1 s → peak 0.868 cores, 118 MiB</text>
+<text x="218" y="542" class="b">• rule: peak × 1.25 CPU / × 1.5 memory → 1.25 vCPU / 192 MiB</text>
+<text x="218" y="564" class="b">• re-run same load with new limits, 3 repeats each</text>
+<text x="218" y="594" class="h">Result: est. hourly cost −42.7%, throughput +4.7%,</text>
+<text x="218" y="614" class="h">p95 −6.2%, median latency +21.8%, 0 errors</text>
+<text x="218" y="644" class="s">Hands its limits to Exp 3 (Kubernetes resources.limits)</text>
+<text x="218" y="664" class="s">and its workload + cost model to Exp 8</text>
+<!-- Exp 8 -->
+<rect x="770" y="430" width="600" height="270" rx="12" class="e8"/>
+<text x="788" y="454" class="exp c8">EXPERIMENT 8 · FINOPS PRINCIPLES &amp; INSTANCE-TYPE COMPARISON</text>
+<text x="788" y="478" class="h">Question it answers: which size gives the most value per unit cost?</text>
+<text x="788" y="506" class="b">• same image + same workload as Exp 7</text>
+<text x="788" y="528" class="b">• 3 Fargate-valid sizes: 0.25 / 0.5 / 1 vCPU</text>
+<text x="788" y="550" class="b">• target fixed before running: ≥ 300 req/s, p95 ≤ 250 ms, 0 errors</text>
+<text x="788" y="572" class="b">• cost per 1M predictions from AWS Mumbai ARM prices (estimate)</text>
+<text x="788" y="602" class="h">Result: 0.5 vCPU / 1 GB is cheapest passing (borderline);</text>
+<text x="788" y="622" class="h">0.25 vCPU fails, 1 vCPU = +44% throughput, +39% cost</text>
+<text x="788" y="652" class="s">Decision input for how large each backend replica should be</text>
+<!-- links -->
+<path d="M1130 428 L1130 393" class="arr dash" marker-end="url(#a)"/>
+<path d="M610 320 L610 398" class="arr" marker-end="url(#a)"/>
+<text x="618" y="364" class="s">backend image</text>
+<path d="M720 545 L768 545" class="arr" marker-end="url(#a)"/>
+<text x="723" y="537" class="s">workload,</text><text x="723" y="562" class="s">cost model</text>
+<path d="M460 700 L460 735 L1380 735 L1380 250 L1372 250" class="arr dash" marker-end="url(#a)"/>
+<text x="900" y="728" class="s">right-sized limits written into k8s/api.yaml by the Exp 3 script</text>
+<text x="1138" y="412" class="s">sizing decision</text>
+</svg></body></html>

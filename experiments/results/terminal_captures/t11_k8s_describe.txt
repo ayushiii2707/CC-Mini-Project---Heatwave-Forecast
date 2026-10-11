@@ -1,0 +1,14 @@
+# captured 2026-10-11 22:59:18
+$ kubectl describe deployment heatguard-api | grep -E 'Replicas:|StrategyType|RollingUpdateStrategy|Image:|Limits|Requests|cpu:|memory:|Liveness|Readiness|PreStop|sleep'
+Replicas:               2 desired | 2 updated | 2 total | 2 available | 0 unavailable
+StrategyType:           RollingUpdate
+RollingUpdateStrategy:  0 max unavailable, 1 max surge
+    Image:      docker.io/ayushiranjan27/heatguard:2.0
+    Limits:
+      cpu:     1250m
+      memory:  192Mi
+    Requests:
+      cpu:         250m
+      memory:      128Mi
+    Liveness:      http-get http://:8000/health delay=10s timeout=1s period=10s #success=1 #failure=3
+    Readiness:     http-get http://:8000/health delay=3s timeout=1s period=5s #success=1 #failure=3

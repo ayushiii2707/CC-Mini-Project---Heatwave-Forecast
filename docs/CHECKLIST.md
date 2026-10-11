@@ -17,9 +17,9 @@ Statuses: Verified / Partially Verified / Not Verified / Blocked. Evidence files
 | 11 | Representative inputs tested | pytest + curl on real IMD windows (Delhi, Jaipur, Nagpur, Chennai) | pytest_output.txt | Verified |
 | 12 | ≥1 invalid-input / failure scenario | unknown city 404, 3 values 422, 99.9 °C 422, bad date 422, bad image tag in K8s | pytest_output.txt, exp2_run.log, exp3_kubernetes.log | Verified |
 | 13 | Measurements (error, latency, throughput, CPU/mem, cost) | MAE/RMSE, recall/precision, req/s, p50/p95, docker stats, est. USD | metrics.json, summary.md | Verified |
-| 14 | Clean-environment setup | README steps; published image pulled and run after deleting local tag | exp2_push.log (pull + health) | Partially Verified |
+| 14 | Clean-environment setup | Fresh git clone + new venv: pip install, 13/13 tests pass, retraining reproduces MAE 0.883 and margin 1.25; published image pulled and run after deleting local tag. Docker/K8s steps not repeated from scratch | exp2_push.log (pull + health); clean-clone check | Partially Verified |
 | 15 | Demonstration video (5 min) | Plan in docs/DEMO_PLAN.md | to be recorded by student | Not Verified |
 
 Notes:
-- *Clean-environment setup* is Partially Verified: the published image was deleted locally, pulled from Docker Hub and run successfully, but the full README procedure was not repeated on a second machine.
+- *Clean-environment setup* is Partially Verified: the GitHub repository was cloned into an empty folder with a new virtual environment; `pip install -r requirements-dev.txt`, `pytest` (13/13 passed) and `python scripts/train.py` (same MAE 0.883 °C and margin 1.25 °C) worked. The published image was pulled from Docker Hub and run. The Docker build and Kubernetes steps were not repeated from scratch on a second machine.
 - *Demonstration video* is Not Verified until the student records it (plan: `docs/DEMO_PLAN.md`).

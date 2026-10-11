@@ -1,0 +1,149 @@
+samples: train=32800 val=3650 test=3660  features=13
+{
+  "persistence_baseline": {
+    "val": {
+      "MAE": 0.924,
+      "RMSE": 1.312
+    },
+    "test": {
+      "MAE": 0.94,
+      "RMSE": 1.303
+    }
+  },
+  "ridge_regression": {
+    "val": {
+      "MAE": 0.888,
+      "RMSE": 1.267
+    },
+    "test": {
+      "MAE": 0.883,
+      "RMSE": 1.225
+    },
+    "train_seconds": 0.01
+  },
+  "gradient_boosting": {
+    "val": {
+      "MAE": 0.895,
+      "RMSE": 1.274
+    },
+    "test": {
+      "MAE": 0.902,
+      "RMSE": 1.248
+    },
+    "train_seconds": 1.18
+  }
+}
+selected model (lowest validation MAE): ridge_regression
+alert margin chosen on validation: 1.25 C
+{
+  "test_mae_by_city": {
+    "Ahmedabad": 0.724,
+    "Bhubaneswar": 0.869,
+    "Chennai": 0.74,
+    "Delhi": 1.057,
+    "Hyderabad": 0.818,
+    "Jaipur": 0.913,
+    "Kolkata": 0.88,
+    "Lucknow": 0.989,
+    "Nagpur": 0.825,
+    "Patna": 1.015
+  },
+  "alert_margin_c": 1.25,
+  "severity_on_test_forecast": {
+    "alert_margin_c": 1.25,
+    "confusion_matrix": {
+      "rows=actual, cols=predicted": [
+        "Normal",
+        "Heatwave",
+        "Severe heatwave"
+      ],
+      "values": [
+        [
+          3579,
+          33,
+          0
+        ],
+        [
+          5,
+          35,
+          3
+        ],
+        [
+          0,
+          4,
+          1
+        ]
+      ]
+    },
+    "accuracy": 0.9877,
+    "heatwave_days_actual": 48,
+    "heatwave_recall": 0.896,
+    "heatwave_precision": 0.566,
+    "heatwave_f2": 0.802
+  },
+  "severity_on_test_forecast_no_margin": {
+    "alert_margin_c": 0.0,
+    "confusion_matrix": {
+      "rows=actual, cols=predicted": [
+        "Normal",
+        "Heatwave",
+        "Severe heatwave"
+      ],
+      "values": [
+        [
+          3612,
+          0,
+          0
+        ],
+        [
+          32,
+          11,
+          0
+        ],
+        [
+          2,
+          3,
+          0
+        ]
+      ]
+    },
+    "accuracy": 0.9899,
+    "heatwave_days_actual": 48,
+    "heatwave_recall": 0.292,
+    "heatwave_precision": 1.0,
+    "heatwave_f2": 0.34
+  },
+  "severity_on_test_persistence": {
+    "alert_margin_c": 0.0,
+    "confusion_matrix": {
+      "rows=actual, cols=predicted": [
+        "Normal",
+        "Heatwave",
+        "Severe heatwave"
+      ],
+      "values": [
+        [
+          3594,
+          18,
+          0
+        ],
+        [
+          15,
+          24,
+          4
+        ],
+        [
+          0,
+          4,
+          1
+        ]
+      ]
+    },
+    "accuracy": 0.9888,
+    "heatwave_days_actual": 48,
+    "heatwave_recall": 0.688,
+    "heatwave_precision": 0.647,
+    "heatwave_f2": 0.679
+  }
+}
+saved models/model.joblib and models/metrics.json

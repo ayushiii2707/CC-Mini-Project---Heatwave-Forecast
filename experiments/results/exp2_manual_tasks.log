@@ -1,0 +1,129 @@
+$ docker pull nginx:latest
+latest: Pulling from library/nginx
+a0eaca4f4a89: Pulling fs layer
+b496ef725cba: Pulling fs layer
+848dbae53a0f: Pulling fs layer
+c6d8c112974b: Pulling fs layer
+95266651b1b5: Pulling fs layer
+74db6078a267: Pulling fs layer
+b496ef725cba: Download complete
+848dbae53a0f: Download complete
+95266651b1b5: Download complete
+c6d8c112974b: Download complete
+74db6078a267: Download complete
+58f461baacaf: Download complete
+10ef391a6a66: Download complete
+a0eaca4f4a89: Download complete
+b496ef725cba: Pull complete
+848dbae53a0f: Pull complete
+95266651b1b5: Pull complete
+c6d8c112974b: Pull complete
+74db6078a267: Pull complete
+a0eaca4f4a89: Pull complete
+Digest: sha256:f9ea18bfa4fad859e1ed38259d711da7ccad2c3516e875cec3351a57c859f571
+Status: Downloaded newer image for nginx:latest
+docker.io/library/nginx:latest
+
+$ docker run -d --name web-nginx -p 8080:80 nginx:latest
+b7c80f153b262ff0084cc325669d72dc3b1c2341b9638a78e55df808dc980ac6
+
+$ curl -s localhost:8080 | grep -i "<title>"
+<title>Welcome to nginx!</title>
+
+$ docker run --rm hello-world
+
+Hello from Docker!
+This message shows that your installation appears to be working correctly.
+
+To generate this message, Docker took the following steps:
+ 1. The Docker client contacted the Docker daemon.
+ 2. The Docker daemon pulled the "hello-world" image from the Docker Hub.
+    (arm64v8)
+ 3. The Docker daemon created a new container from that image which runs the
+    executable that produces the output you are currently reading.
+ 4. The Docker daemon streamed that output to the Docker client, which sent it
+    to your terminal.
+
+To try something more ambitious, you can run an Ubuntu container with:
+ $ docker run -it ubuntu bash
+
+Share images, automate workflows, and more with a free Docker ID:
+ https://hub.docker.com/
+
+For more examples and ideas, visit:
+ https://docs.docker.com/get-started/
+
+
+$ docker run --rm ubuntu:24.04 bash -c cat /etc/os-release | head -2; uname -m; echo "Hello from an Ubuntu container"
+Unable to find image 'ubuntu:24.04' locally
+24.04: Pulling from library/ubuntu
+90812e242c93: Pulling fs layer
+d840120f5ea1: Download complete
+90812e242c93: Download complete
+90812e242c93: Pull complete
+Digest: sha256:534baea6a22c03a63003dbc8dbe78fe34bc0d7e595d9a9dc9834884ff530eb55
+Status: Downloaded newer image for ubuntu:24.04
+PRETTY_NAME="Ubuntu 24.04.5 LTS"
+NAME="Ubuntu"
+aarch64
+Hello from an Ubuntu container
+
+$ docker ps
+CONTAINER ID   IMAGE           COMMAND                  CREATED          STATUS                    PORTS                                         NAMES
+b7c80f153b26   nginx:latest    "/docker-entrypoint.…"   15 seconds ago   Up 15 seconds             0.0.0.0:8080->80/tcp, [::]:8080->80/tcp       web-nginx
+e750e855822e   heatguard:1.0   "uvicorn app.main:ap…"   56 seconds ago   Up 56 seconds (healthy)   0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp   heatguard
+
+$ docker images
+IMAGE                ID             DISK USAGE   CONTENT SIZE   EXTRA
+heatguard:1.0        7d0a6f5d8ce7        633MB          136MB   U    
+hello-world:latest   5e2309035332       22.6kB         10.3kB        
+nginx:latest         f9ea18bfa4fa        261MB           65MB   U    
+ubuntu:24.04         534baea6a22c        141MB         30.9MB        
+
+$ docker exec heatguard python -c import sklearn, platform; print('sklearn', sklearn.__version__, '| python', platform.python_version(), '| arch', platform.machine())
+sklearn 1.9.1 | python 3.13.16 | arch aarch64
+
+$ docker inspect --format {{.Config.Image}} cmd={{.Config.Cmd}} user={{.Config.User}} ports={{.Config.ExposedPorts}} heatguard
+heatguard:1.0 cmd=[uvicorn app.main:app --host 0.0.0.0 --port 8000] user=appuser ports=map[8000/tcp:{}]
+
+$ docker stats --no-stream heatguard web-nginx
+CONTAINER ID   NAME        CPU %     MEM USAGE / LIMIT     MEM %     NET I/O           BLOCK I/O     PIDS
+e750e855822e   heatguard   0.27%     103.2MiB / 3.825GiB   2.63%     12.9kB / 25.5kB   0B / 0B       20
+b7c80f153b26   web-nginx   0.00%     7.59MiB / 3.825GiB    0.19%     1.59kB / 1.68kB   0B / 12.3kB   9
+
+$ docker history --format table {{.CreatedBy}}	{{.Size}} heatguard:1.0
+CREATED BY                                      SIZE
+CMD ["uvicorn" "app.main:app" "--host" "0.0.…   0B
+HEALTHCHECK {Test:[CMD-SHELL python -c "impo…   0B
+EXPOSE [8000/tcp]                               0B
+USER appuser                                    0B
+RUN /bin/sh -c useradd --create-home appuser…   69.6kB
+COPY data/processed/ data/processed/ # build…   1.93MB
+COPY models/ models/ # buildkit                 53.2kB
+COPY app/ app/ # buildkit                       45.1kB
+RUN /bin/sh -c pip install --no-cache-dir -r…   337MB
+COPY requirements.txt . # buildkit              12.3kB
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFER…   0B
+WORKDIR /srv                                    4.1kB
+CMD ["python3"]                                 0B
+RUN /bin/sh -c set -eux;  for src in idle3 p…   16.4kB
+RUN /bin/sh -c set -eux;   savedAptMark="$(a…   43.7MB
+ENV PYTHON_SHA256=f4b1bfb3c79b5bb11b8d228a12…   0B
+ENV PYTHON_VERSION=3.13.16                      0B
+ENV GPG_KEY=7169605F62C751356D054A26A821E680…   0B
+RUN /bin/sh -c set -eux;  apt-get update;  a…   4.99MB
+ENV PATH=/usr/local/bin:/usr/local/sbin:/usr…   0B
+# debian.sh --arch 'arm64' out/ 'trixie' '@1…   110MB
+
+$ docker stop web-nginx
+web-nginx
+
+$ docker rm web-nginx
+web-nginx
+
+$ docker network ls
+NETWORK ID     NAME      DRIVER    SCOPE
+48e19f0c2fd9   bridge    bridge    local
+ba435a91a140   host      host      local
+322318bc731f   none      null      local
+

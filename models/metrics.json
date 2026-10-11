@@ -1,0 +1,247 @@
+{
+  "data": "IMD Pune 1x1 deg gridded daily Tmax",
+  "split": {
+    "train": "2014-2022",
+    "validation": "2023",
+    "test": "2024"
+  },
+  "samples": {
+    "train": 32800,
+    "validation": 3650,
+    "test": 3660
+  },
+  "features": [
+    "lag0",
+    "lag1",
+    "lag2",
+    "lag3",
+    "lag4",
+    "lag5",
+    "lag6",
+    "mean7",
+    "doy_sin",
+    "doy_cos",
+    "normal",
+    "lat",
+    "lon"
+  ],
+  "models": {
+    "persistence_baseline": {
+      "val": {
+        "MAE": 0.924,
+        "RMSE": 1.312
+      },
+      "test": {
+        "MAE": 0.94,
+        "RMSE": 1.303
+      }
+    },
+    "ridge_regression": {
+      "val": {
+        "MAE": 0.888,
+        "RMSE": 1.267
+      },
+      "test": {
+        "MAE": 0.883,
+        "RMSE": 1.225
+      },
+      "train_seconds": 0.01
+    },
+    "gradient_boosting": {
+      "val": {
+        "MAE": 0.895,
+        "RMSE": 1.274
+      },
+      "test": {
+        "MAE": 0.902,
+        "RMSE": 1.248
+      },
+      "train_seconds": 1.18
+    }
+  },
+  "selected_model": "ridge_regression",
+  "test_mae_by_city": {
+    "Ahmedabad": 0.724,
+    "Bhubaneswar": 0.869,
+    "Chennai": 0.74,
+    "Delhi": 1.057,
+    "Hyderabad": 0.818,
+    "Jaipur": 0.913,
+    "Kolkata": 0.88,
+    "Lucknow": 0.989,
+    "Nagpur": 0.825,
+    "Patna": 1.015
+  },
+  "alert_margin_search_validation": [
+    {
+      "alert_margin_c": 0.0,
+      "accuracy": 0.9967,
+      "heatwave_days_actual": 14,
+      "heatwave_recall": 0.143,
+      "heatwave_precision": 1.0,
+      "heatwave_f2": 0.172
+    },
+    {
+      "alert_margin_c": 0.25,
+      "accuracy": 0.997,
+      "heatwave_days_actual": 14,
+      "heatwave_recall": 0.214,
+      "heatwave_precision": 1.0,
+      "heatwave_f2": 0.254
+    },
+    {
+      "alert_margin_c": 0.5,
+      "accuracy": 0.9975,
+      "heatwave_days_actual": 14,
+      "heatwave_recall": 0.357,
+      "heatwave_precision": 1.0,
+      "heatwave_f2": 0.41
+    },
+    {
+      "alert_margin_c": 0.75,
+      "accuracy": 0.9967,
+      "heatwave_days_actual": 14,
+      "heatwave_recall": 0.429,
+      "heatwave_precision": 0.6,
+      "heatwave_f2": 0.455
+    },
+    {
+      "alert_margin_c": 1.0,
+      "accuracy": 0.9962,
+      "heatwave_days_actual": 14,
+      "heatwave_recall": 0.643,
+      "heatwave_precision": 0.5,
+      "heatwave_f2": 0.608
+    },
+    {
+      "alert_margin_c": 1.25,
+      "accuracy": 0.9929,
+      "heatwave_days_actual": 14,
+      "heatwave_recall": 0.786,
+      "heatwave_precision": 0.333,
+      "heatwave_f2": 0.618
+    },
+    {
+      "alert_margin_c": 1.5,
+      "accuracy": 0.9904,
+      "heatwave_days_actual": 14,
+      "heatwave_recall": 0.857,
+      "heatwave_precision": 0.279,
+      "heatwave_f2": 0.606
+    },
+    {
+      "alert_margin_c": 1.75,
+      "accuracy": 0.9871,
+      "heatwave_days_actual": 14,
+      "heatwave_recall": 0.929,
+      "heatwave_precision": 0.228,
+      "heatwave_f2": 0.575
+    },
+    {
+      "alert_margin_c": 2.0,
+      "accuracy": 0.9808,
+      "heatwave_days_actual": 14,
+      "heatwave_recall": 1.0,
+      "heatwave_precision": 0.171,
+      "heatwave_f2": 0.507
+    }
+  ],
+  "alert_margin_c": 1.25,
+  "severity_on_test_forecast": {
+    "alert_margin_c": 1.25,
+    "confusion_matrix": {
+      "rows=actual, cols=predicted": [
+        "Normal",
+        "Heatwave",
+        "Severe heatwave"
+      ],
+      "values": [
+        [
+          3579,
+          33,
+          0
+        ],
+        [
+          5,
+          35,
+          3
+        ],
+        [
+          0,
+          4,
+          1
+        ]
+      ]
+    },
+    "accuracy": 0.9877,
+    "heatwave_days_actual": 48,
+    "heatwave_recall": 0.896,
+    "heatwave_precision": 0.566,
+    "heatwave_f2": 0.802
+  },
+  "severity_on_test_forecast_no_margin": {
+    "alert_margin_c": 0.0,
+    "confusion_matrix": {
+      "rows=actual, cols=predicted": [
+        "Normal",
+        "Heatwave",
+        "Severe heatwave"
+      ],
+      "values": [
+        [
+          3612,
+          0,
+          0
+        ],
+        [
+          32,
+          11,
+          0
+        ],
+        [
+          2,
+          3,
+          0
+        ]
+      ]
+    },
+    "accuracy": 0.9899,
+    "heatwave_days_actual": 48,
+    "heatwave_recall": 0.292,
+    "heatwave_precision": 1.0,
+    "heatwave_f2": 0.34
+  },
+  "severity_on_test_persistence": {
+    "alert_margin_c": 0.0,
+    "confusion_matrix": {
+      "rows=actual, cols=predicted": [
+        "Normal",
+        "Heatwave",
+        "Severe heatwave"
+      ],
+      "values": [
+        [
+          3594,
+          18,
+          0
+        ],
+        [
+          15,
+          24,
+          4
+        ],
+        [
+          0,
+          4,
+          1
+        ]
+      ]
+    },
+    "accuracy": 0.9888,
+    "heatwave_days_actual": 48,
+    "heatwave_recall": 0.688,
+    "heatwave_precision": 0.647,
+    "heatwave_f2": 0.679
+  },
+  "sklearn_version": "1.9.1"
+}

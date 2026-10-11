@@ -1,0 +1,256 @@
+$ docker info --format Logged in as: {{.Username}}
+Logged in as: 
+
+$ docker buildx build --platform linux/arm64,linux/amd64 -t ayushiranjan27/heatguard:1.0 -t ayushiranjan27/heatguard:latest --push .
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 747B done
+#1 DONE 0.0s
+
+#2 [linux/arm64 internal] load metadata for docker.io/library/python:3.13-slim
+#2 ...
+
+#3 [auth] library/python:pull token for registry-1.docker.io
+#3 DONE 0.0s
+
+#4 [linux/amd64 internal] load metadata for docker.io/library/python:3.13-slim
+#4 ...
+
+#2 [linux/arm64 internal] load metadata for docker.io/library/python:3.13-slim
+#2 DONE 1.4s
+
+#4 [linux/amd64 internal] load metadata for docker.io/library/python:3.13-slim
+#4 DONE 1.4s
+
+#5 [internal] load .dockerignore
+#5 transferring context: 139B done
+#5 DONE 0.0s
+
+#6 [linux/arm64 1/8] FROM docker.io/library/python:3.13-slim@sha256:70729b46c69b4f1e97c4822c1af3df53a1476cf5ddc6c087c0c10bc3a5678c2f
+#6 resolve docker.io/library/python:3.13-slim@sha256:70729b46c69b4f1e97c4822c1af3df53a1476cf5ddc6c087c0c10bc3a5678c2f 0.0s done
+#6 DONE 0.0s
+
+#7 [linux/amd64 1/8] FROM docker.io/library/python:3.13-slim@sha256:70729b46c69b4f1e97c4822c1af3df53a1476cf5ddc6c087c0c10bc3a5678c2f
+#7 resolve docker.io/library/python:3.13-slim@sha256:70729b46c69b4f1e97c4822c1af3df53a1476cf5ddc6c087c0c10bc3a5678c2f 0.0s done
+#7 DONE 0.0s
+
+#8 [internal] load build context
+#8 transferring context: 510B done
+#8 DONE 0.0s
+
+#9 [linux/amd64 7/8] COPY data/processed/ data/processed/
+#9 CACHED
+
+#10 [linux/amd64 3/8] COPY requirements.txt .
+#10 CACHED
+
+#11 [linux/amd64 5/8] COPY app/ app/
+#11 CACHED
+
+#12 [linux/amd64 4/8] RUN pip install --no-cache-dir -r requirements.txt
+#12 CACHED
+
+#13 [linux/amd64 6/8] COPY models/ models/
+#13 CACHED
+
+#14 [linux/amd64 2/8] WORKDIR /srv
+#14 CACHED
+
+#15 [linux/amd64 8/8] RUN useradd --create-home appuser
+#15 CACHED
+
+#16 [linux/arm64 3/8] COPY requirements.txt .
+#16 CACHED
+
+#17 [linux/arm64 4/8] RUN pip install --no-cache-dir -r requirements.txt
+#17 CACHED
+
+#18 [linux/arm64 5/8] COPY app/ app/
+#18 CACHED
+
+#19 [linux/arm64 7/8] COPY data/processed/ data/processed/
+#19 CACHED
+
+#20 [linux/arm64 2/8] WORKDIR /srv
+#20 CACHED
+
+#21 [linux/arm64 6/8] COPY models/ models/
+#21 CACHED
+
+#22 [linux/arm64 8/8] RUN useradd --create-home appuser
+#22 CACHED
+
+#23 exporting to image
+#23 exporting layers done
+#23 exporting manifest sha256:16ea477943ddcc9311aa5da8396ca93e40c00681e683eeea9354bb480fc2b67c done
+#23 exporting config sha256:a185d7350f6a994d398354a8d1052344984f04212616c57faba54187f85e19c2 done
+#23 exporting attestation manifest sha256:c1cc990337778bec12e3686783cd053c0e2f2e2a3c890dff5cd3f8ca784cc192 done
+#23 exporting manifest sha256:24ecb9d5a8c2acbabe78cc009ef91d55eac6736bd1f46a5db57c3058cc086d17 done
+#23 exporting config sha256:ae94833648d5163fb19d3740d6cd1c3139ae3248e0864224625c829d72de47b8 done
+#23 exporting attestation manifest sha256:5ba71c14c61e14c7cd682562ddf95b9633cda5e94d59f3d2c319c55de905fea4 done
+#23 exporting manifest list sha256:7ac1187626dbdda4e691f0b0d935e3d238056d501cfe18d3138a02bbd495207c done
+#23 naming to docker.io/ayushiranjan27/heatguard:1.0 done
+#23 naming to docker.io/ayushiranjan27/heatguard:latest done
+#23 pushing layers
+#23 ...
+
+#24 [auth] ayushiranjan27/heatguard:pull,push token for registry-1.docker.io
+#24 DONE 0.0s
+
+#23 exporting to image
+#23 pushing layers 63.1s done
+#23 pushing manifest for docker.io/ayushiranjan27/heatguard:1.0@sha256:7ac1187626dbdda4e691f0b0d935e3d238056d501cfe18d3138a02bbd495207c
+#23 pushing manifest for docker.io/ayushiranjan27/heatguard:1.0@sha256:7ac1187626dbdda4e691f0b0d935e3d238056d501cfe18d3138a02bbd495207c 5.5s done
+#23 pushing layers
+#23 pushing layers 1.7s done
+#23 pushing manifest for docker.io/ayushiranjan27/heatguard:latest@sha256:7ac1187626dbdda4e691f0b0d935e3d238056d501cfe18d3138a02bbd495207c
+#23 pushing manifest for docker.io/ayushiranjan27/heatguard:latest@sha256:7ac1187626dbdda4e691f0b0d935e3d238056d501cfe18d3138a02bbd495207c 3.0s done
+#23 DONE 73.4s
+
+$ docker buildx imagetools inspect ayushiranjan27/heatguard:1.0
+Name:      docker.io/ayushiranjan27/heatguard:1.0
+MediaType: application/vnd.oci.image.index.v1+json
+Digest:    sha256:7ac1187626dbdda4e691f0b0d935e3d238056d501cfe18d3138a02bbd495207c
+           
+Manifests: 
+  Name:        docker.io/ayushiranjan27/heatguard:1.0@sha256:16ea477943ddcc9311aa5da8396ca93e40c00681e683eeea9354bb480fc2b67c
+  MediaType:   application/vnd.oci.image.manifest.v1+json
+  Platform:    linux/arm64
+               
+  Name:        docker.io/ayushiranjan27/heatguard:1.0@sha256:24ecb9d5a8c2acbabe78cc009ef91d55eac6736bd1f46a5db57c3058cc086d17
+  MediaType:   application/vnd.oci.image.manifest.v1+json
+  Platform:    linux/amd64
+               
+  Name:        docker.io/ayushiranjan27/heatguard:1.0@sha256:c1cc990337778bec12e3686783cd053c0e2f2e2a3c890dff5cd3f8ca784cc192
+  MediaType:   application/vnd.oci.image.manifest.v1+json
+  Platform:    unknown/unknown
+  Annotations: 
+    vnd.docker.reference.digest: sha256:16ea477943ddcc9311aa5da8396ca93e40c00681e683eeea9354bb480fc2b67c
+    vnd.docker.reference.type:   attestation-manifest
+               
+  Name:        docker.io/ayushiranjan27/heatguard:1.0@sha256:5ba71c14c61e14c7cd682562ddf95b9633cda5e94d59f3d2c319c55de905fea4
+  MediaType:   application/vnd.oci.image.manifest.v1+json
+  Platform:    unknown/unknown
+  Annotations: 
+    vnd.docker.reference.digest: sha256:24ecb9d5a8c2acbabe78cc009ef91d55eac6736bd1f46a5db57c3058cc086d17
+    vnd.docker.reference.type:   attestation-manifest
+
+$ docker tag nginx:latest ayushiranjan27/nginx-exp2:1.0
+
+$ docker push ayushiranjan27/nginx-exp2:1.0
+The push refers to repository [docker.io/ayushiranjan27/nginx-exp2]
+c6d8c112974b: Unavailable
+bbeda6b4abb7: Unavailable
+a0eaca4f4a89: Unavailable
+848dbae53a0f: Unavailable
+c6d8c112974b: Unavailable
+bbeda6b4abb7: Unavailable
+a0eaca4f4a89: Unavailable
+848dbae53a0f: Unavailable
+c6d8c112974b: Unavailable
+bbeda6b4abb7: Unavailable
+a0eaca4f4a89: Unavailable
+848dbae53a0f: Unavailable
+a0eaca4f4a89: Unavailable
+848dbae53a0f: Unavailable
+c6d8c112974b: Unavailable
+bbeda6b4abb7: Unavailable
+c6d8c112974b: Unavailable
+bbeda6b4abb7: Unavailable
+a0eaca4f4a89: Unavailable
+848dbae53a0f: Unavailable
+848dbae53a0f: Unavailable
+c6d8c112974b: Unavailable
+bbeda6b4abb7: Unavailable
+a0eaca4f4a89: Unavailable
+848dbae53a0f: Unavailable
+c6d8c112974b: Unavailable
+bbeda6b4abb7: Unavailable
+a0eaca4f4a89: Unavailable
+c6d8c112974b: Unavailable
+bbeda6b4abb7: Unavailable
+a0eaca4f4a89: Unavailable
+848dbae53a0f: Unavailable
+c6d8c112974b: Unavailable
+bbeda6b4abb7: Unavailable
+a0eaca4f4a89: Unavailable
+848dbae53a0f: Unavailable
+848dbae53a0f: Unavailable
+c6d8c112974b: Unavailable
+bbeda6b4abb7: Unavailable
+a0eaca4f4a89: Unavailable
+a0eaca4f4a89: Unavailable
+848dbae53a0f: Unavailable
+c6d8c112974b: Unavailable
+bbeda6b4abb7: Unavailable
+c6d8c112974b: Unavailable
+bbeda6b4abb7: Unavailable
+a0eaca4f4a89: Unavailable
+848dbae53a0f: Unavailable
+848dbae53a0f: Unavailable
+c6d8c112974b: Unavailable
+bbeda6b4abb7: Unavailable
+a0eaca4f4a89: Unavailable
+a0eaca4f4a89: Unavailable
+848dbae53a0f: Unavailable
+c6d8c112974b: Unavailable
+bbeda6b4abb7: Unavailable
+c6d8c112974b: Unavailable
+bbeda6b4abb7: Unavailable
+a0eaca4f4a89: Unavailable
+848dbae53a0f: Unavailable
+c6d8c112974b: Unavailable
+bbeda6b4abb7: Unavailable
+a0eaca4f4a89: Unavailable
+848dbae53a0f: Unavailable
+c6d8c112974b: Mounted from library/nginx
+bbeda6b4abb7: Unavailable
+a0eaca4f4a89: Unavailable
+848dbae53a0f: Unavailable
+95266651b1b5: Unavailable
+848dbae53a0f: Mounted from library/nginx
+95266651b1b5: Unavailable
+74db6078a267: Unavailable
+bbeda6b4abb7: Unavailable
+a0eaca4f4a89: Unavailable
+74db6078a267: Unavailable
+bbeda6b4abb7: Unavailable
+a0eaca4f4a89: Mounted from library/nginx
+b496ef725cba: Unavailable
+95266651b1b5: Unavailable
+74db6078a267: Unavailable
+bbeda6b4abb7: Mounted from ayushiranjan27/heatguard
+b496ef725cba: Unavailable
+95266651b1b5: Unavailable
+b496ef725cba: Unavailable
+95266651b1b5: Unavailable
+74db6078a267: Unavailable
+95266651b1b5: Unavailable
+74db6078a267: Unavailable
+b496ef725cba: Unavailable
+b496ef725cba: Unavailable
+95266651b1b5: Unavailable
+74db6078a267: Unavailable
+74db6078a267: Mounted from library/nginx
+b496ef725cba: Mounted from library/nginx
+95266651b1b5: Mounted from library/nginx
+1.0: digest: sha256:f9cceabdc075607fcdca9d7d5714fb82044bff57ae2fe160b39b822ffc31c46b size: 2292
+
+ Info -> Not all multiplatform-content is present and only the available single-platform image was pushed
+         sha256:f9ea18bfa4fad859e1ed38259d711da7ccad2c3516e875cec3351a57c859f571 -> sha256:f9cceabdc075607fcdca9d7d5714fb82044bff57ae2fe160b39b822ffc31c46b
+
+$ docker rmi ayushiranjan27/heatguard:1.0
+Untagged: ayushiranjan27/heatguard:1.0
+
+$ docker pull ayushiranjan27/heatguard:1.0
+1.0: Pulling from ayushiranjan27/heatguard
+Digest: sha256:7ac1187626dbdda4e691f0b0d935e3d238056d501cfe18d3138a02bbd495207c
+Status: Downloaded newer image for ayushiranjan27/heatguard:1.0
+docker.io/ayushiranjan27/heatguard:1.0
+
+$ docker run -d --name heatguard-hub -p 8001:8000 ayushiranjan27/heatguard:1.0
+7121f06d66c9410df245e65923452da8e97dab45d6db37147e6f701995047249
+
+$ curl -s localhost:8001/health
+{"status":"ok","model":"ridge_regression","pod":"7121f06d66c9"}

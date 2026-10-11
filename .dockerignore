@@ -1,0 +1,12 @@
+.venv
+data/raw
+experiments
+docs
+k8s
+tests
+loadtest
+scripts
+**/__pycache__
+*.pyc
+.pytest_cache
+.git

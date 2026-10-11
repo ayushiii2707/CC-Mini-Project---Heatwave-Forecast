@@ -1,0 +1,4 @@
+config,cpus,memory,repeats,all_ok,oom,cpu_avg_pct,cpu_avg_pct_sd,cpu_peak_pct,cpu_peak_pct_sd,mem_peak_mib,mem_peak_mib_sd,cpu_util_of_limit_pct,cpu_util_of_limit_pct_sd,mem_util_of_limit_pct,mem_util_of_limit_pct_sd,throughput_rps,throughput_rps_sd,latency_ms_p50,latency_ms_p50_sd,latency_ms_p95,latency_ms_p95_sd,errors,errors_sd,est_usd_per_hour,est_usd_per_hour_sd,est_usd_per_million_predictions,est_usd_per_million_predictions_sd,meets_target
+low,0.25,512m,3,True,False,24.6,0.2,25.9,0.5,118.2,0.7,103.4,1.8,23.1,0.1,316.2,5.1,54.8,3.2,112.0,0.7,0,0.0,0.0073,0.0,0.0064,0.0001,True
+medium,0.5,1g,3,True,False,34.6,2.1,42.5,1.9,106.0,0.5,85.0,3.8,10.3,0.1,580.1,35.9,16.7,1.1,108.9,6.7,0,0.0,0.0145,0.0,0.007,0.0004,True
+high,1.0,2g,3,True,False,35.1,0.5,52.9,1.1,105.7,0.4,52.9,1.1,5.2,0.1,603.2,8.1,16.0,0.1,107.3,2.5,0,0.0,0.029,0.0,0.0134,0.0002,True

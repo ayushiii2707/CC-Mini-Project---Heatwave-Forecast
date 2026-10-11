@@ -1,0 +1,11 @@
+# Experiment 3: local Kubernetes cluster (kind = Kubernetes-in-Docker) on Docker Desktop.
+# Maps NodePort 30080 on the node to localhost:30080 on the Mac.
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: heatguard
+nodes:
+  - role: control-plane
+    extraPortMappings:
+      - containerPort: 30080
+        hostPort: 30080
+        protocol: TCP

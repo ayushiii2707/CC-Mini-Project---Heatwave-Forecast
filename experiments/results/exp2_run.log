@@ -1,0 +1,53 @@
+$ docker run -d --name heatguard -p 8000:8000 heatguard:1.0
+e6e7fb4dddac7b74ede30f8adc679c1737b572ca36159d79aafc88625b7fb3e5
+
+$ docker ps --filter name=heatguard
+NAMES       IMAGE           STATUS                   PORTS
+heatguard   heatguard:1.0   Up 6 seconds (healthy)   0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp
+
+$ curl -s localhost:8000/health
+{"status":"ok","model":"ridge_regression","pod":"e6e7fb4dddac"}
+
+$ curl -s "localhost:8000/observed?city=Delhi&date=2024-05-27"
+{"city":"Delhi","date":"2024-05-27","recent_tmax":[42.209049224853516,41.137046813964844,40.19950866699219,41.15043640136719,43.54515838623047,44.929176330566406,45.10328674316406],"actual_next_day_tmax":45.99938201904297,"source":"IMD 1x1 deg gridded Tmax"}
+
+$ curl -s -X POST localhost:8000/predict -H "Content-Type: application/json" -d '{"city":"Delhi","date":"2024-05-27","recent_tmax":[<values above>]}'
+{
+    "city": "Delhi",
+    "forecast_date": "2024-05-28",
+    "forecast_tmax": 44.1,
+    "upper_forecast_tmax": 45.3,
+    "alert_margin_c": 1.25,
+    "normal_tmax": 40.6,
+    "alert": "Heatwave",
+    "departure_from_normal": 4.8,
+    "rule": "departure +4.8 C from normal 40.6 C",
+    "advisory": "Heatwave conditions likely. Avoid sun exposure 12-3 pm, drink water often, check on elderly people, children and outdoor workers.",
+    "model": "ridge_regression",
+    "inference_ms": 8.15,
+    "pod": "e6e7fb4dddac",
+    "note": "Educational prototype. Official warnings: India Meteorological Department."
+}
+
+# Failure scenario 1: unknown city
+$ curl -s -w " HTTP %{http_code}" -X POST localhost:8000/predict -d {"city":"Atlantis",...}
+{"detail":"unknown city 'Atlantis'. Supported: Delhi, Jaipur, Lucknow, Patna, Ahmedabad, Nagpur, Kolkata, Bhubaneswar, Hyderabad, Chennai"} HTTP 404
+
+# Failure scenario 2: implausible sensor value (99.9 = IMD missing code)
+{"detail":[{"type":"value_error","loc":["body","recent_tmax"],"msg":"Value error, temperature 99.9 C is outside the plausible range -10..55 C","input":[40,41,42,43,44,45,99.9],"ctx":{"error":{}}}]} HTTP 422
+
+# Failure scenario 3: only 3 values instead of 7
+{"detail":[{"type":"too_short","loc":["body","recent_tmax"],"msg":"List should have at least 7 items after validation, not 3","input":[40,41,42],"ctx":{"field_type":"List","min_length":7,"actual_length":3}}]} HTTP 422
+
+$ docker logs --tail 8 heatguard
+INFO:     127.0.0.1:35876 - "GET /health HTTP/1.1" 200 OK
+INFO:     192.168.65.1:18755 - "GET /health HTTP/1.1" 200 OK
+INFO:     192.168.65.1:24005 - "GET /observed?city=Delhi&date=2024-05-27 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:34363 - "GET /observed?city=Delhi&date=2024-05-27 HTTP/1.1" 200 OK
+INFO:     192.168.65.1:27298 - "POST /predict HTTP/1.1" 200 OK
+INFO:     192.168.65.1:54733 - "POST /predict HTTP/1.1" 404 Not Found
+INFO:     192.168.65.1:46196 - "POST /predict HTTP/1.1" 422 Unprocessable Content
+INFO:     192.168.65.1:41396 - "POST /predict HTTP/1.1" 422 Unprocessable Content
+
+$ docker inspect --format "{{.State.Health.Status}}" heatguard
+healthy

@@ -1,0 +1,198 @@
+$ docker version --format ...
+Client 29.7.2 / Server 29.7.2 (linux/arm64)
+
+$ docker build -t heatguard:1.0 .
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 747B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.13-slim
+#2 DONE 5.7s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 139B done
+#3 DONE 0.0s
+
+#4 [internal] load build context
+#4 transferring context: 1.97MB 0.0s done
+#4 DONE 0.1s
+
+#5 [1/8] FROM docker.io/library/python:3.13-slim@sha256:70729b46c69b4f1e97c4822c1af3df53a1476cf5ddc6c087c0c10bc3a5678c2f
+#5 resolve docker.io/library/python:3.13-slim@sha256:70729b46c69b4f1e97c4822c1af3df53a1476cf5ddc6c087c0c10bc3a5678c2f done
+#5 sha256:e41644b4b81a155dbd3f55fa04a37386bf9cc6c5fcb5d9470f604e5f6531259b 0B / 11.85MB 0.2s
+#5 sha256:74202e18a58bbfeb8aa453d39c9f10218cfd1afc69e81a2b29e40913c69f56b9 0B / 250B 0.2s
+#5 sha256:74202e18a58bbfeb8aa453d39c9f10218cfd1afc69e81a2b29e40913c69f56b9 250B / 250B 0.2s done
+#5 sha256:a2c5ac708d8b046b36bb9ff13512a4ebb02740989de6f68337004fe5473a996d 0B / 1.28MB 0.2s
+#5 sha256:bbeda6b4abb749f743f4547ef5a28070a14de8caef211daa5afb78d5b5fa21ba 0B / 30.20MB 0.2s
+#5 sha256:e41644b4b81a155dbd3f55fa04a37386bf9cc6c5fcb5d9470f604e5f6531259b 1.05MB / 11.85MB 2.3s
+#5 sha256:a2c5ac708d8b046b36bb9ff13512a4ebb02740989de6f68337004fe5473a996d 1.05MB / 1.28MB 2.7s
+#5 sha256:a2c5ac708d8b046b36bb9ff13512a4ebb02740989de6f68337004fe5473a996d 1.28MB / 1.28MB 2.9s done
+#5 sha256:e41644b4b81a155dbd3f55fa04a37386bf9cc6c5fcb5d9470f604e5f6531259b 2.10MB / 11.85MB 3.3s
+#5 sha256:bbeda6b4abb749f743f4547ef5a28070a14de8caef211daa5afb78d5b5fa21ba 2.10MB / 30.20MB 3.5s
+#5 sha256:e41644b4b81a155dbd3f55fa04a37386bf9cc6c5fcb5d9470f604e5f6531259b 3.15MB / 11.85MB 3.8s
+#5 sha256:e41644b4b81a155dbd3f55fa04a37386bf9cc6c5fcb5d9470f604e5f6531259b 4.19MB / 11.85MB 4.2s
+#5 sha256:bbeda6b4abb749f743f4547ef5a28070a14de8caef211daa5afb78d5b5fa21ba 4.19MB / 30.20MB 4.2s
+#5 sha256:e41644b4b81a155dbd3f55fa04a37386bf9cc6c5fcb5d9470f604e5f6531259b 5.24MB / 11.85MB 4.5s
+#5 sha256:e41644b4b81a155dbd3f55fa04a37386bf9cc6c5fcb5d9470f604e5f6531259b 6.29MB / 11.85MB 5.3s
+#5 sha256:bbeda6b4abb749f743f4547ef5a28070a14de8caef211daa5afb78d5b5fa21ba 6.29MB / 30.20MB 5.3s
+#5 sha256:e41644b4b81a155dbd3f55fa04a37386bf9cc6c5fcb5d9470f604e5f6531259b 7.34MB / 11.85MB 5.9s
+#5 sha256:e41644b4b81a155dbd3f55fa04a37386bf9cc6c5fcb5d9470f604e5f6531259b 8.39MB / 11.85MB 6.3s
+#5 sha256:bbeda6b4abb749f743f4547ef5a28070a14de8caef211daa5afb78d5b5fa21ba 8.39MB / 30.20MB 6.3s
+#5 sha256:e41644b4b81a155dbd3f55fa04a37386bf9cc6c5fcb5d9470f604e5f6531259b 9.44MB / 11.85MB 6.6s
+#5 sha256:e41644b4b81a155dbd3f55fa04a37386bf9cc6c5fcb5d9470f604e5f6531259b 10.49MB / 11.85MB 7.1s
+#5 sha256:bbeda6b4abb749f743f4547ef5a28070a14de8caef211daa5afb78d5b5fa21ba 10.49MB / 30.20MB 7.1s
+#5 sha256:e41644b4b81a155dbd3f55fa04a37386bf9cc6c5fcb5d9470f604e5f6531259b 11.53MB / 11.85MB 7.7s
+#5 sha256:e41644b4b81a155dbd3f55fa04a37386bf9cc6c5fcb5d9470f604e5f6531259b 11.85MB / 11.85MB 7.7s done
+#5 sha256:bbeda6b4abb749f743f4547ef5a28070a14de8caef211daa5afb78d5b5fa21ba 12.58MB / 30.20MB 8.0s
+#5 sha256:bbeda6b4abb749f743f4547ef5a28070a14de8caef211daa5afb78d5b5fa21ba 14.68MB / 30.20MB 8.4s
+#5 sha256:bbeda6b4abb749f743f4547ef5a28070a14de8caef211daa5afb78d5b5fa21ba 16.78MB / 30.20MB 8.9s
+#5 sha256:bbeda6b4abb749f743f4547ef5a28070a14de8caef211daa5afb78d5b5fa21ba 18.87MB / 30.20MB 9.3s
+#5 sha256:bbeda6b4abb749f743f4547ef5a28070a14de8caef211daa5afb78d5b5fa21ba 20.97MB / 30.20MB 9.9s
+#5 sha256:bbeda6b4abb749f743f4547ef5a28070a14de8caef211daa5afb78d5b5fa21ba 23.07MB / 30.20MB 10.4s
+#5 sha256:bbeda6b4abb749f743f4547ef5a28070a14de8caef211daa5afb78d5b5fa21ba 25.17MB / 30.20MB 11.0s
+#5 sha256:bbeda6b4abb749f743f4547ef5a28070a14de8caef211daa5afb78d5b5fa21ba 27.26MB / 30.20MB 11.6s
+#5 sha256:bbeda6b4abb749f743f4547ef5a28070a14de8caef211daa5afb78d5b5fa21ba 29.36MB / 30.20MB 12.0s
+#5 sha256:bbeda6b4abb749f743f4547ef5a28070a14de8caef211daa5afb78d5b5fa21ba 30.20MB / 30.20MB 12.2s done
+#5 extracting sha256:bbeda6b4abb749f743f4547ef5a28070a14de8caef211daa5afb78d5b5fa21ba
+#5 extracting sha256:bbeda6b4abb749f743f4547ef5a28070a14de8caef211daa5afb78d5b5fa21ba 0.5s done
+#5 DONE 12.7s
+
+#5 [1/8] FROM docker.io/library/python:3.13-slim@sha256:70729b46c69b4f1e97c4822c1af3df53a1476cf5ddc6c087c0c10bc3a5678c2f
+#5 extracting sha256:a2c5ac708d8b046b36bb9ff13512a4ebb02740989de6f68337004fe5473a996d 0.0s done
+#5 extracting sha256:e41644b4b81a155dbd3f55fa04a37386bf9cc6c5fcb5d9470f604e5f6531259b
+#5 extracting sha256:e41644b4b81a155dbd3f55fa04a37386bf9cc6c5fcb5d9470f604e5f6531259b 0.2s done
+#5 DONE 13.0s
+
+#5 [1/8] FROM docker.io/library/python:3.13-slim@sha256:70729b46c69b4f1e97c4822c1af3df53a1476cf5ddc6c087c0c10bc3a5678c2f
+#5 extracting sha256:74202e18a58bbfeb8aa453d39c9f10218cfd1afc69e81a2b29e40913c69f56b9 done
+#5 DONE 13.0s
+
+#6 [2/8] WORKDIR /srv
+#6 DONE 0.2s
+
+#7 [3/8] COPY requirements.txt .
+#7 DONE 0.0s
+
+#8 [4/8] RUN pip install --no-cache-dir -r requirements.txt
+#8 1.960 Collecting numpy==2.5.4 (from -r requirements.txt (line 2))
+#8 2.032   Downloading numpy-2.5.4-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl.metadata (6.6 kB)
+#8 2.673 Collecting scikit-learn==1.9.1 (from -r requirements.txt (line 3))
+#8 2.690   Downloading scikit_learn-1.9.1-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl.metadata (9.3 kB)
+#8 4.267 Collecting joblib==1.6.0 (from -r requirements.txt (line 4))
+#8 4.277   Downloading joblib-1.6.0-py3-none-any.whl.metadata (6.5 kB)
+#8 4.367 Collecting fastapi==0.143.0 (from -r requirements.txt (line 5))
+#8 4.374   Downloading fastapi-0.143.0-py3-none-any.whl.metadata (26 kB)
+#8 4.442 Collecting uvicorn==0.54.0 (from uvicorn[standard]==0.54.0->-r requirements.txt (line 6))
+#8 4.455   Downloading uvicorn-0.54.0-py3-none-any.whl.metadata (6.6 kB)
+#8 4.710 Collecting scipy>=1.10.0 (from scikit-learn==1.9.1->-r requirements.txt (line 3))
+#8 4.718   Downloading scipy-1.18.1-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl.metadata (62 kB)
+#8 4.840 Collecting narwhals>=2.0.1 (from scikit-learn==1.9.1->-r requirements.txt (line 3))
+#8 4.968   Downloading narwhals-2.27.1-py3-none-any.whl.metadata (15 kB)
+#8 4.997 Collecting threadpoolctl>=3.5.0 (from scikit-learn==1.9.1->-r requirements.txt (line 3))
+#8 5.007   Downloading threadpoolctl-3.7.0-py3-none-any.whl.metadata (24 kB)
+#8 5.301 Collecting cloudpickle>=3.0 (from joblib==1.6.0->-r requirements.txt (line 4))
+#8 5.312   Downloading cloudpickle-3.1.2-py3-none-any.whl.metadata (7.1 kB)
+#8 6.310 Collecting starlette>=0.46.0 (from fastapi==0.143.0->-r requirements.txt (line 5))
+#8 6.320   Downloading starlette-1.7.0-py3-none-any.whl.metadata (6.6 kB)
+#8 7.431 Collecting pydantic>=2.9.0 (from fastapi==0.143.0->-r requirements.txt (line 5))
+#8 7.559   Downloading pydantic-2.14.0-py3-none-any.whl.metadata (131 kB)
+#8 7.757 Collecting typing-extensions>=4.8.0 (from fastapi==0.143.0->-r requirements.txt (line 5))
+#8 7.884   Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+#8 7.900 Collecting typing-inspection>=0.4.2 (from fastapi==0.143.0->-r requirements.txt (line 5))
+#8 7.912   Downloading typing_inspection-0.4.4-py3-none-any.whl.metadata (2.6 kB)
+#8 7.928 Collecting annotated-doc>=0.0.2 (from fastapi==0.143.0->-r requirements.txt (line 5))
+#8 7.939   Downloading annotated_doc-0.0.5-py3-none-any.whl.metadata (6.5 kB)
+#8 7.985 Collecting opentelemetry-api>=1.44.0 (from fastapi==0.143.0->-r requirements.txt (line 5))
+#8 7.999   Downloading opentelemetry_api-1.45.1-py3-none-any.whl.metadata (1.4 kB)
+#8 8.032 Collecting click>=7.0 (from uvicorn==0.54.0->uvicorn[standard]==0.54.0->-r requirements.txt (line 6))
+#8 8.039   Downloading click-8.5.0-py3-none-any.whl.metadata (2.6 kB)
+#8 8.052 Collecting h11>=0.8 (from uvicorn==0.54.0->uvicorn[standard]==0.54.0->-r requirements.txt (line 6))
+#8 8.061   Downloading h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+#8 8.143 Collecting httptools>=0.8.0 (from uvicorn[standard]==0.54.0->-r requirements.txt (line 6))
+#8 8.162   Downloading httptools-0.9.0-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl.metadata (3.5 kB)
+#8 8.195 Collecting python-dotenv>=0.13 (from uvicorn[standard]==0.54.0->-r requirements.txt (line 6))
+#8 8.217   Downloading python_dotenv-1.2.4-py3-none-any.whl.metadata (29 kB)
+#8 8.313 Collecting pyyaml>=5.1 (from uvicorn[standard]==0.54.0->-r requirements.txt (line 6))
+#8 8.445   Downloading pyyaml-6.0.3-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl.metadata (2.4 kB)
+#8 8.548 Collecting uvloop>=0.15.1 (from uvicorn[standard]==0.54.0->-r requirements.txt (line 6))
+#8 8.677   Downloading uvloop-0.23.0-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl.metadata (5.1 kB)
+#8 9.215 Collecting watchfiles>=0.20 (from uvicorn[standard]==0.54.0->-r requirements.txt (line 6))
+#8 9.222   Downloading watchfiles-1.3.0-cp310-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl.metadata (4.9 kB)
+#8 9.437 Collecting websockets>=13.0 (from uvicorn[standard]==0.54.0->-r requirements.txt (line 6))
+#8 9.449   Downloading websockets-17.2-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl.metadata (6.3 kB)
+#8 9.462 Collecting annotated-types>=0.6.0 (from pydantic>=2.9.0->fastapi==0.143.0->-r requirements.txt (line 5))
+#8 9.471   Downloading annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)
+#8 11.76 Collecting pydantic-core==2.50.0 (from pydantic>=2.9.0->fastapi==0.143.0->-r requirements.txt (line 5))
+#8 11.89   Downloading pydantic_core-2.50.0-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl.metadata (6.5 kB)
+#8 11.92 Collecting anyio<5,>=4.0.0 (from starlette>=0.46.0->fastapi==0.143.0->-r requirements.txt (line 5))
+#8 11.94   Downloading anyio-4.15.1-py3-none-any.whl.metadata (4.7 kB)
+#8 11.96 Collecting idna>=2.8 (from anyio<5,>=4.0.0->starlette>=0.46.0->fastapi==0.143.0->-r requirements.txt (line 5))
+#8 11.97   Downloading idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+#8 11.99 Downloading numpy-2.5.4-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl (15.7 MB)
+#8 20.81    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 15.7/15.7 MB 1.8 MB/s  0:00:08
+#8 20.83 Downloading scikit_learn-1.9.1-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl (8.8 MB)
+#8 25.23    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.8/8.8 MB 2.0 MB/s  0:00:04
+#8 25.24 Downloading joblib-1.6.0-py3-none-any.whl (306 kB)
+#8 25.36 Downloading fastapi-0.143.0-py3-none-any.whl (144 kB)
+#8 25.41 Downloading uvicorn-0.54.0-py3-none-any.whl (87 kB)
+#8 25.44 Downloading annotated_doc-0.0.5-py3-none-any.whl (5.3 kB)
+#8 25.45 Downloading click-8.5.0-py3-none-any.whl (125 kB)
+#8 25.50 Downloading cloudpickle-3.1.2-py3-none-any.whl (22 kB)
+#8 25.51 Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+#8 25.53 Downloading httptools-0.9.0-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (516 kB)
+#8 25.71 Downloading narwhals-2.27.1-py3-none-any.whl (483 kB)
+#8 25.90 Downloading opentelemetry_api-1.45.1-py3-none-any.whl (60 kB)
+#8 25.92 Downloading pydantic-2.14.0-py3-none-any.whl (487 kB)
+#8 26.26 Downloading pydantic_core-2.50.0-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (2.0 MB)
+#8 26.96    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.0/2.0 MB 3.0 MB/s  0:00:00
+#8 26.97 Downloading annotated_types-0.8.0-py3-none-any.whl (13 kB)
+#8 26.99 Downloading python_dotenv-1.2.4-py3-none-any.whl (23 kB)
+#8 27.01 Downloading pyyaml-6.0.3-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (767 kB)
+#8 27.36    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 767.1/767.1 kB 2.5 MB/s  0:00:00
+#8 27.37 Downloading scipy-1.18.1-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl (34.0 MB)
+#8 47.53    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 34.0/34.0 MB 1.7 MB/s  0:00:20
+#8 47.54 Downloading starlette-1.7.0-py3-none-any.whl (78 kB)
+#8 47.57 Downloading anyio-4.15.1-py3-none-any.whl (132 kB)
+#8 47.61 Downloading idna-3.20-py3-none-any.whl (69 kB)
+#8 47.63 Downloading threadpoolctl-3.7.0-py3-none-any.whl (26 kB)
+#8 47.65 Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+#8 47.68 Downloading typing_inspection-0.4.4-py3-none-any.whl (14 kB)
+#8 47.69 Downloading uvloop-0.23.0-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (4.4 MB)
+#8 49.93    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.4/4.4 MB 1.9 MB/s  0:00:02
+#8 49.95 Downloading watchfiles-1.3.0-cp310-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (454 kB)
+#8 50.13 Downloading websockets-17.2-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (226 kB)
+#8 50.42 Installing collected packages: websockets, uvloop, typing-extensions, threadpoolctl, pyyaml, python-dotenv, numpy, narwhals, idna, httptools, h11, cloudpickle, click, annotated-types, annotated-doc, uvicorn, typing-inspection, scipy, pydantic-core, opentelemetry-api, joblib, anyio, watchfiles, starlette, scikit-learn, pydantic, fastapi
+#8 56.29 
+#8 56.29 Successfully installed annotated-doc-0.0.5 annotated-types-0.8.0 anyio-4.15.1 click-8.5.0 cloudpickle-3.1.2 fastapi-0.143.0 h11-0.16.0 httptools-0.9.0 idna-3.20 joblib-1.6.0 narwhals-2.27.1 numpy-2.5.4 opentelemetry-api-1.45.1 pydantic-2.14.0 pydantic-core-2.50.0 python-dotenv-1.2.4 pyyaml-6.0.3 scikit-learn-1.9.1 scipy-1.18.1 starlette-1.7.0 threadpoolctl-3.7.0 typing-extensions-4.16.0 typing-inspection-0.4.4 uvicorn-0.54.0 uvloop-0.23.0 watchfiles-1.3.0 websockets-17.2
+#8 56.29 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#8 DONE 56.5s
+
+#9 [5/8] COPY app/ app/
+#9 DONE 0.0s
+
+#10 [6/8] COPY models/ models/
+#10 DONE 0.0s
+
+#11 [7/8] COPY data/processed/ data/processed/
+#11 DONE 0.0s
+
+#12 [8/8] RUN useradd --create-home appuser
+#12 DONE 0.1s
+
+#13 exporting to image
+#13 exporting layers
+#13 exporting layers 5.8s done
+#13 exporting manifest sha256:ed79e07c1623d73f4bef4ec5824ff92be26618e5fe15b8c9b8bd45975cd1127d done
+#13 exporting config sha256:59c2533e7411f96b414e457e078fed4960706fa82aee7b609133b8aa8f5aec74 done
+#13 exporting attestation manifest sha256:727bb082630d3655c7f399d1cb203344f5801b3a89caf09bc5cf706434911f13 done
+#13 exporting manifest list sha256:194d0b851f6e2242b318dbd14dc4d2b5b928cd9e4d6312f7e7760567b154390a done
+#13 naming to docker.io/library/heatguard:1.0 done
+#13 unpacking to docker.io/library/heatguard:1.0
+#13 unpacking to docker.io/library/heatguard:1.0 1.2s done
+#13 DONE 7.1s
+
+$ docker images heatguard
+IMAGE           ID             DISK USAGE   CONTENT SIZE   EXTRA
+heatguard:1.0   194d0b851f6e        633MB          136MB        

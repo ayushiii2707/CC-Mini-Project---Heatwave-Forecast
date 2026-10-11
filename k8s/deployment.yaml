@@ -1,0 +1,32 @@
+# Experiment 3: HeatGuard Deployment. Image is pulled from Docker Hub (Experiment 2).
+# CPU/memory limits are the right-sized values measured in Experiment 7.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: heatguard
+  labels: {app: heatguard}
+spec:
+  replicas: 2
+  selector:
+    matchLabels: {app: heatguard}
+  template:
+    metadata:
+      labels: {app: heatguard}
+    spec:
+      containers:
+        - name: heatguard
+          image: docker.io/DOCKERHUB_USER/heatguard:1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          resources:
+            requests: {cpu: 250m, memory: 128Mi}
+            limits: {cpu: 750m, memory: 192Mi}
+          readinessProbe:
+            httpGet: {path: /health, port: 8000}
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: {path: /health, port: 8000}
+            initialDelaySeconds: 10
+            periodSeconds: 10

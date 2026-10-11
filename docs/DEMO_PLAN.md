@@ -27,9 +27,9 @@ Ayushi Ranjan · 16014223028 · B1 · Use case KJS-CES-01 · Experiments 2, 3, 7
    ```
 6. Open these browser tabs in order:
    1. GitHub repo → `docs/screenshots/00_architecture_diagram.png`
-   2. http://localhost:8080/?city=Delhi&date=2024-05-27 (frontend via Docker Compose)
+   2. http://localhost:8080/ (landing page via Docker Compose; scroll it once before recording so you know the flow)
    3. https://hub.docker.com/u/ayushiranjan27
-   4. http://localhost:30080/?city=Jaipur&date=2024-05-24 (frontend via Kubernetes)
+   4. http://localhost:30080/dashboard?city=Jaipur&date=2024-05-24 (dashboard via Kubernetes)
    5. GitHub → `docs/screenshots/exp7_rightsizing_chart.png` and `exp8_finops_chart.png`
    6. GitHub repo home page
 7. Practise once with a stopwatch.
@@ -47,9 +47,10 @@ Then put the link in `docs/video_link.txt` and rebuild the report: `python docs/
 |---|---|---|
 | 0:00–0:30 | GitHub README | "I'm Ayushi Ranjan, roll 16014223028, batch B1. My use case is KJS-CES-01, heatwave early warning. HeatGuard forecasts the next 7 days of maximum temperature for 10 Indian cities from real IMD data and turns them into IMD-style heatwave alerts. I integrated Experiments 2, 3, 7 and 8." |
 | 0:30–1:10 | Architecture diagram | "Data is IMD Pune's gridded daily maximum temperature, 2014–2024. The AI part, in orange, is seven ridge-regression models, one for each forecast day, followed by IMD's rule-based heatwave criteria. The app has two services: a FastAPI backend and an nginx web frontend that proxies API calls. In blue: Docker images on Docker Hub, Kubernetes, and the right-sizing and FinOps measurements." |
-| 1:10–2:00 | Frontend :8080, Delhi 27 May 2024 | "This is the frontend. As of 27 May 2024, Delhi gets a Heatwave alert from the next day. Each card shows the forecast with its typical error, the alert, and what IMD actually recorded: 46 °C, so the alert was right. Days 5 to 7 are marked low-confidence, because validation showed weak skill that far ahead." Scroll: chart ("observed, normal, forecast with uncertainty band, green = what happened"), map + ranking ("Jaipur is the only severe one"). Click **Chennai** on the map. In What-if, change the last value to `99.9`, click Run: "the backend rejects impossible values." |
+| 1:10–1:35 | Landing page :8080 | Scroll slowly: "This is the landing page. Every number here comes live from the API: the highest-risk city for 27 May 2024, and every day of 2024 in Delhi from IMD data, where the deep red is the heatwave." Scroll past *How it works* and the dark *Ten cities* map, then click **Open the dashboard**. |
+| 1:35–2:00 | Dashboard, Delhi 27 May 2024 | "As of 27 May 2024, Delhi gets a Heatwave alert from the next day. Each card shows the forecast with its typical error, the alert, and what IMD actually recorded: 46 °C, so the alert was right. Days 5 to 7 are marked low-confidence, because validation showed weak skill that far ahead." Scroll: chart ("observed, normal, forecast with uncertainty band, green = what happened"), map + ranking ("Jaipur is the only severe one"). Click **Chennai** on the map. In What-if, change the last value to `99.9`, click Run: "the backend rejects impossible values." |
 | 2:00–2:30 | Terminal + Docker Hub tab (**Exp 2**) | `docker compose ps` → "two containers, both healthy". `curl -s localhost:8080/api/health` → "the frontend proxies to the backend". Docker Hub tab: "both images pushed for Intel and Apple chips." |
-| 2:30–3:20 | Terminal + :30080 tab (**Exp 3**) | `kubectl get deploy,pods,svc` → "backend is ClusterIP, internal only; frontend is NodePort 30080." `kubectl delete pod $(kubectl get pods -l app=heatguard-api -o name \| head -1 \| cut -d/ -f2)` then `kubectl get pods` → "self-healing." `kubectl scale deployment heatguard-web --replicas=4` → "scaling." Show :30080 tab: "the green pill shows which backend pod answered. Rolling updates had zero failed requests: 89 of 89 and 114 of 114." |
+| 2:30–3:20 | Terminal + :30080 tab (**Exp 3**) | `kubectl get deploy,pods,svc` → "backend is ClusterIP, internal only; frontend is NodePort 30080." `kubectl delete pod $(kubectl get pods -l app=heatguard-api -o name \| head -1 \| cut -d/ -f2)` then `kubectl get pods` → "self-healing." `kubectl scale deployment heatguard-web --replicas=4` → "scaling." Show :30080 tab: "the label at the top right shows which backend pod answered. Rolling updates had zero failed requests, including the frontend update to version 2.1: 248 of 248." |
 | 3:20–3:45 | Exp 7 chart | "With 2 CPUs the backend used only about 43% of its CPU limit and 6% of its memory. Right-sized to 1.25 CPUs and 192 MB: estimated cost down 43%, throughput and p95 latency not worse, median latency up about 22%." |
 | 3:45–4:15 | Exp 8 chart | "I fixed the target before running: at least 300 requests per second and p95 under 250 ms. 0.25 CPU failed badly. 0.5 CPU is the cheapest that passes, but only on average, so it's borderline; 1 CPU gives 44% more throughput for 39% more cost per prediction. Costs are estimates from AWS's Mumbai price list." |
 | 4:15–4:40 | Frontend "How reliable is it?" | "On the unseen year 2024, error grows from 0.88 °C on day 1 to 1.54 on day 7, better than both baselines. Next-day alerts caught 90% of heatwave days. 18 automated tests pass." |
@@ -61,7 +62,7 @@ After recording: `kubectl scale deployment heatguard-web --replicas=2`.
 
 | Experiment | Proof on screen |
 |---|---|
-| 2 Docker & Docker Hub | `docker compose ps` (2 healthy containers); `/api/health` through the frontend; Docker Hub page with heatguard + heatguard-web |
+| 2 Docker & Docker Hub | `docker ps` (2 healthy containers); `/api/health` through the frontend; Docker Hub page with heatguard + heatguard-web |
 | 3 Kubernetes | `kubectl get deploy,pods,svc`; pod replaced after delete; scaling; pod name in the :30080 status pill |
 | 7 Right-sizing | Exp 7 chart + report table (CPU/memory % of limit before vs after, cost) |
 | 8 FinOps | Exp 8 chart with both target lines; medium highlighted |
@@ -82,7 +83,8 @@ After recording: `kubectl scale deployment heatguard-web --replicas=2`.
 **Application**
 9. *Why separate frontend and backend?* Each can be scaled, updated and secured independently; the backend stays internal and the frontend is a cheap static nginx container.
 10. *How does the frontend reach the backend?* nginx proxies `/api/` to `API_URL`: `http://api:8000` in Compose, `http://heatguard-api:8000` (Kubernetes DNS) in the cluster.
-11. *Why does the map work offline?* It uses a bundled Natural Earth outline (India point-of-view boundaries) instead of an online tile server.
+11. *Why does the map work offline?* It uses a bundled Natural Earth outline (India point-of-view boundaries) instead of an online tile server; fonts and chart libraries are bundled too.
+11b. *What changed in frontend 2.1?* A new animated landing page and a redesigned dashboard. Only the frontend image changed (2.0 → 2.1); it was rolled out on Kubernetes with 248/248 requests succeeding. The backend and all measurements are unchanged.
 
 **Cloud / experiments**
 12. *Image vs container?* An image is the read-only template; a container is a running instance.

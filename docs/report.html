@@ -93,7 +93,7 @@ outage. Because such a service runs all year but is busy only in summer, paying 
 how much of the allocated capacity is really used, and Exp 8 picks the cheapest size that still meets a stated response-time and
 throughput target.</p>
 <h3>3.2 Tools</h3>
-<table><tr><th>Layer</th><th>Tools (versions as run)</th></tr><tr><td>Language / ML</td><td>Python 3.13, NumPy 2.5.4, scikit-learn 1.9.1, pandas 3.0.6 (training only), joblib 1.6.0</td></tr><tr><td>Backend</td><td>FastAPI 0.143.0, Uvicorn 0.54.0 (image python:3.13-slim, non-root)</td></tr><tr><td>Frontend</td><td>HTML/CSS/JavaScript, Chart.js 4.4.1, Leaflet 1.9.4, Natural Earth boundaries (India view), served by nginx 1.27 (nginx-unprivileged)</td></tr><tr><td>Testing / load</td><td>pytest 9.1.1, httpx 0.28.1 (async load generator)</td></tr><tr><td>Containers (Exp 2)</td><td>Docker Desktop engine 29.7.2 (arm64), Docker Compose, docker buildx, Docker Hub</td></tr><tr><td>Orchestration (Exp 3)</td><td>kind v0.33.0 (Kubernetes v1.37.0), kubectl v1.36.1</td></tr><tr><td>Measurement (Exp 7, 8)</td><td>docker stats, experiments/run_config.py, matplotlib 3.11.2</td></tr><tr><td>Hardware</td><td>Apple MacBook M2, 8 GB RAM (Docker VM: 8 CPUs, 3.8 GiB)</td></tr></table>
+<table><tr><th>Layer</th><th>Tools (versions as run)</th></tr><tr><td>Language / ML</td><td>Python 3.13, NumPy 2.5.4, scikit-learn 1.9.1, pandas 3.0.6 (training only), joblib 1.6.0</td></tr><tr><td>Backend</td><td>FastAPI 0.143.0, Uvicorn 0.54.0 (image python:3.13-slim, non-root)</td></tr><tr><td>Frontend</td><td>HTML/CSS/JavaScript (landing page + dashboard), Chart.js 4.4.1, Leaflet 1.9.4, Natural Earth boundaries (India view), bundled fonts Fraunces / IBM Plex (SIL OFL), served by nginx 1.27 (nginx-unprivileged)</td></tr><tr><td>Testing / load</td><td>pytest 9.1.1, httpx 0.28.1 (async load generator)</td></tr><tr><td>Containers (Exp 2)</td><td>Docker Desktop engine 29.7.2 (arm64), Docker Compose, docker buildx, Docker Hub</td></tr><tr><td>Orchestration (Exp 3)</td><td>kind v0.33.0 (Kubernetes v1.37.0), kubectl v1.36.1</td></tr><tr><td>Measurement (Exp 7, 8)</td><td>docker stats, experiments/run_config.py, matplotlib 3.11.2</td></tr><tr><td>Hardware</td><td>Apple MacBook M2, 8 GB RAM (Docker VM: 8 CPUs, 3.8 GiB)</td></tr></table>
 
 <h2>4. AI component</h2>
 <p>The AI part is kept separate from the cloud part so each can be explained on its own.</p>
@@ -121,20 +121,32 @@ climatology, which is expected for weather forecasting from temperature history 
 1–4 are validated; days 5–7 catch fewer heatwaves and raise more false alarms,
 so they are shown as an outlook. Day-1 confusion matrix (rows = actual, columns = predicted; Normal / Heatwave / Severe):
 [[3579, 33, 0], [5, 37, 2], [0, 3, 1]]. Persistence baseline day-1 alert recall/precision: 0.688 / 0.647.</p>
-<figure><img src="screenshots/04_frontend_model_reliability.png" style="width:92%"><figcaption>Figure 2. The frontend's reliability panel: forecast error by day (ML vs baselines) and alert skill per day, read live from the API.</figcaption></figure>
+<figure><img src="screenshots/04_frontend_model_reliability.png" style="width:92%"><figcaption>Figure 2. The dashboard's reliability panel: forecast error by day (ML vs baselines) and alert skill per day, read live from the API.</figcaption></figure>
 
 <h2>5. Application: backend and frontend</h2>
 <p><b>Backend</b> (<code>app/main.py</code>, image <code>ayushiranjan27/heatguard:2.0</code>): a stateless FastAPI service. Endpoints:
 <code>/health</code>, <code>/cities</code>, <code>/observed</code> (IMD history with normals and the actual next 7 days),
 <code>/outlook</code> (7-day forecast for all 10 cities), <code>/model-info</code> (per-horizon metrics) and <code>POST /predict</code>
 (7-day forecast from 7 values). Input validation returns 404/422 with clear messages; interactive API docs are at <code>/docs</code>.
-<b>Frontend</b> (<code>frontend/</code>, image <code>ayushiranjan27/heatguard-web:2.0</code>): a static web app served by unprivileged
-nginx, which also reverse-proxies <code>/api/</code> to the backend, so the browser talks to one address and the backend can stay
-internal. It shows an alert banner, KPI cards, seven forecast cards (with the actual IMD value when known), a 30-day trend chart with
-the forecast and an uncertainty band, an India map and ranking of all cities, a what-if form, and the reliability panel. The map uses
-bundled Natural Earth boundaries (India point-of-view edition), so it works without an internet map service.</p>
-<figure><img src="screenshots/01_frontend_delhi_heatwave_overview.png" style="width:100%"><figcaption>Figure 3. Frontend, Delhi as of 27 May 2024 (served by Docker Compose): alert banner, KPIs and 7-day forecast with the actual IMD values that followed.</figcaption></figure>
-<figure><img src="screenshots/02_frontend_trend_map_ranking.png" style="width:100%"><figcaption>Figure 4. Trend chart (observed, normal, forecast with uncertainty band, actual IMD values), all-India map and regional ranking.</figcaption></figure>
+<b>Frontend</b> (<code>frontend/</code>, image <code>ayushiranjan27/heatguard-web:2.1</code>): a static web app served by unprivileged
+nginx, which also reverse-proxies <code>/api/</code> to the backend (and the backend's interactive docs at <code>/api/docs</code>), so the
+browser talks to one address and the backend can stay internal. It has two pages with one visual identity (a printed "heat bulletin":
+paper and ink for the interface, heat colours only for data, bundled fonts so nothing depends on the internet):</p>
+<ul>
+<li><b>Landing page</b> (<code>/</code>): an animated introduction whose figures all come from the live API: a hero card with the
+highest-risk city for 27 May 2024, a "heat stripes" band of every 2024 IMD daily maximum for Delhi, count-up key figures read from
+<code>/model-info</code>, a scroll-revealed explanation of the pipeline, a pulsing India map of the 10-city outlook, a per-day accuracy chart,
+and the four cloud experiments with their measured results. Animations respect the operating system's reduced-motion setting.</li>
+<li><b>Dashboard</b> (<code>/dashboard</code>): the 7-day heat bulletin for any city and date in 2014–2024: headline alert and advice,
+KPI row, a seven-day forecast table (forecast ± typical error, alert, alert basis, departure, the actual IMD value, confidence), a 30-day
+trend chart with uncertainty band, an India map and ranking, a what-if form, and the reliability panel.</li>
+</ul>
+<p>The map uses bundled Natural Earth boundaries (India point-of-view edition), so it works without an internet map service. Version 2.0 of the
+frontend (a single dark dashboard) is kept in the archive; 2.1 changed only the frontend, so the backend and all measurements are unchanged.</p>
+<figure><img src="screenshots/06_landing_hero.png" style="width:100%"><figcaption>Figure 3. Landing page: animated headline, live hero card (highest-risk city on 27 May 2024 from /outlook) and the 2024 Delhi heat stripes from IMD data.</figcaption></figure>
+<figure><img src="screenshots/07_landing_how_outlook.png" style="width:92%"><figcaption>Figure 4. Landing page: how it works, and the 10-city outlook with a pulsing India map (Natural Earth, India view).</figcaption></figure>
+<figure><img src="screenshots/01_frontend_delhi_heatwave_overview.png" style="width:100%"><figcaption>Figure 5. Dashboard, Delhi as of 27 May 2024 (served by Docker Compose): bulletin headline, KPIs and the 7-day forecast table with the actual IMD values that followed.</figcaption></figure>
+<figure><img src="screenshots/02_frontend_trend_map_ranking.png" style="width:100%"><figcaption>Figure 6. Dashboard: trend chart (observed, normal, forecast with uncertainty band, actual IMD values), all-India map and regional ranking.</figcaption></figure>
 
 <h2>6. Implementation of the four experiments</h2>
 
@@ -172,7 +184,7 @@ HEALTHCHECK --interval=15s --timeout=3s --start-period=10s \
   CMD python -c &quot;import urllib.request; urllib.request.urlopen(&#x27;http://localhost:8000/health&#x27;)&quot;
 CMD [&quot;uvicorn&quot;, &quot;app.main:app&quot;, &quot;--host&quot;, &quot;0.0.0.0&quot;, &quot;--port&quot;, &quot;8000&quot;]</pre>
 <pre class="code"><span class="src">frontend/Dockerfile</span>
-# HeatGuard web frontend: static app served by nginx (unprivileged, port 8080),
+# HeatGuard web frontend (landing page + dashboard): static app served by nginx (unprivileged, port 8080),
 # with /api/ reverse-proxied to the backend given by API_URL.
 FROM nginxinc/nginx-unprivileged:1.27-alpine
 ENV API_URL=http://api:8000
@@ -191,7 +203,7 @@ services:
     build: .
     ports: [&quot;8000:8000&quot;]          # direct API access (Swagger docs at http://localhost:8000/docs)
   web:
-    image: ayushiranjan27/heatguard-web:2.0
+    image: ayushiranjan27/heatguard-web:2.1
     build: ./frontend
     environment:
       API_URL: http://api:8000
@@ -283,11 +295,20 @@ $ docker compose up -d --wait --no-build
  Container heatguard-web-1 Creating 
  Container heatguard-web-1 Created 
  Container heatguard-api-1 Starting </pre>
-<figure><img src="screenshots/03_dockerhub_repositories.png" style="width:80%"><figcaption>Figure 5. Docker Hub repositories of user ayushiranjan27 (captured after the v2 push).</figcaption></figure>
-<p><b>Results.</b> Backend image 136 MB and frontend image 22 MB (compressed). Both containers report healthy; the frontend reaches the backend
+<p>The redesigned frontend was later released as <code>heatguard-web:2.1</code> with the same tooling (<code>experiments/release_frontend.sh</code>):</p>
+<pre class="log"><span class="src">experiments/results/frontend_2.1_release.log</span>
+### 1. Build and push ayushiranjan27/heatguard-web:2.1 (linux/arm64 + linux/amd64)
+$ docker buildx build --platform linux/arm64,linux/amd64 -t ayushiranjan27/heatguard-web:2.1 -t ayushiranjan27/heatguard-web:latest --push --quiet ./f
+
+$ docker buildx imagetools inspect ayushiranjan27/heatguard-web:2.1 | grep Platform
+  Platform:    linux/arm64
+  Platform:    linux/amd64
+</pre>
+<figure><img src="screenshots/03_dockerhub_repositories.png" style="width:80%"><figcaption>Figure 7. Docker Hub repositories of user ayushiranjan27 (captured after the v2 push).</figcaption></figure>
+<p><b>Results.</b> Backend image 136 MB and frontend image 22 MB (compressed, v2.0). Both containers report healthy; the frontend reaches the backend
 through its <code>/api/</code> proxy. Invalid input returns 404/422. With the backend stopped, the frontend stayed up and API calls returned
 HTTP 504 (gateway error) until the backend was restarted (HTTP 200). Docker Hub lists both images for
-linux/amd64 and linux/arm64; the pulled images ran healthy.</p>
+linux/amd64 and linux/arm64; the pulled images ran healthy. Frontend 2.1 was pushed the same way for both platforms.</p>
 <p><b>Conclusion.</b> Both tiers were containerised, run together and published; anyone can start the full application with
 <code>docker compose up</code> on Intel or Apple Silicon machines.</p>
 
@@ -374,7 +395,7 @@ spec:
       terminationGracePeriodSeconds: 20
       containers:
         - name: web
-          image: docker.io/DOCKERHUB_USER/heatguard-web:2.0
+          image: docker.io/DOCKERHUB_USER/heatguard-web:2.1
           imagePullPolicy: Always
           env:
             - name: API_URL
@@ -564,12 +585,49 @@ Waiting for deployment &quot;heatguard-web&quot; rollout to finish: 1 out of 4 n
 Waiting for deployment &quot;heatguard-web&quot; rollout to finish: 2 out of 4 new replicas have been updated...
 Waiting for deployment &quot;heatguard-web&quot; rollout to finish: 2 out of 4 new replicas have been updated...
 Waiting for deployment &quot;heatguard-web&quot; rollout to finish: 2 out of 4 new replicas have been updated...</pre>
-<figure><img src="screenshots/05_frontend_via_kubernetes.png" style="width:100%"><figcaption>Figure 6. Frontend served through the Kubernetes NodePort (localhost:30080); the status pill shows the backend pod that answered.</figcaption></figure>
+<p><b>Frontend release 2.0 → 2.1 on the running cluster</b> (<code>experiments/release_frontend.sh</code>), with the landing page and
+<code>/api/health</code> polled every 0.25 s during the rollout:</p>
+<pre class="log"><span class="src">experiments/results/frontend_2.1_release.log</span>
+### 2. Rolling update on Kubernetes with availability check (every 0.25 s through NodePort 30080)
+$ kubectl get deployment heatguard-web -o wide
+NAME            READY   UP-TO-DATE   AVAILABLE   AGE    CONTAINERS   IMAGES                                       SELECTOR
+heatguard-web   4/4     4            4           121m   web          docker.io/ayushiranjan27/heatguard-web:2.0   app=heatguard-web
+
+$ kubectl set image deployment/heatguard-web web=docker.io/ayushiranjan27/heatguard-web:2.1
+deployment.apps/heatguard-web image updated
+
+$ kubectl rollout status deployment/heatguard-web --timeout=300s
+Waiting for deployment spec update to be observed...
+Waiting for deployment &quot;heatguard-web&quot; rollout to finish: 0 out of 4 new replicas have been updated...
+Waiting for deployment &quot;heatguard-web&quot; rollout to finish: 1 out of 4 new replicas have been updated...
+Waiting for deployment &quot;heatguard-web&quot; rollout to finish: 1 out of 4 new replicas have been updated...
+Waiting for deployment &quot;heatguard-web&quot; rollout to finish: 1 out of 4 new replicas have been updated...
+Waiting for deployment &quot;heatguard-web&quot; rollout to finish: 2 out of 4 new replicas have been updated...
+Waiting for deployment &quot;heatguard-web&quot; rollout to finish: 2 out of 4 new replicas have been updated...
+Waiting for deployment &quot;heatguard-web&quot; rollout to finish: 2 out of 4 new replicas have been updated...
+Waiting for deployment &quot;heatguard-web&quot; rollout to finish: 2 out of 4 new replicas have been updated...
+Waiting for deployment &quot;heatguard-web&quot; rollout to finish: 3 out of 4 new replicas have been updated...
+Waiting for deployment &quot;heatguard-web&quot; rollout to finish: 3 out of 4 new replicas have been updated...
+Waiting for deployment &quot;heatguard-web&quot; rollout to finish: 3 out of 4 new replicas have been updated...
+Waiting for deployment &quot;heatguard-web&quot; rollout to finish: 3 out of 4 new replicas have been updated...
+Waiting for deployment &quot;heatguard-web&quot; rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment &quot;heatguard-web&quot; rollout to finish: 1 old replicas are pending termination...
+deployment &quot;heatguard-web&quot; successfully rolled out
+
+# availability: 248/248 requests (landing page + /api/health) returned HTTP 200 (failed: 0)
+
+$ kubectl get deployment heatguard-web -o wide
+NAME            READY   UP-TO-DATE   AVAILABLE   AGE    CONTAINERS   IMAGES                                       SELECTOR
+heatguard-web   4/4     4            4           122m   web          docker.io/ayushiranjan27/heatguard-web:2.1   app=heatguard-web
+
+$ kubectl get pods -l app=heatguard-web
+NAME                             READY   STATUS        RESTARTS   AGE</pre>
+<figure><img src="screenshots/05_frontend_via_kubernetes.png" style="width:100%"><figcaption>Figure 8. Dashboard (frontend 2.1) served through the Kubernetes NodePort (localhost:30080); the status label at the top right shows the backend pod that answered.</figcaption></figure>
 <p><b>Results.</b> Both images were pulled from Docker Hub; all pods became Ready; the frontend reached the backend through the
 <code>heatguard-api</code> Service, with requests spread across backend pods; scaling (frontend 2→4, backend 2→3) worked; a deleted backend pod was
 replaced automatically; a non-existent image tag stopped in <code>ImagePullBackOff</code> while existing pods kept serving, and
 <code>kubectl rollout undo</code> restored the Deployment. Rolling updates with continuous checks every 0.25 s: 89/89 successful during the backend rollout; 114/114 successful during the frontend rollout.
-No request failed, so the preStop delay removed the single failure observed in v1 (39/40).</p>
+The later frontend release to 2.1 served 248/248 requests successfully. No request failed, so the preStop delay removed the single failure observed in v1 (39/40).</p>
 <p><b>Conclusion.</b> Kubernetes provided declarative deployment, service discovery between the two tiers, scaling, self-healing, safe rollback
 and rolling updates for HeatGuard.</p>
 
@@ -589,7 +647,7 @@ rounded up to 64 MiB. (5) Re-run the same workload 3 times with the new limits. 
 p95 latency -6.2%, estimated hourly cost -42.7%,
 estimated cost per million predictions -45.3%.
 Errors: 0 and 0; out-of-memory kills: none.</p>
-<figure><img src="screenshots/exp7_rightsizing_chart.png" style="width:100%"><figcaption>Figure 7. Experiment 7: utilisation of the allocated resources and estimated hourly cost before and after right-sizing (mean ± std, 3 runs).</figcaption></figure>
+<figure><img src="screenshots/exp7_rightsizing_chart.png" style="width:100%"><figcaption>Figure 9. Experiment 7: utilisation of the allocated resources and estimated hourly cost before and after right-sizing (mean ± std, 3 runs).</figcaption></figure>
 <p><b>Cost basis (estimate, not an actual charge):</b> AWS Fargate on-demand, Linux/ARM, Asia Pacific (Mumbai): USD 0.02383 per vCPU-hour and
 USD 0.00261 per GB-hour, from the AWS public price list (publication date 2026-09-11), saved as <code>experiments/pricing/aws_ecs_ap-south-1_index.json</code>.
 Hourly cost = vCPU × 0.02383 + GB × 0.00261; cost per million predictions = hourly cost ÷ (throughput × 3600) × 10<sup>6</sup>. No cloud account was used.</p>
@@ -607,7 +665,7 @@ performance degradation. <b>Use-case connection:</b> chooses the cheapest size o
 The <b>performance target was written down before running</b> (<code>experiments/exp8_configs.json</code>), using the rule: At most 25% lower throughput and at most 50% higher p95 latency than the over-provisioned reference (2 vCPU / 2 GB: ~417 req/s, p95 ~162 ms), no errors, no OOM kill.
 This gives throughput ≥ 300 req/s, p95 latency ≤ 250 ms, zero errors and no OOM kill. Each configuration ran 3 times.</p>
 <table><tr><th>Configuration</th><th>CPU peak (% of 1 core)</th><th>CPU used (% of limit)</th><th>Memory peak (MiB)</th><th>Memory used (% of limit)</th><th>Throughput (req/s)</th><th>p50 latency (ms)</th><th>p95 latency (ms)</th><th>Errors</th><th>Est. USD / hour</th><th>Est. USD / 1M predictions</th><th>Meets target</th></tr><tr><td><b>low</b><br>0.25 vCPU / 512m</td><td>27.1 ± 0.1</td><td>108.4 ± 0.4</td><td>119.7 ± 0.3</td><td>23.4 ± 0.1</td><td>62.9 ± 0.8</td><td>289.4 ± 2.5</td><td>869.6 ± 49.2</td><td>0</td><td>0.0073</td><td>0.0320</td><td>no</td></tr><tr><td><b>medium</b><br>0.5 vCPU / 1g</td><td>50.8 ± 0.6</td><td>101.7 ± 1.1</td><td>118.3 ± 0.8</td><td>11.6 ± 0.1</td><td>302.7 ± 8.3</td><td>76.3 ± 1.1</td><td>109.2 ± 2.9</td><td>0</td><td>0.0145</td><td>0.0133</td><td>yes</td></tr><tr><td><b>high</b><br>1.0 vCPU / 2g</td><td>83.1 ± 5.9</td><td>83.1 ± 5.9</td><td>114.5 ± 7.2</td><td>5.6 ± 0.3</td><td>435.7 ± 7.3</td><td>22.2 ± 1.4</td><td>153.0 ± 3.1</td><td>0</td><td>0.0290</td><td>0.0185</td><td>yes</td></tr></table>
-<figure><img src="screenshots/exp8_finops_chart.png" style="width:100%"><figcaption>Figure 8. Experiment 8: throughput, p95 latency (dashed lines = targets) and estimated cost per million predictions (mean ± std, 3 runs).</figcaption></figure>
+<figure><img src="screenshots/exp8_finops_chart.png" style="width:100%"><figcaption>Figure 10. Experiment 8: throughput, p95 latency (dashed lines = targets) and estimated cost per million predictions (mean ± std, 3 runs).</figcaption></figure>
 <p><b>Result.</b> The most cost-efficient configuration meeting the target is <b>medium (0.5 vCPU / 1g)</b> at an estimated USD 0.0133 per million predictions.
 It passes on the mean of 3 runs, but only 2 of 3 individual runs reached 300 req/s (runs: 295.5, 300.7, 311.8 req/s), so it is a borderline choice with little headroom.
 low (0.25 vCPU) failed: throughput 62.9 &lt; 300 req/s, p95 869.6 &gt; 250 ms.
@@ -644,7 +702,8 @@ scheduled data refresh; LLM multilingual advisories with human review (use case 
 
 <h2>10. Version history</h2>
 <p><b>v1.0/1.1</b>: single FastAPI container with a built-in dashboard and a next-day forecast; v1.1 corrected the coastal heatwave rule.
-<b>v2.0</b> (this report): 7-day forecast, separate backend and frontend images, two-tier Kubernetes deployment with zero-downtime settings.
+<b>v2.0</b>: 7-day forecast, separate backend and frontend images, two-tier Kubernetes deployment with zero-downtime settings.
+<b>Frontend 2.1</b> (current): new landing page and redesigned dashboard; frontend-only change, released with a measured rolling update. Backend stays 2.0.
 All v1 experiment logs and measurements are kept unchanged in <code>experiments/results/archive_v1/</code>; every v2 experiment was re-run with the same scripts.</p>
 
 <h2>11. Conclusion</h2>

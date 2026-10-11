@@ -10,6 +10,7 @@
 | Exp 7 v2: 2 vCPU/2 GB → 1.25 vCPU/192 MiB, est. cost −42.7% | Verified | `exp7/`, `summary.md` |
 | Exp 8 v2: target fixed beforehand; medium cheapest passing (borderline) | Verified | `exp8/`, `summary.md` |
 | Exp 3 v2: two tiers, scaling, self-healing, rollback, rolling updates 89/89 + 114/114 | Verified | `exp3_kubernetes.log`, screenshot 05 |
+| Frontend 2.1: animated landing page + redesigned dashboard; pushed and rolled out (248/248 OK) | Verified | `frontend_2.1_release.log`, screenshots 01–08 |
 | Report PDF, README, checklist, demo plan, ZIP, GitHub push | Done | `docs/` |
 | Demonstration video | To be recorded by student; link goes in `docs/video_link.txt` | `docs/DEMO_PLAN.md` |
 

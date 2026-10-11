@@ -1,4 +1,4 @@
-# HeatGuard web frontend: static app served by nginx (unprivileged, port 8080),
+# HeatGuard web frontend (landing page + dashboard): static app served by nginx (unprivileged, port 8080),
 # with /api/ reverse-proxied to the backend given by API_URL.
 FROM nginxinc/nginx-unprivileged:1.27-alpine
 ENV API_URL=http://api:8000

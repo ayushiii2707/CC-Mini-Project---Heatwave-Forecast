@@ -3,3 +3,5 @@ Third-party libraries bundled with the HeatGuard frontend (unmodified copies fro
 - Leaflet 1.9.4   - BSD 2-Clause License - https://leafletjs.com/ (https://github.com/Leaflet/Leaflet/blob/main/LICENSE)
 - India and neighbouring country outlines: Natural Earth 1:10m admin-0 countries, India point-of-view edition
   (ne_10m_admin_0_countries_ind.geojson, public domain, https://www.naturalearthdata.com/), simplified for size.
+- Fonts (assets/fonts): Fraunces, IBM Plex Sans, IBM Plex Mono - SIL Open Font License 1.1 - via Google Fonts
+  (https://fonts.google.com/specimen/Fraunces, https://fonts.google.com/specimen/IBM+Plex+Sans, https://fonts.google.com/specimen/IBM+Plex+Mono)

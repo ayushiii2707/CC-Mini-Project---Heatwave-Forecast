@@ -11,13 +11,15 @@ heatwave alert, and shows it in a web dashboard. It runs as two services, a **Fa
 **nginx web frontend**, published on Docker Hub, deployed on Kubernetes, and right-sized and cost-compared
 from measurements.
 
-![HeatGuard frontend](docs/screenshots/01_frontend_delhi_heatwave_overview.png)
+![HeatGuard landing page](docs/screenshots/06_landing_hero.png)
+
+![HeatGuard dashboard](docs/screenshots/01_frontend_delhi_heatwave_overview.png)
 
 > Educational prototype. Official heatwave warnings are issued by the India Meteorological Department.
 
 | | |
 |---|---|
-| Docker Hub | [`ayushiranjan27/heatguard:2.0`](https://hub.docker.com/r/ayushiranjan27/heatguard) (backend) · [`ayushiranjan27/heatguard-web:2.0`](https://hub.docker.com/r/ayushiranjan27/heatguard-web) (frontend), linux/arm64 + linux/amd64 |
+| Docker Hub | [`ayushiranjan27/heatguard:2.0`](https://hub.docker.com/r/ayushiranjan27/heatguard) (backend) · [`ayushiranjan27/heatguard-web:2.1`](https://hub.docker.com/r/ayushiranjan27/heatguard-web) (frontend), linux/arm64 + linux/amd64 |
 | Data | IMD Pune 1°×1° daily gridded max temperature, 2014–2024 ([source](https://www.imdpune.gov.in/cmpg/Griddata/Max_1_Bin.html)) |
 | AI | 7 ridge-regression models, one per forecast day (ML) + IMD heatwave rules with a per-day safety margin (rule-based) |
 | Experiments | 2 Docker & Docker Hub · 3 Kubernetes · 7 Right-sizing · 8 FinOps instance comparison |
@@ -28,8 +30,9 @@ from measurements.
 
 ```
 browser ─► heatguard-web (nginx :8080) ── /api/* ──► heatguard (FastAPI :8000) ─► 7 ML models + IMD rules
-            static app: banner, 7-day cards,             /health /cities /observed /outlook
-            chart, India map, ranking, what-if           /model-info  POST /predict
+            /           animated landing page            /health /cities /observed /outlook
+            /dashboard  7-day heat bulletin              /model-info  POST /predict
+            /api/docs   backend API docs (proxied)
 Docker Compose: both containers locally · Kubernetes (kind): web = NodePort 30080, api = ClusterIP (internal)
 ```
 
@@ -41,7 +44,7 @@ Docker Compose: both containers locally · Kubernetes (kind): web = NodePort 300
 | Heatwave alerts on 2024 | day 1 recall **90%** (precision 57%); days 1–4 validated, days 5–7 shown as low-confidence |
 | Tests | **18/18** pytest passed (incl. invalid-input and failure cases) |
 | Exp 2 | both images built, run with Compose, pushed (arm64 + amd64), pulled back and run; backend-down failure handled |
-| Exp 3 | 2 Deployments + 2 Services, scaling, self-healing, bad-image rollback; rolling updates **89/89** and **114/114** requests OK (zero downtime) |
+| Exp 3 | 2 Deployments + 2 Services, scaling, self-healing, bad-image rollback; rolling updates **89/89**, **114/114** and frontend 2.0→2.1 **248/248** requests OK (zero downtime) |
 | Exp 7 | backend 2 vCPU/2 GB → **1.25 vCPU/192 MiB**: est. cost/hour **−42.7%**, throughput +4.7%, p95 −6.2%, p50 +21.8% |
 | Exp 8 | target ≥ 300 req/s, p95 ≤ 250 ms: cheapest passing = **0.5 vCPU / 1 GB** (USD 0.0133 per 1M predictions, estimate; borderline: 2 of 3 runs ≥ 300 req/s) |
 
@@ -53,8 +56,8 @@ USD 0.00261 per GB-hour (AWS price list published 2026-09-11, saved in `experime
 ```bash
 docker compose up -d
 ```
-Open **http://localhost:8080** (frontend). The backend API and its Swagger docs are at http://localhost:8000/docs.
-Example: http://localhost:8080/?city=Delhi&date=2024-05-27
+Open **http://localhost:8080** (landing page) and **http://localhost:8080/dashboard** (dashboard).
+Example: http://localhost:8080/dashboard?city=Delhi&date=2024-05-27 · API docs: http://localhost:8080/api/docs
 
 ## Prerequisites
 
@@ -100,6 +103,7 @@ python experiments/summarize.py
 ```bash
 DOCKERHUB_USER=<your-user> bash experiments/exp3_kubernetes.sh   # creates the kind cluster if needed
 # open http://localhost:30080
+DOCKERHUB_USER=<your-user> VERSION=2.1 bash experiments/release_frontend.sh   # push a new frontend + rolling update
 kind delete cluster --name heatguard                             # clean up
 ```
 
@@ -120,7 +124,8 @@ Errors: unknown city → 404; wrong number of values, values outside −10..55 �
 
 ```
 app/              backend: FastAPI service, features, IMD severity rules
-frontend/         web frontend: public/ (HTML, CSS, JS, vendored Chart.js, Leaflet, India outline), nginx/, Dockerfile
+frontend/         web frontend: public/index.html (landing), dashboard.html, assets/ (css, js, fonts), vendor/ (Chart.js, Leaflet,
+                  India outline), nginx/ (routes + /api proxy), Dockerfile
 docker-compose.yml   runs backend + frontend together
 scripts/          download_imd.sh, prepare_data.py, train.py
 data/processed/   city_tmax.csv (derived from IMD data; raw .GRD files not committed)
@@ -144,6 +149,7 @@ No personal data is processed.
 
 - **v1.0 / v1.1**: single container with built-in dashboard, next-day forecast (v1.1 fixed the coastal rule). Evidence: `experiments/results/archive_v1/`.
 - **v2.0**: 7-day forecast, separate backend and frontend, Docker Compose, two-tier Kubernetes with zero-downtime rollouts; all experiments re-run.
+- **frontend 2.1**: animated landing page and redesigned dashboard (frontend only; backend stays 2.0), released with a measured zero-downtime rolling update.
 
 ## Deliverables
 

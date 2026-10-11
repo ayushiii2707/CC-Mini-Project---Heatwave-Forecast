@@ -1,4 +1,4 @@
-# Requirement-to-test checklist (HeatGuard v2)
+# Requirement-to-test checklist (HeatGuard v2, frontend 2.1)
 
 Statuses: Verified / Partially Verified / Not Verified / Blocked. Evidence files are in `experiments/results/` unless a path is given.
 
@@ -22,4 +22,5 @@ Statuses: Verified / Partially Verified / Not Verified / Blocked. Evidence files
 
 Notes:
 - *Clean-environment setup* is Partially Verified: v1 was cloned fresh and reproduced (tests + retraining); for v2 both images were deleted locally, pulled from Docker Hub and run with Compose. The full README procedure was not repeated on a second machine.
+- Frontend 2.1 (landing page + redesigned dashboard) was released with `experiments/release_frontend.sh`: `frontend_2.1_release.log` (248/248 requests OK during the rollout).
 - *Demonstration video* becomes Verified once its link is added (`docs/video_link.txt`, then `python docs/build_report.py`).

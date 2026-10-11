@@ -7,7 +7,7 @@ services:
     build: .
     ports: ["8000:8000"]          # direct API access (Swagger docs at http://localhost:8000/docs)
   web:
-    image: ayushiranjan27/heatguard-web:2.0
+    image: ayushiranjan27/heatguard-web:2.1
     build: ./frontend
     environment:
       API_URL: http://api:8000

@@ -1,0 +1,63 @@
+### 1. Build and push ayushiranjan27/heatguard-web:2.1 (linux/arm64 + linux/amd64)
+$ docker buildx build --platform linux/arm64,linux/amd64 -t ayushiranjan27/heatguard-web:2.1 -t ayushiranjan27/heatguard-web:latest --push --quiet ./frontend
+sha256:115c2d8ab30476dea61e37b165e899cfef9d3c1aeeb1a00497dfe9106c0f7123
+
+$ docker buildx imagetools inspect ayushiranjan27/heatguard-web:2.1 | grep Platform
+  Platform:    linux/arm64
+  Platform:    linux/amd64
+
+### 2. Rolling update on Kubernetes with availability check (every 0.25 s through NodePort 30080)
+$ kubectl get deployment heatguard-web -o wide
+NAME            READY   UP-TO-DATE   AVAILABLE   AGE    CONTAINERS   IMAGES                                       SELECTOR
+heatguard-web   4/4     4            4           121m   web          docker.io/ayushiranjan27/heatguard-web:2.0   app=heatguard-web
+
+$ kubectl set image deployment/heatguard-web web=docker.io/ayushiranjan27/heatguard-web:2.1
+deployment.apps/heatguard-web image updated
+
+$ kubectl rollout status deployment/heatguard-web --timeout=300s
+Waiting for deployment spec update to be observed...
+Waiting for deployment "heatguard-web" rollout to finish: 0 out of 4 new replicas have been updated...
+Waiting for deployment "heatguard-web" rollout to finish: 1 out of 4 new replicas have been updated...
+Waiting for deployment "heatguard-web" rollout to finish: 1 out of 4 new replicas have been updated...
+Waiting for deployment "heatguard-web" rollout to finish: 1 out of 4 new replicas have been updated...
+Waiting for deployment "heatguard-web" rollout to finish: 2 out of 4 new replicas have been updated...
+Waiting for deployment "heatguard-web" rollout to finish: 2 out of 4 new replicas have been updated...
+Waiting for deployment "heatguard-web" rollout to finish: 2 out of 4 new replicas have been updated...
+Waiting for deployment "heatguard-web" rollout to finish: 2 out of 4 new replicas have been updated...
+Waiting for deployment "heatguard-web" rollout to finish: 3 out of 4 new replicas have been updated...
+Waiting for deployment "heatguard-web" rollout to finish: 3 out of 4 new replicas have been updated...
+Waiting for deployment "heatguard-web" rollout to finish: 3 out of 4 new replicas have been updated...
+Waiting for deployment "heatguard-web" rollout to finish: 3 out of 4 new replicas have been updated...
+Waiting for deployment "heatguard-web" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "heatguard-web" rollout to finish: 1 old replicas are pending termination...
+deployment "heatguard-web" successfully rolled out
+
+# availability: 248/248 requests (landing page + /api/health) returned HTTP 200 (failed: 0)
+
+$ kubectl get deployment heatguard-web -o wide
+NAME            READY   UP-TO-DATE   AVAILABLE   AGE    CONTAINERS   IMAGES                                       SELECTOR
+heatguard-web   4/4     4            4           122m   web          docker.io/ayushiranjan27/heatguard-web:2.1   app=heatguard-web
+
+$ kubectl get pods -l app=heatguard-web
+NAME                             READY   STATUS        RESTARTS   AGE
+heatguard-web-5ccd8856c5-9nnrr   1/1     Running       0          7s
+heatguard-web-5ccd8856c5-b5k2t   1/1     Running       0          24s
+heatguard-web-5ccd8856c5-ns2hd   1/1     Running       0          15s
+heatguard-web-5ccd8856c5-zv7dn   1/1     Running       0          37s
+heatguard-web-6f8bd4c886-6tvnl   1/1     Terminating   0          119m
+
+$ kubectl rollout history deployment/heatguard-web
+deployment.apps/heatguard-web 
+REVISION  CHANGE-CAUSE
+1         <none>
+2         <none>
+3         <none>
+
+
+### 3. New pages served by the cluster
+HTTP 200  text/html  /
+HTTP 200  text/html  /dashboard
+HTTP 200  application/json  /api/health
+HTTP 200  text/html; charset=utf-8  /api/docs
+$ curl -s http://localhost:30080/ | grep -o '<title>.*</title>'
+<title>HeatGuard · See the heat coming, a week ahead</title>

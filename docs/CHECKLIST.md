@@ -22,4 +22,4 @@ Statuses: Verified / Partially Verified / Not Verified / Blocked. § numbers ref
 
 Notes:
 - *Clean-environment setup* is Partially Verified: v1 was cloned fresh and reproduced (tests + retraining); for v2 both images were deleted locally, pulled from Docker Hub and run with Compose. The full README procedure was not repeated on a second machine.
-- Demonstration video: https://drive.google.com/file/d/1VtWn7bEx814fL0UOkdP6OPuQMR9Il3yf/view?usp=sharing
+- Demonstration video: https://drive.google.com/file/d/1zebI3uAvh0hrG1DP8EzQjp-oGLMuGmM1/view?usp=sharing

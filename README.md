@@ -158,7 +158,7 @@ No personal data is processed.
 | Consolidated report (PDF) | `docs/16014223028_AyushiRanjan_CC_UseCase_Report.pdf` (rebuild: `python docs/build_report.py`) |
 | Requirement-to-test checklist | `docs/CHECKLIST.md` |
 | 5-minute demo plan + viva questions | `docs/DEMO_PLAN.md` |
-| Demonstration video | https://drive.google.com/file/d/1VtWn7bEx814fL0UOkdP6OPuQMR9Il3yf/view?usp=sharing |
+| Demonstration video | https://drive.google.com/file/d/1zebI3uAvh0hrG1DP8EzQjp-oGLMuGmM1/view?usp=sharing |
 | Diagrams (experiment map, request flow, Kubernetes topology, ML pipeline, Exp 7/8 method) | `docs/diagrams/` → `docs/screenshots/diag_*.png` |
 | Terminal captures of Docker/Kubernetes commands (real output) | `experiments/results/terminal_captures/` → `docs/screenshots/t*.png` (`python docs/tools/capture_terminal.py`) |
 | Screenshots and charts | `docs/screenshots/` |

@@ -1,4 +1,4 @@
-# HeatGuard: heatwave forecast API (Experiment 2: containerisation)
+# HeatGuard backend: 7-day heatwave forecast API (Experiment 2: containerisation)
 FROM python:3.13-slim
 
 WORKDIR /srv

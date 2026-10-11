@@ -1,0 +1,140 @@
+### 1. Build both images
+$ docker version --format Client {{.Client.Version}} / Server {{.Server.Version}} ({{.Server.Os}}/{{.Server.Arch}})
+Client 29.7.2 / Server 29.7.2 (linux/arm64)
+
+$ docker build -q -t ayushiranjan27/heatguard:2.0 .
+sha256:1c4434e742eb713872a5e9f898a9a2c0f1b185922ebae496e0609810d9dfcd9d
+
+$ docker build -q -t ayushiranjan27/heatguard-web:2.0 ./frontend
+sha256:2e1ab0cca69845011fc3656a1de093d0c57ec305e896c80433abffecc533b9a3
+
+$ docker images --filter reference=ayushiranjan27/heatguard*
+IMAGE                                 ID             DISK USAGE   CONTENT SIZE   EXTRA
+ayushiranjan27/heatguard-web:2.0      2e1ab0cca698       76.7MB           22MB   U    
+ayushiranjan27/heatguard-web:latest   11863b13c199       97.9MB         43.1MB   U    
+ayushiranjan27/heatguard:1.0          7ac1187626db       1.23GB          273MB        
+ayushiranjan27/heatguard:1.1          27f3bc3384ae        771MB          273MB        
+ayushiranjan27/heatguard:2.0          1c4434e742eb        633MB          136MB   U    
+ayushiranjan27/heatguard:latest       ecf81f1f22c4        771MB          273MB   U    
+
+### 2. Run backend + frontend together (docker-compose.yml)
+$ docker compose up -d --wait
+ Network heatguard_default Creating 
+ Network heatguard_default Creating 
+ Network heatguard_default Created 
+ Network heatguard_default Created 
+ Container heatguard-api-1 Creating 
+ Container heatguard-api-1 Created 
+ Container heatguard-web-1 Creating 
+ Container heatguard-web-1 Created 
+ Container heatguard-api-1 Starting 
+ Container heatguard-api-1 Started 
+ Container heatguard-api-1 Waiting 
+ Container heatguard-api-1 Healthy 
+ Container heatguard-web-1 Starting 
+ Container heatguard-web-1 Started 
+ Container heatguard-web-1 Waiting 
+ Container heatguard-api-1 Waiting 
+ Container heatguard-api-1 Healthy 
+ Container heatguard-web-1 Healthy 
+
+$ docker compose ps
+NAME              IMAGE                              COMMAND                  SERVICE   CREATED          STATUS                    PORTS
+heatguard-api-1   ayushiranjan27/heatguard:2.0       "uvicorn app.main:ap…"   api       11 seconds ago   Up 11 seconds (healthy)   0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp
+heatguard-web-1   ayushiranjan27/heatguard-web:2.0   "/docker-entrypoint.…"   web       11 seconds ago   Up 5 seconds (healthy)    0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp
+
+$ curl -s localhost:8000/health
+{"status":"ok","version":"2.0","model":"ridge_regression","horizons":7,"pod":"15f51d4e40e3"}
+$ curl -s localhost:8080/healthz
+ok
+
+$ curl -s localhost:8080/api/health          # frontend -> nginx proxy -> backend
+{"status":"ok","version":"2.0","model":"ridge_regression","horizons":7,"pod":"15f51d4e40e3"}
+
+$ curl -s -X POST localhost:8080/api/predict (Delhi, real IMD values 21-27 May 2024)
+highest alert: Heatwave | validated: Heatwave | first alert day: 1 | served by 15f51d4e40e3 in 16.85 ms
+  day 1 2024-05-28   44.1 C (+/-0.888)  alert basis  45.3 C  Heatwave         validated
+  day 2 2024-05-29   43.2 C (+/-1.299)  alert basis  45.9 C  Heatwave         validated
+  day 3 2024-05-30   42.5 C (+/-1.515)  alert basis  45.5 C  Heatwave         validated
+  day 4 2024-05-31   42.1 C (+/-1.645)  alert basis  45.4 C  Heatwave         validated
+  day 5 2024-06-01   42.0 C (+/-1.715)  alert basis  45.7 C  Heatwave         low
+  day 6 2024-06-02   41.9 C (+/-1.761)  alert basis  45.1 C  Heatwave         low
+  day 7 2024-06-03   41.8 C (+/-1.79)  alert basis  45.3 C  Heatwave         low
+
+$ curl -s 'localhost:8080/api/outlook?date=2024-05-27'   (all 10 cities)
+  Jaipur       today  47.2 C  peak  46.2 C  Severe heatwave
+  Delhi        today  45.1 C  peak  44.1 C  Heatwave
+  Lucknow      today  44.3 C  peak  43.4 C  Heatwave
+  Ahmedabad    today  42.1 C  peak  42.0 C  Heatwave
+  Nagpur       today  42.6 C  peak  42.3 C  Normal
+  Hyderabad    today  38.8 C  peak  39.3 C  Normal
+  Chennai      today  38.0 C  peak  38.4 C  Normal
+  Patna        today  38.1 C  peak  37.7 C  Normal
+  Bhubaneswar  today  35.4 C  peak  36.0 C  Normal
+  Kolkata      today  29.9 C  peak  33.7 C  Normal
+  (10 cities, 19.15 ms, served by 15f51d4e40e3)
+
+### 3. Failure scenarios (through the frontend proxy)
+# unknown city
+{"detail":"unknown city 'Atlantis'. Supported: Delhi, Jaipur, Lucknow, Patna, Ahmedabad, Nagpur, Kolkata, Bhubaneswar, Hyderabad, Chennai"} HTTP 404
+# 99.9 = IMD missing code
+{"detail":[{"type":"value_error","loc":["body","recent_tmax"],"msg":"Value error, temperature 99.9 C is outside the plausible range -10..55 C","input":[40,41,42,43,44,45,99.9],"ctx":{"error":{}}}]} HTTP 422
+# date outside the data
+{"detail":"no IMD observations for Delhi for the 7 days up to 2030-05-01 (available: 2014-01-07 to 2024-12-31)"} HTTP 404
+# backend stopped -> frontend stays up, API calls fail with a gateway error
+  /healthz HTTP 200   /api/health HTTP 504
+# backend restarted -> /api/health HTTP 200
+
+### 4. Push both images to Docker Hub for linux/arm64 and linux/amd64
+$ docker buildx build --platform linux/arm64,linux/amd64 -t ayushiranjan27/heatguard:2.0 -t ayushiranjan27/heatguard:latest --push --quiet .
+sha256:8eebf471058fa7828a1791c7998ca8463b46e992178fd7f2ff64b8300d2da039
+
+$ docker buildx build --platform linux/arm64,linux/amd64 -t ayushiranjan27/heatguard-web:2.0 -t ayushiranjan27/heatguard-web:latest --push --quiet ./frontend
+sha256:9506d974586291f17a469f16ffbbc2a21c4fa9470158b961b819bd7a850167a7
+
+$ docker buildx imagetools inspect ayushiranjan27/heatguard:2.0 | grep Platform
+  Platform:    linux/arm64
+  Platform:    linux/amd64
+
+$ docker buildx imagetools inspect ayushiranjan27/heatguard-web:2.0 | grep Platform
+  Platform:    linux/arm64
+  Platform:    linux/amd64
+
+### 5. Verify: delete local images, pull from Docker Hub, run with Compose
+$ docker rmi ayushiranjan27/heatguard:2.0 ayushiranjan27/heatguard-web:2.0
+Untagged: ayushiranjan27/heatguard:2.0
+Untagged: ayushiranjan27/heatguard-web:2.0
+
+$ docker compose pull
+ Image ayushiranjan27/heatguard:2.0 Pulling 
+ Image ayushiranjan27/heatguard-web:2.0 Pulling 
+ Image ayushiranjan27/heatguard-web:2.0 Pulled 
+ Image ayushiranjan27/heatguard:2.0 Pulled 
+
+$ docker compose up -d --wait --no-build
+ Network heatguard_default Creating 
+ Network heatguard_default Creating 
+ Network heatguard_default Created 
+ Network heatguard_default Created 
+ Container heatguard-api-1 Creating 
+ Container heatguard-api-1 Created 
+ Container heatguard-web-1 Creating 
+ Container heatguard-web-1 Created 
+ Container heatguard-api-1 Starting 
+ Container heatguard-api-1 Started 
+ Container heatguard-api-1 Waiting 
+ Container heatguard-api-1 Healthy 
+ Container heatguard-web-1 Starting 
+ Container heatguard-web-1 Started 
+ Container heatguard-web-1 Waiting 
+ Container heatguard-api-1 Waiting 
+ Container heatguard-api-1 Healthy 
+ Container heatguard-web-1 Healthy 
+
+$ docker compose ps
+NAME              IMAGE                              COMMAND                  SERVICE   CREATED          STATUS                    PORTS
+heatguard-api-1   ayushiranjan27/heatguard:2.0       "uvicorn app.main:ap…"   api       12 seconds ago   Up 11 seconds (healthy)   0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp
+heatguard-web-1   ayushiranjan27/heatguard-web:2.0   "/docker-entrypoint.…"   web       12 seconds ago   Up 5 seconds (healthy)    0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp
+
+$ curl -s localhost:8080/api/health
+{"status":"ok","version":"2.0","model":"ridge_regression","horizons":7,"pod":"079bd2f4ebed"}

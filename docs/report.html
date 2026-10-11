@@ -3,23 +3,24 @@
 body { font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 10.5pt; color: #1e1e1e; line-height: 1.45; }
 h1 { font-size: 24pt; margin: 10px 0; } h2 { font-size: 15pt; margin-top: 22px; border-bottom: 2px solid #b4441c; padding-bottom: 3px; }
 h3 { font-size: 12.5pt; margin-top: 18px; color: #1f5fa8; }
-.title { text-align: center; page-break-after: always; padding-top: 70px; }
+.title { text-align: center; page-break-after: always; padding-top: 60px; }
 .title .inst { font-size: 12pt; } .title .course { color: #555; } .title .sub { font-size: 12pt; }
-table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 9pt; page-break-inside: avoid; }
-th, td { border: 1px solid #ccc; padding: 4px 6px; text-align: left; vertical-align: top; } th { background: #f3efe8; }
-table.meta { width: 85%; margin: 30px auto; font-size: 10.5pt; } table.meta td:first-child { width: 28%; font-weight: 600; background: #f8f6f2; }
-pre { font-family: Menlo, Consolas, monospace; font-size: 7.3pt; background: #f7f7f7; border: 1px solid #ddd; padding: 6px 8px;
+table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 8.8pt; page-break-inside: avoid; }
+th, td { border: 1px solid #ccc; padding: 4px 5px; text-align: left; vertical-align: top; } th { background: #f3efe8; }
+table.meta { width: 88%; margin: 30px auto; font-size: 10.5pt; } table.meta td:first-child { width: 26%; font-weight: 600; background: #f8f6f2; }
+pre { font-family: Menlo, Consolas, monospace; font-size: 7.2pt; background: #f7f7f7; border: 1px solid #ddd; padding: 6px 8px;
       white-space: pre-wrap; word-break: break-all; page-break-inside: avoid; }
 pre.log { background: #10151c; color: #d7e0ea; border-color: #10151c; }
 .src { display: block; font-weight: 700; color: #b4441c; margin-bottom: 2px; } pre.log .src { color: #f0a070; }
-figure { text-align: center; margin: 10px 0; page-break-inside: avoid; } img { border: 1px solid #ddd; }
+figure { text-align: center; margin: 10px 0; page-break-inside: avoid; } img { border: 1px solid #ddd; max-height: 245mm; object-fit: contain; }
 figcaption { font-size: 9pt; color: #555; margin-top: 4px; }
 code { font-family: Menlo, Consolas, monospace; font-size: 9pt; } ol.refs li { margin-bottom: 4px; } a { color: #1f5fa8; }
+.placeholder { background: #fff3cd; border: 1px dashed #c9a227; padding: 1px 6px; }
 </style></head><body>
 <section class="title">
   <p class="inst">Somaiya Vidyavihar University · K J Somaiya School of Engineering</p>
   <p class="course">Cloud Computing · Mini Project Report</p>
-  <h1>HeatGuard: Heatwave Forecast and Early Warning</h1>
+  <h1>HeatGuard: 7-day Heatwave Forecast and Early Warning</h1>
   <p class="sub">Cloud Computing Experiments integrated with the Somaiya AI Use Case<br>
   <b>KJS-CES-01: Climate Intelligence for Heatwave Monitoring, Prediction and Early Warning</b></p>
   <table class="meta">
@@ -31,101 +32,124 @@ code { font-family: Menlo, Consolas, monospace; font-size: 9pt; } ol.refs li { m
     <tr><td>Selected experiments</td><td><b>2</b> Containerization, Docker and Docker Hub · <b>3</b> Application Deployment using Kubernetes ·
         <b>7</b> Cloud Cost Optimization through Resource Right-Sizing · <b>8</b> FinOps Principles and Instance-Type Comparison</td></tr>
     <tr><td>Source code</td><td><a href="https://github.com/ayushiii2707/CC-Mini-Project---Heatwave-Forecast">https://github.com/ayushiii2707/CC-Mini-Project---Heatwave-Forecast</a></td></tr>
-    <tr><td>Docker image</td><td><a href="https://hub.docker.com/r/ayushiranjan27/heatguard">https://hub.docker.com/r/ayushiranjan27/heatguard</a></td></tr>
+    <tr><td>Docker images</td><td><a href="https://hub.docker.com/u/ayushiranjan27">https://hub.docker.com/u/ayushiranjan27</a> (heatguard, heatguard-web)</td></tr>
+    <tr><td>Demonstration video</td><td><span class="placeholder">[Placeholder: demonstration video link, to be inserted after upload]</span></td></tr>
     <tr><td>Date</td><td>11 October 2026</td></tr>
   </table>
 </section>
 
 <h2>Abstract</h2>
-<p>HeatGuard is a working prototype of the heatwave early-warning use case. It reads real India Meteorological
-Department (IMD) gridded daily maximum-temperature data for 2014–2024, forecasts the next day's maximum temperature
-for ten Indian cities with a machine-learning model, and converts the forecast into a heatwave alert using IMD's published
-criteria. On the unseen year 2024 the deployed ridge-regression model has a mean absolute error of
-<b>0.883 °C</b> (persistence baseline 0.94 °C), and the alert
-logic detects <b>89.6%</b> of the 48 actual heatwave city-days with a precision of
-56.6%. The service is containerised and published on Docker Hub (Experiment 2), deployed on a Kubernetes cluster with
-scaling, self-healing, rollback and a rolling update (Experiment 3), right-sized from 2 vCPU / 2 GB to 0.75 vCPU /
-192m with an estimated <b>-65.2%</b> change in hourly cost
-(Experiment 7), and compared across three instance sizes under the same workload to find the cheapest size meeting a
-pre-defined performance target (Experiment 8). All results in this report come from real runs; costs are estimates.</p>
+<p>HeatGuard is a working prototype of the heatwave early-warning use case. It uses real India Meteorological Department (IMD)
+gridded daily maximum-temperature data for 2014–2024, forecasts the maximum temperature for each of the next <b>7 days</b> for ten
+Indian cities with machine-learning models, and converts every forecast day into a heatwave alert using IMD's published criteria.
+On the unseen year 2024 the forecast error grows from <b>0.883 °C</b> (day 1) to
+<b>1.542 °C</b> (day 7), lower than both baselines at every horizon. Next-day alerts detect
+<b>90%</b> of actual heatwave city-days; alerts for days 5–7 are marked
+low-confidence because validation showed limited skill. The system is split into a FastAPI <b>backend</b> and an nginx-served
+<b>web frontend</b>, both published on Docker Hub (Experiment 2) and deployed on Kubernetes with scaling, self-healing, rollback
+and measured rolling updates (Experiment 3). The backend was right-sized from 2 vCPU / 2 GB to 1.25 vCPU /
+192m with an estimated <b>-42.7%</b> change in hourly cost
+(Experiment 7), and three instance sizes were compared under the same workload against a target fixed in advance (Experiment 8).
+All results come from real runs; costs are estimates.</p>
 
 <h2>1. Problem statement, objectives and scope</h2>
-<p><b>Problem.</b> Heatwaves in India are increasing in frequency, intensity and duration and affect public health,
-agriculture and economic activity. Severity varies by region, so timely, region-specific warnings are needed
-(Use-case document KJS-CES-01, §6).</p>
+<p><b>Problem.</b> Heatwaves in India are increasing in frequency, intensity and duration and affect public health, agriculture
+and economic activity. Severity varies by region, so timely, region-specific warnings are needed (use-case document KJS-CES-01, §6).</p>
 <p><b>Objectives.</b></p>
 <ol>
 <li>Build an input → processing → output prototype on real IMD meteorological data (use case §11, steps 1–2).</li>
-<li>Develop an AI model for region-wise maximum-temperature forecasting and evaluate it against a baseline (§8, objective 2).</li>
-<li>Classify heatwave severity and produce an advisory (§8, objective 4; §11, steps 8–9).</li>
+<li>Develop AI models for region-wise maximum-temperature forecasting up to 7 days ahead and evaluate them against baselines (§8, objective 2).</li>
+<li>Classify heatwave severity per day, produce advisories and visualise them on a decision-support dashboard (§8, objective 4; §11, steps 7–9).</li>
 <li>Package, publish, deploy, measure and cost-optimise the service using Experiments 2, 3, 7 and 8.</li>
 </ol>
 <p><b>Prototype scope.</b></p>
-<table><tr><th>In scope</th><th>Out of scope (see Limitations)</th></tr><tr><td>IMD 1°×1° gridded daily Tmax, 2014–2024, ten city grid cells</td><td>IoT Automated Weather Stations (hardware)</td></tr><tr><td>Next-day Tmax regression + IMD rule-based severity</td><td>Multi-day forecasts, spatial hotspot maps of all 7 IMD regions</td></tr><tr><td>Template advisories per severity level</td><td>LLM-generated advisories (listed as future work)</td></tr><tr><td>REST API + web dashboard, Docker, Kubernetes</td><td>Real cloud deployment and billing (costs are estimates)</td></tr></table>
+<table><tr><th>In scope</th><th>Out of scope (see Limitations)</th></tr><tr><td>IMD 1°×1° gridded daily Tmax 2014–2024, ten city grid cells</td><td>IoT Automated Weather Stations (hardware)</td></tr><tr><td>7-day Tmax forecast (one ML model per day) + IMD rule-based severity</td><td>Humidity/heat-index inputs, numerical weather model input</td></tr><tr><td>Web frontend: alerts, 7-day cards, trend chart, India map, ranking, what-if</td><td>LLM-generated multilingual advisories (future work)</td></tr><tr><td>Backend REST API, Docker, Docker Compose, Kubernetes</td><td>Real cloud VM deployment and billing (costs are estimates)</td></tr></table>
 
 <h2>2. Dataset</h2>
 <ul>
 <li><b>Source:</b> IMD Pune, "High resolution 1°×1° daily gridded maximum temperature" binary data,
 <a href="https://www.imdpune.gov.in/cmpg/Griddata/Max_1_Bin.html">imdpune.gov.in/cmpg/Griddata/Max_1_Bin.html</a>
-(Srivastava, Rajeevan and Kshirsagar, 2009). This is the repository named in the use-case document (§11, step 1).</li>
+(Srivastava, Rajeevan and Kshirsagar, 2009), the repository named in the use-case document (§11, step 1).</li>
 <li><b>Format:</b> one <code>.GRD</code> file per year, float32, 31 × 31 grid (7.5–37.5 °N, 67.5–97.5 °E), 99.9 = missing.
-File sizes were checked: 1,403,060 bytes for 365-day years and 1,406,904 bytes for leap years.</li>
+File sizes were checked (1,403,060 bytes for 365-day years, 1,406,904 bytes for leap years).</li>
 <li><b>Acquisition:</b> <code>scripts/download_imd.sh</code>. The IMD server is slow and dropped connections (2017 needed three
 attempts), so the script retries and accepts only full-size files.</li>
-<li><b>Pre-processing:</b> <code>scripts/prepare_data.py</code> parses the grid, extracts the cell nearest to each of ten cities
-(Delhi, Jaipur, Lucknow, Patna, Ahmedabad, Nagpur, Kolkata, Bhubaneswar, Hyderabad, Chennai) and writes 40,180 daily rows.
-Grid orientation was verified (sea cells missing, Ladakh cold, Delhi ≈ 17 °C in January and ≈ 40 °C in May).</li>
-<li><b>Split (time-ordered):</b> train 2014–2022 (32800 samples), validation 2023 (3650),
-test 2024 (3660).</li>
-<li><b>No synthetic data</b> is used. The data is non-personal meteorological data, so no personal-data privacy issues arise.</li>
+<li><b>Pre-processing:</b> <code>scripts/prepare_data.py</code> extracts the grid cell nearest to each of ten cities (Delhi, Jaipur, Lucknow,
+Patna, Ahmedabad, Nagpur, Kolkata, Bhubaneswar, Hyderabad, Chennai): 40,180 daily rows. Grid orientation was verified (sea cells missing,
+Ladakh cold, Delhi ≈ 17 °C in January and ≈ 40 °C in May).</li>
+<li><b>Split (time-ordered by the forecast target day):</b> train 2014–2022, validation 2023, test 2024. Day-1 samples: train
+32800, validation 3650, test 3660.</li>
+<li><b>No synthetic data</b> is used. The data is non-personal meteorological data.</li>
 </ul>
 
 <h2>3. System architecture and tools</h2>
-<figure><img src="screenshots/00_architecture_diagram.png" style="width:100%"><figcaption>Figure 1. Labelled architecture and data flow. Orange: AI component. Blue: Cloud Computing experiments. Green: data pipeline.</figcaption></figure>
-<table><tr><th>Layer</th><th>Tools (versions as run)</th></tr><tr><td>Language / ML</td><td>Python 3.13, NumPy 2.5.4, scikit-learn 1.9.1, pandas 3.0.6 (training only), joblib 1.6.0</td></tr><tr><td>Service</td><td>FastAPI 0.143.0, Uvicorn 0.54.0, HTML/JS dashboard (no external libraries)</td></tr><tr><td>Testing / load</td><td>pytest 9.1.1, httpx 0.28.1 (async load generator)</td></tr><tr><td>Containers (Exp 2)</td><td>Docker Desktop, engine 29.7.2 (arm64), docker buildx, Docker Hub</td></tr><tr><td>Orchestration (Exp 3)</td><td>kind v0.33.0 (Kubernetes v1.37.0), kubectl v1.36.1</td></tr><tr><td>Measurement (Exp 7, 8)</td><td>docker stats, custom runner experiments/run_config.py, matplotlib 3.11.2</td></tr><tr><td>Hardware</td><td>Apple MacBook M2, 8 GB RAM (Docker VM: 8 CPUs, 3.8 GiB)</td></tr></table>
+<figure><img src="screenshots/00_architecture_diagram.png" style="width:100%"><figcaption>Figure 1. Labelled architecture and data flow (v2). Orange: AI component. Blue: Cloud Computing experiments. Green: data pipeline.</figcaption></figure>
+<h3>3.1 Why an early-warning service needs these cloud capabilities</h3>
+<p>A heatwave warning is most valuable exactly when demand peaks: during a hot spell many people open the dashboard at once, and the
+service cannot be down while it is being updated. Packaging the backend and frontend as separate images (Exp 2) means each can be
+rebuilt, versioned and moved to any machine unchanged. Running them on Kubernetes (Exp 3) adds replicas, health probes and
+self-healing, so a crashed pod does not take the warning offline, and rolling updates let a retrained model be released without an
+outage. Because such a service runs all year but is busy only in summer, paying for idle capacity is the main waste; Exp 7 measures
+how much of the allocated capacity is really used, and Exp 8 picks the cheapest size that still meets a stated response-time and
+throughput target.</p>
+<h3>3.2 Tools</h3>
+<table><tr><th>Layer</th><th>Tools (versions as run)</th></tr><tr><td>Language / ML</td><td>Python 3.13, NumPy 2.5.4, scikit-learn 1.9.1, pandas 3.0.6 (training only), joblib 1.6.0</td></tr><tr><td>Backend</td><td>FastAPI 0.143.0, Uvicorn 0.54.0 (image python:3.13-slim, non-root)</td></tr><tr><td>Frontend</td><td>HTML/CSS/JavaScript, Chart.js 4.4.1, Leaflet 1.9.4, Natural Earth boundaries (India view), served by nginx 1.27 (nginx-unprivileged)</td></tr><tr><td>Testing / load</td><td>pytest 9.1.1, httpx 0.28.1 (async load generator)</td></tr><tr><td>Containers (Exp 2)</td><td>Docker Desktop engine 29.7.2 (arm64), Docker Compose, docker buildx, Docker Hub</td></tr><tr><td>Orchestration (Exp 3)</td><td>kind v0.33.0 (Kubernetes v1.37.0), kubectl v1.36.1</td></tr><tr><td>Measurement (Exp 7, 8)</td><td>docker stats, experiments/run_config.py, matplotlib 3.11.2</td></tr><tr><td>Hardware</td><td>Apple MacBook M2, 8 GB RAM (Docker VM: 8 CPUs, 3.8 GiB)</td></tr></table>
 
 <h2>4. AI component</h2>
 <p>The AI part is kept separate from the cloud part so each can be explained on its own.</p>
-<h3>4.1 Machine-learning forecaster (next-day maximum temperature)</h3>
-<p><b>Input features</b> (<code>app/features.py</code>, shared by training and serving): the last 7 daily Tmax values, their
-mean, day-of-year as sine/cosine, the climatological normal for the target day (from 2014–2022 only, to avoid leakage),
-and the cell's latitude and longitude. <b>Target:</b> Tmax on the next day. Three approaches were compared; the model with the
-lowest <i>validation</i> error was deployed and the test year was used only once for final reporting.</p>
-<table><tr><th>Model</th><th>Validation MAE 2023 (°C)</th><th>Test MAE 2024 (°C)</th><th>Test RMSE 2024 (°C)</th></tr><tr><td>persistence_baseline</td><td>0.924</td><td>0.94</td><td>1.303</td></tr><tr><td>ridge_regression <b>(deployed)</b></td><td>0.888</td><td>0.883</td><td>1.225</td></tr><tr><td>gradient_boosting</td><td>0.895</td><td>0.902</td><td>1.248</td></tr></table>
-<p>Test MAE by city (°C): Ahmedabad 0.724, Bhubaneswar 0.869, Chennai 0.74, Delhi 1.057, Hyderabad 0.818, Jaipur 0.913, Kolkata 0.88, Lucknow 0.989, Nagpur 0.825, Patna 1.015.</p>
-<p><b>Interpretation:</b> the ML model is about 6%
-more accurate than the persistence baseline. Day-to-day temperature is strongly persistent, so the gain is modest but consistent; the
-simpler linear model generalised slightly better than gradient boosting.</p>
-
+<h3>4.1 Machine-learning forecaster (7 days ahead)</h3>
+<p><b>Method: direct multi-horizon forecasting.</b> Seven separate models are trained; model <i>h</i> predicts the maximum temperature on
+day <i>t + h</i> from the 7 days up to day <i>t</i>. <b>Features</b> (<code>app/features.py</code>, shared by training and serving): the last 7
+daily Tmax values, their mean, the target day's season (sine/cosine of day-of-year) and climatological normal (from 2014–2022 only),
+and the cell's latitude and longitude. Two model families (ridge regression, gradient boosting) were compared with two baselines:
+<i>persistence</i> (same as today) and <i>climatology</i> (the normal for that date). The family with the lowest mean validation error
+(ridge_regression, 1.516 °C) was deployed; 2024 was used only once, for the final numbers below.</p>
 <h3>4.2 Rule-based severity classifier (not ML)</h3>
-<p><code>app/severity.py</code> applies the IMD heatwave definitions (IMD, <i>Heat wave definitions</i>): a heatwave is
-considered only if Tmax ≥ 40 °C (plains) or ≥ 37 °C (coastal). Departure from normal 4.5–6.4 °C → Heatwave, &gt; 6.4 °C →
-Severe heatwave; for plains, Tmax ≥ 45 °C → Heatwave and ≥ 47 °C → Severe. Coastal stations have only a Heatwave category.
-Kolkata and Chennai are treated as coastal.</p>
+<p><code>app/severity.py</code> applies the IMD heatwave definitions: a heatwave is considered only if Tmax ≥ 40 °C (plains) or ≥ 37 °C
+(coastal). Departure from normal 4.5–6.4 °C → Heatwave, &gt; 6.4 °C → Severe heatwave; for plains, Tmax ≥ 45 °C → Heatwave and ≥ 47 °C
+→ Severe. Coastal stations (Kolkata, Chennai) have only a Heatwave category.</p>
+<h3>4.3 Alert margin and confidence per forecast day</h3>
+<p>Regression pulls extreme values towards the mean, so a raw forecast rarely crosses the IMD thresholds (day 1 without a margin:
+recall 29%). Because a missed heatwave is costlier than a false alarm, each day's alert is issued on an
+<b>upper-bound forecast</b> (forecast + margin). The margin for each day was chosen on the 2023 validation year by F2 score (recall weighted
+over precision). Where the best validation F2 was below 0.3, that day's alerts are labelled <b>low-confidence</b>
+in the API and the dashboard. Validation contains only 14 heatwave city-days, so these choices are uncertain.</p>
+<table><tr><th>Day</th><th>Persistence MAE</th><th>Climatology MAE</th><th>Grad. boosting MAE</th><th>ridge_regression MAE (deployed)</th><th>Alert margin</th><th>Val F2</th><th>Test recall</th><th>Test precision</th><th>Alert confidence</th></tr><tr><td>Day 1</td><td>0.94</td><td>1.575</td><td>0.902</td><td><b>0.883</b></td><td>1.25 °C</td><td>0.618</td><td>0.896</td><td>0.566</td><td>validated</td></tr><tr><td>Day 2</td><td>1.379</td><td>1.575</td><td>1.262</td><td><b>1.235</b></td><td>2.75 °C</td><td>0.38</td><td>0.979</td><td>0.299</td><td>validated</td></tr><tr><td>Day 3</td><td>1.652</td><td>1.575</td><td>1.438</td><td><b>1.396</b></td><td>3.0 °C</td><td>0.388</td><td>0.854</td><td>0.295</td><td>validated</td></tr><tr><td>Day 4</td><td>1.84</td><td>1.575</td><td>1.536</td><td><b>1.475</b></td><td>3.25 °C</td><td>0.381</td><td>0.729</td><td>0.257</td><td>validated</td></tr><tr><td>Day 5</td><td>1.976</td><td>1.575</td><td>1.562</td><td><b>1.514</b></td><td>3.75 °C</td><td>0.276</td><td>0.771</td><td>0.164</td><td><b>low</b></td></tr><tr><td>Day 6</td><td>2.086</td><td>1.575</td><td>1.586</td><td><b>1.534</b></td><td>3.25 °C</td><td>0.26</td><td>0.354</td><td>0.23</td><td><b>low</b></td></tr><tr><td>Day 7</td><td>2.155</td><td>1.575</td><td>1.587</td><td><b>1.542</b></td><td>3.5 °C</td><td>0.294</td><td>0.396</td><td>0.184</td><td><b>low</b></td></tr></table>
+<p>All MAE values are in °C on the 2024 test year (48 actual heatwave city-days per horizon).
+<b>Interpretation:</b> the ML model beats persistence at every horizon and by a widening margin; by day 7 it is only slightly better than
+climatology, which is expected for weather forecasting from temperature history alone. Alert skill falls with lead time: days
+1–4 are validated; days 5–7 catch fewer heatwaves and raise more false alarms,
+so they are shown as an outlook. Day-1 confusion matrix (rows = actual, columns = predicted; Normal / Heatwave / Severe):
+[[3579, 33, 0], [5, 37, 2], [0, 3, 1]]. Persistence baseline day-1 alert recall/precision: 0.688 / 0.647.</p>
+<figure><img src="screenshots/04_frontend_model_reliability.png" style="width:92%"><figcaption>Figure 2. The frontend's reliability panel: forecast error by day (ML vs baselines) and alert skill per day, read live from the API.</figcaption></figure>
 
-<h3>4.3 Alert margin (finding and fix)</h3>
-<p>Evaluated directly on the forecast, alerts detected only <b>29.2%</b> of real heatwave days: regression
-pulls extreme values towards the mean, so the forecast rarely crossed the IMD thresholds. Because a missed heatwave is costlier
-than a false alarm, alerts are issued on an <b>upper-bound forecast</b> (forecast + margin). The margin was chosen on the 2023
-validation year by F2 score (which weights recall above precision): margin 1.25 °C. The 2023 year contains only 14
-heatwave city-days, so this choice is uncertain.</p>
-<table><tr><th>Alert method (test 2024, 48 actual heatwave city-days)</th><th>Recall</th><th>Precision</th><th>F2</th></tr><tr><td>ML forecast + 1.25 °C margin <b>(deployed)</b></td><td>0.896</td><td>0.566</td><td>0.802</td></tr><tr><td>ML forecast, no margin</td><td>0.292</td><td>1.0</td><td>0.34</td></tr><tr><td>Persistence baseline</td><td>0.688</td><td>0.647</td><td>0.679</td></tr></table>
-<p>Confusion matrix of the deployed alert on 2024 (rows = actual, columns = predicted; Normal / Heatwave / Severe):
-[3579, 33, 0], [5, 37, 2], [0, 3, 1]. The system detects most heatwave days but about 4 in 10 alerts are false alarms.</p>
+<h2>5. Application: backend and frontend</h2>
+<p><b>Backend</b> (<code>app/main.py</code>, image <code>ayushiranjan27/heatguard:2.0</code>): a stateless FastAPI service. Endpoints:
+<code>/health</code>, <code>/cities</code>, <code>/observed</code> (IMD history with normals and the actual next 7 days),
+<code>/outlook</code> (7-day forecast for all 10 cities), <code>/model-info</code> (per-horizon metrics) and <code>POST /predict</code>
+(7-day forecast from 7 values). Input validation returns 404/422 with clear messages; interactive API docs are at <code>/docs</code>.
+<b>Frontend</b> (<code>frontend/</code>, image <code>ayushiranjan27/heatguard-web:2.0</code>): a static web app served by unprivileged
+nginx, which also reverse-proxies <code>/api/</code> to the backend, so the browser talks to one address and the backend can stay
+internal. It shows an alert banner, KPI cards, seven forecast cards (with the actual IMD value when known), a 30-day trend chart with
+the forecast and an uncertainty band, an India map and ranking of all cities, a what-if form, and the reliability panel. The map uses
+bundled Natural Earth boundaries (India point-of-view edition), so it works without an internet map service.</p>
+<figure><img src="screenshots/01_frontend_delhi_heatwave_overview.png" style="width:100%"><figcaption>Figure 3. Frontend, Delhi as of 27 May 2024 (served by Docker Compose): alert banner, KPIs and 7-day forecast with the actual IMD values that followed.</figcaption></figure>
+<figure><img src="screenshots/02_frontend_trend_map_ranking.png" style="width:100%"><figcaption>Figure 4. Trend chart (observed, normal, forecast with uncertainty band, actual IMD values), all-India map and regional ranking.</figcaption></figure>
 
-<h2>5. Implementation of the four experiments</h2>
+<h2>6. Implementation of the four experiments</h2>
 
 <h3>Experiment 2: Containerization, Docker and Docker Hub</h3>
-<p><b>Aim (manual):</b> install Docker, pull and run images from Docker Hub, modify containers to run an application and push it to
-Docker Hub. <b>Use-case connection:</b> the HeatGuard forecast service, trained model and IMD city data are packaged as one image,
+<p><b>Aim (manual):</b> install Docker, pull and run images from Docker Hub, modify containers to run an application and push it to Docker Hub.
+<b>Use-case connection:</b> the forecasting backend (code + 7 trained models + IMD city data) and the web frontend are packaged as two images,
 which every later experiment uses unchanged.</p>
-<p><b>Procedure.</b> (1) Docker Desktop installed; Docker Hub account <code>ayushiranjan27</code> created and <code>docker login</code> done by
-the student. (2) Manual tasks: nginx pulled and run on port 8080, hello-world and Ubuntu run, Docker commands explored.
-(3) Dockerfile written (python:3.13-slim, non-root user, HEALTHCHECK). (4) Image built, run and tested, including invalid inputs.
-(5) Image pushed for arm64 and amd64 with <code>docker buildx</code>; nginx pushed. (6) Local tag removed, image pulled back from
-Docker Hub and run.</p>
+<p><b>Procedure.</b> (1) Docker Desktop installed; Docker Hub account <code>ayushiranjan27</code> created and <code>docker login</code> done by the
+student. (2) Manual tasks: nginx pulled and run on port 8080, hello-world and Ubuntu run, Docker commands explored
+(<code>experiments/results/archive_v1/exp2_manual_tasks.log</code>; nginx was pushed as <code>ayushiranjan27/nginx-exp2:1.0</code>).
+(3) Two Dockerfiles and a Compose file written. (4) Both images built and run together, tested through the frontend proxy, including failure cases.
+(5) Both pushed for arm64 and amd64 with <code>docker buildx</code>. (6) Local images deleted, pulled back from Docker Hub and run. Script:
+<code>experiments/exp2_docker.sh</code>.</p>
 <pre class="code"><span class="src">Dockerfile</span>
-# HeatGuard: heatwave forecast API (Experiment 2: containerisation)
+# HeatGuard backend: 7-day heatwave forecast API (Experiment 2: containerisation)
 FROM python:3.13-slim
 
 WORKDIR /srv
@@ -147,153 +171,165 @@ EXPOSE 8000
 HEALTHCHECK --interval=15s --timeout=3s --start-period=10s \
   CMD python -c &quot;import urllib.request; urllib.request.urlopen(&#x27;http://localhost:8000/health&#x27;)&quot;
 CMD [&quot;uvicorn&quot;, &quot;app.main:app&quot;, &quot;--host&quot;, &quot;0.0.0.0&quot;, &quot;--port&quot;, &quot;8000&quot;]</pre>
-<pre class="log"><span class="src">exp2_run.log</span>
-$ docker run -d --name heatguard -p 8000:8000 heatguard:1.0
-e6e7fb4dddac7b74ede30f8adc679c1737b572ca36159d79aafc88625b7fb3e5
+<pre class="code"><span class="src">frontend/Dockerfile</span>
+# HeatGuard web frontend: static app served by nginx (unprivileged, port 8080),
+# with /api/ reverse-proxied to the backend given by API_URL.
+FROM nginxinc/nginx-unprivileged:1.27-alpine
+ENV API_URL=http://api:8000
+COPY nginx/default.conf.template /etc/nginx/templates/default.conf.template
+COPY public/ /usr/share/nginx/html/
+EXPOSE 8080
+HEALTHCHECK --interval=15s --timeout=3s --start-period=5s \
+  CMD wget -qO- http://127.0.0.1:8080/healthz || exit 1</pre>
+<pre class="code"><span class="src">docker-compose.yml</span>
+# Run HeatGuard v2 locally as two containers: backend API + web frontend.
+#   docker compose up -d   -&gt;  open http://localhost:8080
+name: heatguard
+services:
+  api:
+    image: ayushiranjan27/heatguard:2.0
+    build: .
+    ports: [&quot;8000:8000&quot;]          # direct API access (Swagger docs at http://localhost:8000/docs)
+  web:
+    image: ayushiranjan27/heatguard-web:2.0
+    build: ./frontend
+    environment:
+      API_URL: http://api:8000
+    ports: [&quot;8080:8080&quot;]
+    depends_on:
+      api:
+        condition: service_healthy</pre>
+<pre class="log"><span class="src">experiments/results/exp2_docker.log</span>
+### 2. Run backend + frontend together (docker-compose.yml)
+$ docker compose up -d --wait
+ Network heatguard_default Creating 
+ Network heatguard_default Creating 
+ Network heatguard_default Created 
+ Network heatguard_default Created 
+ Container heatguard-api-1 Creating 
+ Container heatguard-api-1 Created 
+ Container heatguard-web-1 Creating 
+ Container heatguard-web-1 Created 
+ Container heatguard-api-1 Starting 
+ Container heatguard-api-1 Started 
+ Container heatguard-api-1 Waiting 
+ Container heatguard-api-1 Healthy 
+ Container heatguard-web-1 Starting 
+ Container heatguard-web-1 Started 
+ Container heatguard-web-1 Waiting 
+ Container heatguard-api-1 Waiting 
+ Container heatguard-api-1 Healthy 
+ Container heatguard-web-1 Healthy 
 
-$ docker ps --filter name=heatguard
-NAMES       IMAGE           STATUS                   PORTS
-heatguard   heatguard:1.0   Up 6 seconds (healthy)   0.0.0.0:8000-&gt;8000/tcp, [::]:8000-&gt;8000/tcp
+$ docker compose ps
+NAME              IMAGE                              COMMAND                  SERVICE   CREATED          STATUS                    PORTS
+heatguard-api-1   ayushiranjan27/heatguard:2.0       &quot;uvicorn app.main:ap…&quot;   api       11 seconds ago   Up 11 seconds (healthy)   0.0.0.0:8000-&gt;8000/
+heatguard-web-1   ayushiranjan27/heatguard-web:2.0   &quot;/docker-entrypoint.…&quot;   web       11 seconds ago   Up 5 seconds (healthy)    0.0.0.0:8080-&gt;8080/
 
 $ curl -s localhost:8000/health
-{&quot;status&quot;:&quot;ok&quot;,&quot;model&quot;:&quot;ridge_regression&quot;,&quot;pod&quot;:&quot;e6e7fb4dddac&quot;}
+{&quot;status&quot;:&quot;ok&quot;,&quot;version&quot;:&quot;2.0&quot;,&quot;model&quot;:&quot;ridge_regression&quot;,&quot;horizons&quot;:7,&quot;pod&quot;:&quot;15f51d4e40e3&quot;}
+$ curl -s localhost:8080/healthz
+ok
 
-$ curl -s &quot;localhost:8000/observed?city=Delhi&amp;date=2024-05-27&quot;
-{&quot;city&quot;:&quot;Delhi&quot;,&quot;date&quot;:&quot;2024-05-27&quot;,&quot;recent_tmax&quot;:[42.209049224853516,41.137046813964844,40.19950866699219,41.15043640136719,43.54515838623047,44.9291
+$ curl -s localhost:8080/api/health          # frontend -&gt; nginx proxy -&gt; backend
+{&quot;status&quot;:&quot;ok&quot;,&quot;version&quot;:&quot;2.0&quot;,&quot;model&quot;:&quot;ridge_regression&quot;,&quot;horizons&quot;:7,&quot;pod&quot;:&quot;15f51d4e40e3&quot;}
 
-$ curl -s -X POST localhost:8000/predict -H &quot;Content-Type: application/json&quot; -d &#x27;{&quot;city&quot;:&quot;Delhi&quot;,&quot;date&quot;:&quot;2024-05-27&quot;,&quot;recent_tmax&quot;:[&lt;values above&gt;]}&#x27;
-{
-    &quot;city&quot;: &quot;Delhi&quot;,
-    &quot;forecast_date&quot;: &quot;2024-05-28&quot;,
-    &quot;forecast_tmax&quot;: 44.1,
-    &quot;upper_forecast_tmax&quot;: 45.3,
-    &quot;alert_margin_c&quot;: 1.25,
-    &quot;normal_tmax&quot;: 40.6,
-    &quot;alert&quot;: &quot;Heatwave&quot;,
-    &quot;departure_from_normal&quot;: 4.8,
-    &quot;rule&quot;: &quot;departure +4.8 C from normal 40.6 C&quot;,
-    &quot;advisory&quot;: &quot;Heatwave conditions likely. Avoid sun exposure 12-3 pm, drink water often, check on elderly people, children and outdoor workers.&quot;,
-    &quot;model&quot;: &quot;ridge_regression&quot;,
-    &quot;inference_ms&quot;: 8.15,
-    &quot;pod&quot;: &quot;e6e7fb4dddac&quot;,
-    &quot;note&quot;: &quot;Educational prototype. Official warnings: India Meteorological Department.&quot;
-}
-</pre>
-<pre class="log"><span class="src">exp2_run.log</span>
-# Failure scenario 1: unknown city
-$ curl -s -w &quot; HTTP %{http_code}&quot; -X POST localhost:8000/predict -d {&quot;city&quot;:&quot;Atlantis&quot;,...}
+$ curl -s -X POST localhost:8080/api/predict (Delhi, real IMD values 21-27 May 2024)
+highest alert: Heatwave | validated: Heatwave | first alert day: 1 | served by 15f51d4e40e3 in 16.85 ms</pre>
+<pre class="log"><span class="src">experiments/results/exp2_docker.log</span>
+### 3. Failure scenarios (through the frontend proxy)
+# unknown city
 {&quot;detail&quot;:&quot;unknown city &#x27;Atlantis&#x27;. Supported: Delhi, Jaipur, Lucknow, Patna, Ahmedabad, Nagpur, Kolkata, Bhubaneswar, Hyderabad, Chennai&quot;} HTTP 404
-
-# Failure scenario 2: implausible sensor value (99.9 = IMD missing code)
+# 99.9 = IMD missing code
 {&quot;detail&quot;:[{&quot;type&quot;:&quot;value_error&quot;,&quot;loc&quot;:[&quot;body&quot;,&quot;recent_tmax&quot;],&quot;msg&quot;:&quot;Value error, temperature 99.9 C is outside the plausible range -10..55 C&quot;,&quot;input&quot;
-
-# Failure scenario 3: only 3 values instead of 7
-{&quot;detail&quot;:[{&quot;type&quot;:&quot;too_short&quot;,&quot;loc&quot;:[&quot;body&quot;,&quot;recent_tmax&quot;],&quot;msg&quot;:&quot;List should have at least 7 items after validation, not 3&quot;,&quot;input&quot;:[40,41,42],&quot;ctx&quot;
+# date outside the data
+{&quot;detail&quot;:&quot;no IMD observations for Delhi for the 7 days up to 2030-05-01 (available: 2014-01-07 to 2024-12-31)&quot;} HTTP 404
+# backend stopped -&gt; frontend stays up, API calls fail with a gateway error
+  /healthz HTTP 200   /api/health HTTP 504
+# backend restarted -&gt; /api/health HTTP 200
 </pre>
-<pre class="log"><span class="src">exp2_manual_tasks.log</span>
-$ docker run -d --name web-nginx -p 8080:80 nginx:latest
-b7c80f153b262ff0084cc325669d72dc3b1c2341b9638a78e55df808dc980ac6
+<pre class="log"><span class="src">experiments/results/exp2_docker.log</span>
+### 4. Push both images to Docker Hub for linux/arm64 and linux/amd64
+$ docker buildx build --platform linux/arm64,linux/amd64 -t ayushiranjan27/heatguard:2.0 -t ayushiranjan27/heatguard:latest --push --quiet .
 
-$ curl -s localhost:8080 | grep -i &quot;&lt;title&gt;&quot;
-&lt;title&gt;Welcome to nginx!&lt;/title&gt;
+$ docker buildx build --platform linux/arm64,linux/amd64 -t ayushiranjan27/heatguard-web:2.0 -t ayushiranjan27/heatguard-web:latest --push --quiet ./f
 
-$ docker run --rm hello-world
-
-Hello from Docker!
-This message shows that your installation appears to be working correctly.
-
-To generate this message, Docker took the following steps:
- 1. The Docker client contacted the Docker daemon.
- 2. The Docker daemon pulled the &quot;hello-world&quot; image from the Docker Hub.
-    (arm64v8)
- 3. The Docker daemon created a new container from that image which runs the
-    executable that produces the output you are currently reading.
- 4. The Docker daemon streamed that output to the Docker client, which sent it
-    to your terminal.
-
-To try something more ambitious, you can run an Ubuntu container with:
- $ docker run -it ubuntu bash
-
-Share images, automate workflows, and more with a free Docker ID:
- https://hub.docker.com/
-
-For more examples and ideas, visit:
- https://docs.docker.com/get-started/
-
-</pre>
-<pre class="log"><span class="src">exp2_push.log</span>
-$ docker buildx imagetools inspect ayushiranjan27/heatguard:1.0
-Name:      docker.io/ayushiranjan27/heatguard:1.0
-MediaType: application/vnd.oci.image.index.v1+json
-Digest:    sha256:7ac1187626dbdda4e691f0b0d935e3d238056d501cfe18d3138a02bbd495207c
-           
-Manifests: 
-  Name:        docker.io/ayushiranjan27/heatguard:1.0@sha256:16ea477943ddcc9311aa5da8396ca93e40c00681e683eeea9354bb480fc2b67c
-  MediaType:   application/vnd.oci.image.manifest.v1+json
+$ docker buildx imagetools inspect ayushiranjan27/heatguard:2.0 | grep Platform
   Platform:    linux/arm64
-               
-  Name:        docker.io/ayushiranjan27/heatguard:1.0@sha256:24ecb9d5a8c2acbabe78cc009ef91d55eac6736bd1f46a5db57c3058cc086d17
-  MediaType:   application/vnd.oci.image.manifest.v1+json
   Platform:    linux/amd64
-               
-  Name:        docker.io/ayushiranjan27/heatguard:1.0@sha256:c1cc990337778bec12e3686783cd053c0e2f2e2a3c890dff5cd3f8ca784cc192
-  MediaType:   application/vnd.oci.image.manifest.v1+json</pre>
-<pre class="log"><span class="src">exp2_push.log</span>
-$ docker rmi ayushiranjan27/heatguard:1.0
-Untagged: ayushiranjan27/heatguard:1.0
 
-$ docker pull ayushiranjan27/heatguard:1.0
-1.0: Pulling from ayushiranjan27/heatguard
-Digest: sha256:7ac1187626dbdda4e691f0b0d935e3d238056d501cfe18d3138a02bbd495207c
-Status: Downloaded newer image for ayushiranjan27/heatguard:1.0
-docker.io/ayushiranjan27/heatguard:1.0
+$ docker buildx imagetools inspect ayushiranjan27/heatguard-web:2.0 | grep Platform
+  Platform:    linux/arm64
+  Platform:    linux/amd64
+</pre>
+<pre class="log"><span class="src">experiments/results/exp2_docker.log</span>
+$ docker rmi ayushiranjan27/heatguard:2.0 ayushiranjan27/heatguard-web:2.0
+Untagged: ayushiranjan27/heatguard:2.0
+Untagged: ayushiranjan27/heatguard-web:2.0
 
-$ docker run -d --name heatguard-hub -p 8001:8000 ayushiranjan27/heatguard:1.0
-7121f06d66c9410df245e65923452da8e97dab45d6db37147e6f701995047249
+$ docker compose pull
+ Image ayushiranjan27/heatguard:2.0 Pulling 
+ Image ayushiranjan27/heatguard-web:2.0 Pulling 
+ Image ayushiranjan27/heatguard-web:2.0 Pulled 
+ Image ayushiranjan27/heatguard:2.0 Pulled 
 
-$ curl -s localhost:8001/health
-{&quot;status&quot;:&quot;ok&quot;,&quot;model&quot;:&quot;ridge_regression&quot;,&quot;pod&quot;:&quot;7121f06d66c9&quot;}</pre>
-<figure><img src="screenshots/04_dockerhub_heatguard_tags.png" style="width:85%"><figcaption>Figure 2. Docker Hub repository ayushiranjan27/heatguard with linux/amd64 and linux/arm64 images (captured after the 1.0 push).</figcaption></figure>
-<figure><img src="screenshots/01_dashboard_docker_delhi_heatwave.png" style="width:80%"><figcaption>Figure 3. Dashboard served from the Docker container: Delhi, forecast for 28 May 2024 = 44.1 °C, alert Heatwave; actual IMD value 46.0 °C.</figcaption></figure>
-<p><b>Results.</b> Image size 136 MB (compressed content). Health check reports healthy; forecasts are served; unknown city returns 404 and
-malformed inputs return 422 without crashing the service. Docker Hub lists <code>heatguard:1.0</code>, <code>1.1</code> and <code>latest</code>
-for amd64 and arm64, and <code>nginx-exp2:1.0</code>. Version 1.1 only corrects the coastal heatwave rule (Section 4.2); forecast errors are identical.</p>
-<p><b>Conclusion.</b> The application was containerised, run and published; anyone can now run it with one <code>docker run</code> command on
-Intel or Apple Silicon machines.</p>
+$ docker compose up -d --wait --no-build
+ Network heatguard_default Creating 
+ Network heatguard_default Creating 
+ Network heatguard_default Created 
+ Network heatguard_default Created 
+ Container heatguard-api-1 Creating 
+ Container heatguard-api-1 Created 
+ Container heatguard-web-1 Creating 
+ Container heatguard-web-1 Created 
+ Container heatguard-api-1 Starting </pre>
+<figure><img src="screenshots/03_dockerhub_repositories.png" style="width:80%"><figcaption>Figure 5. Docker Hub repositories of user ayushiranjan27 (captured after the v2 push).</figcaption></figure>
+<p><b>Results.</b> Backend image 136 MB and frontend image 22 MB (compressed). Both containers report healthy; the frontend reaches the backend
+through its <code>/api/</code> proxy. Invalid input returns 404/422. With the backend stopped, the frontend stayed up and API calls returned
+HTTP 504 (gateway error) until the backend was restarted (HTTP 200). Docker Hub lists both images for
+linux/amd64 and linux/arm64; the pulled images ran healthy.</p>
+<p><b>Conclusion.</b> Both tiers were containerised, run together and published; anyone can start the full application with
+<code>docker compose up</code> on Intel or Apple Silicon machines.</p>
 
 <h3>Experiment 3: Application Deployment using Kubernetes</h3>
-<p><b>Aim (manual):</b> deploy an application using Kubernetes, use kubectl commands and expose an app (preferably the image created in the
-Docker experiment). <b>Use-case connection:</b> the HeatGuard image from Docker Hub is deployed as a replicated, self-healing service, as an
-early-warning service must stay available. Resource limits come from Experiment 7.</p>
-<p><b>Procedure.</b> The manual used the Killercoda playground; this project used <b>kind</b> (Kubernetes-in-Docker), a real Kubernetes
-cluster running locally on Docker Desktop, so the full sequence could be scripted (<code>experiments/exp3_kubernetes.sh</code>) and
-logged. Steps: create cluster → apply Deployment (2 replicas) and NodePort Service → access through the Service → scale to 3 → delete a
-pod → set a non-existent image tag → roll back → rolling update to 1.1.</p>
-<pre class="code"><span class="src">k8s/deployment.yaml</span>
-# Experiment 3: HeatGuard Deployment. Image is pulled from Docker Hub (Experiment 2).
-# CPU/memory limits are the right-sized values measured in Experiment 7.
+<p><b>Aim (manual):</b> deploy an application using Kubernetes, use kubectl commands and expose an app (preferably the image created in the Docker
+experiment). <b>Use-case connection:</b> both HeatGuard images from Docker Hub run as replicated, self-healing Deployments, as an early-warning
+service must stay available, including while it is updated.</p>
+<p><b>Procedure.</b> The manual used the Killercoda playground; this project used <b>kind</b> (Kubernetes-in-Docker), a real Kubernetes cluster
+running locally, so every step could be scripted (<code>experiments/exp3_kubernetes.sh</code>) and logged. The backend is a ClusterIP Service
+(internal only); the frontend is a NodePort Service on 30080 and finds the backend by its Kubernetes DNS name. Both Deployments use
+<code>maxSurge: 1, maxUnavailable: 0</code> and a 5-second <code>preStop</code> delay. The backend's CPU/memory limits are read from the
+Experiment 7 right-sizing decision.</p>
+<pre class="code"><span class="src">k8s/api.yaml</span>
+# Experiment 3: HeatGuard backend API (7-day forecast). Image from Docker Hub (Experiment 2).
+# Internal only: ClusterIP service, reached by the frontend through its /api/ proxy.
+# Resource limits = right-sized values measured in Experiment 7.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: heatguard
-  labels: {app: heatguard}
+  name: heatguard-api
+  labels: {app: heatguard-api, tier: backend}
 spec:
   replicas: 2
   selector:
-    matchLabels: {app: heatguard}
+    matchLabels: {app: heatguard-api}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: {maxSurge: 1, maxUnavailable: 0}   # never drop below the desired replica count
   template:
     metadata:
-      labels: {app: heatguard}
+      labels: {app: heatguard-api, tier: backend}
     spec:
+      terminationGracePeriodSeconds: 20
       containers:
-        - name: heatguard
-          image: docker.io/DOCKERHUB_USER/heatguard:1.1
+        - name: api
+          image: docker.io/DOCKERHUB_USER/heatguard:2.0
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
           resources:
             requests: {cpu: 250m, memory: 128Mi}
-            limits: {cpu: 750m, memory: 192Mi}
+            limits: {cpu: API_CPU_LIMIT, memory: API_MEM_LIMIT}
           readinessProbe:
             httpGet: {path: /health, port: 8000}
             initialDelaySeconds: 3
@@ -301,237 +337,323 @@ spec:
           livenessProbe:
             httpGet: {path: /health, port: 8000}
             initialDelaySeconds: 10
-            periodSeconds: 10</pre>
-<pre class="code"><span class="src">k8s/service.yaml</span>
-# Experiment 3: expose HeatGuard outside the cluster on NodePort 30080.
+            periodSeconds: 10
+          lifecycle:
+            preStop:
+              exec: {command: [&quot;sleep&quot;, &quot;5&quot;]}   # let the Service remove this pod before it stops
+---
 apiVersion: v1
 kind: Service
 metadata:
-  name: heatguard
+  name: heatguard-api
 spec:
-  type: NodePort
-  selector: {app: heatguard}
+  type: ClusterIP
+  selector: {app: heatguard-api}
   ports:
-    - port: 80
-      targetPort: 8000
-      nodePort: 30080</pre>
-<pre class="log"><span class="src">exp3_kubernetes.log</span>
-### 1. Deploy (image pulled from Docker Hub) and expose
-$ kubectl apply -f /tmp/heatguard-deployment.yaml
-deployment.apps/heatguard created
+    - port: 8000
+      targetPort: 8000</pre>
+<pre class="code"><span class="src">k8s/web.yaml</span>
+# Experiment 3: HeatGuard web frontend (nginx). Serves the app and proxies /api/ to the backend.
+# Exposed outside the cluster on NodePort 30080 (mapped to localhost:30080 by kind-config.yaml).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: heatguard-web
+  labels: {app: heatguard-web, tier: frontend}
+spec:
+  replicas: 2
+  selector:
+    matchLabels: {app: heatguard-web}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: {maxSurge: 1, maxUnavailable: 0}
+  template:
+    metadata:
+      labels: {app: heatguard-web, tier: frontend}
+    spec:
+      terminationGracePeriodSeconds: 20
+      containers:
+        - name: web
+          image: docker.io/DOCKERHUB_USER/heatguard-web:2.0
+          imagePullPolicy: Always
+          env:
+            - name: API_URL
+              value: http://heatguard-api:8000   # Kubernetes DNS name of the backend Service
+          ports:
+            - containerPort: 8080
+          resources:
+            requests: {cpu: 25m, memory: 32Mi}
+            limits: {cpu: 200m, memory: 64Mi}
+          readinessProbe:
+            httpGet: {path: /healthz, port: 8080}
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: {path: /healthz, port: 8080}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          lifecycle:</pre>
+<pre class="log"><span class="src">experiments/results/exp3_kubernetes.log</span>
+### 1. Deploy backend (ClusterIP) and frontend (NodePort) from Docker Hub
+$ kubectl apply -f /tmp/heatguard-api.yaml -f /tmp/heatguard-web.yaml
+deployment.apps/heatguard-api created
+service/heatguard-api created
+deployment.apps/heatguard-web created
+service/heatguard-web created
 
-$ kubectl apply -f k8s/service.yaml
-service/heatguard created
+$ kubectl rollout status deployment/heatguard-api --timeout=300s
+Waiting for deployment spec update to be observed...
+Waiting for deployment spec update to be observed...
+Waiting for deployment &quot;heatguard-api&quot; rollout to finish: 0 out of 2 new replicas have been updated...
+Waiting for deployment &quot;heatguard-api&quot; rollout to finish: 0 of 2 updated replicas are available...
+Waiting for deployment &quot;heatguard-api&quot; rollout to finish: 1 of 2 updated replicas are available...
+deployment &quot;heatguard-api&quot; successfully rolled out
 
-$ kubectl rollout status deployment/heatguard --timeout=300s
-Waiting for deployment &quot;heatguard&quot; rollout to finish: 0 of 2 updated replicas are available...
-Waiting for deployment &quot;heatguard&quot; rollout to finish: 1 of 2 updated replicas are available...
-deployment &quot;heatguard&quot; successfully rolled out
+$ kubectl rollout status deployment/heatguard-web --timeout=300s
+deployment &quot;heatguard-web&quot; successfully rolled out
 
-$ kubectl get deployment heatguard
-NAME        READY   UP-TO-DATE   AVAILABLE   AGE
-heatguard   2/2     2            2           11s
+$ kubectl get deployments,pods,services -o wide
+NAME                            READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES                                       SELECTOR
+deployment.apps/heatguard-api   2/2     2            2           67s   api          docker.io/ayushiranjan27/heatguard:2.0       app=heatguard-api
+deployment.apps/heatguard-web   2/2     2            2           67s   web          docker.io/ayushiranjan27/heatguard-web:2.0   app=heatguard-web
 
-$ kubectl get pods -o wide
-NAME                        READY   STATUS    RESTARTS   AGE   IP           NODE                      NOMINATED NODE   READINESS GATES
-heatguard-9ddf56c84-jxrpf   1/1     Running   0          11s   10.244.0.7   heatguard-control-plane   &lt;none&gt;           &lt;none&gt;
-heatguard-9ddf56c84-wkhkq   1/1     Running   0          11s   10.244.0.8   heatguard-control-plane   &lt;none&gt;           &lt;none&gt;
+NAME                                 READY   STATUS    RESTARTS   AGE   IP           NODE                      NOMINATED NODE   READINESS GATES
+pod/heatguard-api-8c955c984-82rsc    1/1     Running   0          61s   10.244.0.7   heatguard-control-plane   &lt;none&gt;           &lt;none&gt;
+pod/heatguard-api-8c955c984-b7856    1/1     Running   0          61s   10.244.0.5   heatguard-control-plane   &lt;none&gt;           &lt;none&gt;
+pod/heatguard-web-66cf47486d-gb7hk   1/1     Running   0          61s   10.244.0.8   heatguard-control-plane   &lt;none&gt;           &lt;none&gt;
+pod/heatguard-web-66cf47486d-s4cr5   1/1     Running   0          61s   10.244.0.2   heatguard-control-plane   &lt;none&gt;           &lt;none&gt;
 
-$ kubectl get service heatguard
-NAME        TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
-heatguard   NodePort   10.96.84.104   &lt;none&gt;        80:30080/TCP   10s
+NAME                    TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE   SELECTOR
+service/heatguard-api   ClusterIP   10.96.212.217   &lt;none&gt;        8000/TCP       67s   app=heatguard-api
+service/heatguard-web   NodePort    10.96.57.17     &lt;none&gt;        80:30080/TCP   67s   app=heatguard-web
+service/kubernetes      ClusterIP   10.96.0.1       &lt;none&gt;        443/TCP        71s   &lt;none&gt;
 
-$ kubectl describe pod heatguard-9ddf56c84-jxrpf | grep -E &#x27;Image:|Pulled|Limits|cpu|memory&#x27;
-    Image:          docker.io/ayushiranjan27/heatguard:1.0
+$ kubectl describe pod heatguard-api-8c955c984-82rsc | grep -E &#x27;Image:|Limits|Requests|cpu|memory|Pulled|preStop&#x27;
+    Image:          docker.io/ayushiranjan27/heatguard:2.0
     Limits:
-      cpu:     750m
-      memory:  192Mi
-    Requests:
-      cpu:        250m
-      memory:     128Mi
-  Normal  Pulled     5s    kubelet            spec.containers{heatguard}: Successfully pulled image &quot;docker.io/ayushiranjan27/heatguard:1.0&quot; in 1.465s
-</pre>
-<pre class="log"><span class="src">exp3_kubernetes.log</span>
-### 2. Service access + load balancing across pods
-{&quot;status&quot;:&quot;ok&quot;,&quot;model&quot;:&quot;ridge_regression&quot;,&quot;pod&quot;:&quot;heatguard-9ddf56c84-jxrpf&quot;}
-{&quot;status&quot;:&quot;ok&quot;,&quot;model&quot;:&quot;ridge_regression&quot;,&quot;pod&quot;:&quot;heatguard-9ddf56c84-jxrpf&quot;}
-{&quot;status&quot;:&quot;ok&quot;,&quot;model&quot;:&quot;ridge_regression&quot;,&quot;pod&quot;:&quot;heatguard-9ddf56c84-wkhkq&quot;}
-{&quot;status&quot;:&quot;ok&quot;,&quot;model&quot;:&quot;ridge_regression&quot;,&quot;pod&quot;:&quot;heatguard-9ddf56c84-jxrpf&quot;}
-{&quot;status&quot;:&quot;ok&quot;,&quot;model&quot;:&quot;ridge_regression&quot;,&quot;pod&quot;:&quot;heatguard-9ddf56c84-wkhkq&quot;}
-{&quot;status&quot;:&quot;ok&quot;,&quot;model&quot;:&quot;ridge_regression&quot;,&quot;pod&quot;:&quot;heatguard-9ddf56c84-jxrpf&quot;}
+      cpu:     1250m</pre>
+<pre class="log"><span class="src">experiments/results/exp3_kubernetes.log</span>
+### 2. Service access: browser -&gt; NodePort 30080 -&gt; frontend -&gt; heatguard-api Service -&gt; backend pods
+$ curl -s http://localhost:30080/healthz
+ok
 
-$ curl -X POST http://localhost:30080/predict (Delhi, real IMD values for 21-27 May 2024)
-{&quot;city&quot;:&quot;Delhi&quot;,&quot;forecast_date&quot;:&quot;2024-05-28&quot;,&quot;forecast_tmax&quot;:44.1,&quot;upper_forecast_tmax&quot;:45.3,&quot;alert_margin_c&quot;:1.25,&quot;normal_tmax&quot;:40.6,&quot;alert&quot;:&quot;Heatwav
+# backend pod answering each request (load-balanced by the heatguard-api Service):
+{&quot;status&quot;:&quot;ok&quot;,&quot;version&quot;:&quot;2.0&quot;,&quot;model&quot;:&quot;ridge_regression&quot;,&quot;horizons&quot;:7,&quot;pod&quot;:&quot;heatguard-api-8c955c984-82rsc&quot;}
+{&quot;status&quot;:&quot;ok&quot;,&quot;version&quot;:&quot;2.0&quot;,&quot;model&quot;:&quot;ridge_regression&quot;,&quot;horizons&quot;:7,&quot;pod&quot;:&quot;heatguard-api-8c955c984-82rsc&quot;}
+{&quot;status&quot;:&quot;ok&quot;,&quot;version&quot;:&quot;2.0&quot;,&quot;model&quot;:&quot;ridge_regression&quot;,&quot;horizons&quot;:7,&quot;pod&quot;:&quot;heatguard-api-8c955c984-82rsc&quot;}
+{&quot;status&quot;:&quot;ok&quot;,&quot;version&quot;:&quot;2.0&quot;,&quot;model&quot;:&quot;ridge_regression&quot;,&quot;horizons&quot;:7,&quot;pod&quot;:&quot;heatguard-api-8c955c984-b7856&quot;}
+{&quot;status&quot;:&quot;ok&quot;,&quot;version&quot;:&quot;2.0&quot;,&quot;model&quot;:&quot;ridge_regression&quot;,&quot;horizons&quot;:7,&quot;pod&quot;:&quot;heatguard-api-8c955c984-b7856&quot;}
+{&quot;status&quot;:&quot;ok&quot;,&quot;version&quot;:&quot;2.0&quot;,&quot;model&quot;:&quot;ridge_regression&quot;,&quot;horizons&quot;:7,&quot;pod&quot;:&quot;heatguard-api-8c955c984-b7856&quot;}
+{&quot;status&quot;:&quot;ok&quot;,&quot;version&quot;:&quot;2.0&quot;,&quot;model&quot;:&quot;ridge_regression&quot;,&quot;horizons&quot;:7,&quot;pod&quot;:&quot;heatguard-api-8c955c984-b7856&quot;}
+{&quot;status&quot;:&quot;ok&quot;,&quot;version&quot;:&quot;2.0&quot;,&quot;model&quot;:&quot;ridge_regression&quot;,&quot;horizons&quot;:7,&quot;pod&quot;:&quot;heatguard-api-8c955c984-82rsc&quot;}
 
-# invalid input through the Service
+$ curl -s -X POST http://localhost:30080/api/predict   (Delhi, real IMD values 21-27 May 2024)
+highest alert: Heatwave | validated: Heatwave | first alert day: 1 | served by heatguard-api-8c955c984-b7856 in 8.32 ms
+  day 1 2024-05-28   44.1 C (+/-0.888)  alert basis  45.3 C  Heatwave         validated
+  day 2 2024-05-29   43.2 C (+/-1.299)  alert basis  45.9 C  Heatwave         validated
+  day 3 2024-05-30   42.5 C (+/-1.515)  alert basis  45.5 C  Heatwave         validated
+  day 4 2024-05-31   42.1 C (+/-1.645)  alert basis  45.4 C  Heatwave         validated
+  day 5 2024-06-01   42.0 C (+/-1.715)  alert basis  45.7 C  Heatwave         low
+  day 6 2024-06-02   41.9 C (+/-1.761)  alert basis  45.1 C  Heatwave         low
+  day 7 2024-06-03   41.8 C (+/-1.79)  alert basis  45.3 C  Heatwave         low
+
+# invalid input through the cluster
 {&quot;detail&quot;:&quot;unknown city &#x27;Atlantis&#x27;. Supported: Delhi, Jaipur, Lucknow, Patna, Ahmedabad, Nagpur, Kolkata, Bhubaneswar, Hyderabad, Chennai&quot;} HTTP 404
-</pre>
-<pre class="log"><span class="src">exp3_kubernetes.log</span>
-### 4. Self-healing: delete a pod, the Deployment recreates it
-$ kubectl delete pod heatguard-9ddf56c84-br798 --wait=false
-pod &quot;heatguard-9ddf56c84-br798&quot; deleted from default namespace
 
-$ kubectl get pods
-NAME                        READY   STATUS              RESTARTS   AGE
-heatguard-9ddf56c84-br798   1/1     Terminating         0          8s
-heatguard-9ddf56c84-jxrpf   1/1     Running             0          19s
-heatguard-9ddf56c84-ltqpr   0/1     ContainerCreating   0          0s
-heatguard-9ddf56c84-wkhkq   1/1     Running             0          19s
+# the backend is not exposed outside the cluster (type ClusterIP, no NodePort):
+$ kubectl get service heatguard-api -o jsonpath={.spec.type} {.spec.ports}
+ClusterIP [{&quot;port&quot;:8000,&quot;protocol&quot;:&quot;TCP&quot;,&quot;targetPort&quot;:8000}]</pre>
+<pre class="log"><span class="src">experiments/results/exp3_kubernetes.log</span>
+### 3. Horizontal scaling: frontend 2 -&gt; 4, backend 2 -&gt; 3
+$ kubectl scale deployment heatguard-web --replicas=4
+deployment.apps/heatguard-web scaled
 
-$ kubectl get pods
-NAME                        READY   STATUS    RESTARTS   AGE
-heatguard-9ddf56c84-jxrpf   1/1     Running   0          35s
-heatguard-9ddf56c84-ltqpr   1/1     Running   0          16s
-heatguard-9ddf56c84-wkhkq   1/1     Running   0          35s
+$ kubectl scale deployment heatguard-api --replicas=3
+deployment.apps/heatguard-api scaled
 
-$ kubectl get deployment heatguard
-NAME        READY   UP-TO-DATE   AVAILABLE   AGE
-heatguard   3/3     3            3           35s
+$ kubectl rollout status deployment/heatguard-web --timeout=120s
+Waiting for deployment &quot;heatguard-web&quot; rollout to finish: 2 of 4 updated replicas are available...
+Waiting for deployment &quot;heatguard-web&quot; rollout to finish: 3 of 4 updated replicas are available...
+deployment &quot;heatguard-web&quot; successfully rolled out
 
-{&quot;status&quot;:&quot;ok&quot;,&quot;model&quot;:&quot;ridge_regression&quot;,&quot;pod&quot;:&quot;heatguard-9ddf56c84-ltqpr&quot;}
-{&quot;status&quot;:&quot;ok&quot;,&quot;model&quot;:&quot;ridge_regression&quot;,&quot;pod&quot;:&quot;heatguard-9ddf56c84-wkhkq&quot;}
-{&quot;status&quot;:&quot;ok&quot;,&quot;model&quot;:&quot;ridge_regression&quot;,&quot;pod&quot;:&quot;heatguard-9ddf56c84-jxrpf&quot;}
-</pre>
-<pre class="log"><span class="src">exp3_kubernetes.log</span>
-### 5. Failure scenario: bad image tag -&gt; rollout blocked, old pods keep serving -&gt; rollback
-$ kubectl set image deployment/heatguard heatguard=docker.io/ayushiranjan27/heatguard:does-not-exist
-deployment.apps/heatguard image updated
+$ kubectl rollout status deployment/heatguard-api --timeout=120s
+Waiting for deployment &quot;heatguard-api&quot; rollout to finish: 2 of 3 updated replicas are available...
+deployment &quot;heatguard-api&quot; successfully rolled out
 
-$ kubectl get pods
-NAME                         READY   STATUS             RESTARTS   AGE
-heatguard-68fc79f464-vmgq5   0/1     ImagePullBackOff   0          25s
-heatguard-9ddf56c84-jxrpf    1/1     Running            0          60s
-heatguard-9ddf56c84-ltqpr    1/1     Running            0          41s
-heatguard-9ddf56c84-wkhkq    1/1     Running            0          60s
-
-$ curl -s http://localhost:30080/health
-{&quot;status&quot;:&quot;ok&quot;,&quot;model&quot;:&quot;ridge_regression&quot;,&quot;pod&quot;:&quot;heatguard-9ddf56c84-ltqpr&quot;}
-
-$ kubectl rollout undo deployment/heatguard
-Warning: resource deployments/heatguard was previously managed with &#x27;kubectl apply&#x27;. Rolling back will not update the kubectl.kubernetes.io/last-appli
-deployment.apps/heatguard rolled back
-
-$ kubectl rollout status deployment/heatguard --timeout=180s
-deployment &quot;heatguard&quot; successfully rolled out
-</pre>
-<pre class="log"><span class="src">exp3_kubernetes.log</span>
-### 7. Rolling update 1.0 -&gt; 1.1 (coastal heatwave rule fix), with availability check during rollout
-$ kubectl set image deployment/heatguard heatguard=docker.io/ayushiranjan27/heatguard:1.1
-deployment.apps/heatguard image updated
-$ kubectl rollout status deployment/heatguard
-Waiting for deployment &quot;heatguard&quot; rollout to finish: 1 out of 3 new replicas have been updated...
-Waiting for deployment &quot;heatguard&quot; rollout to finish: 1 out of 3 new replicas have been updated...
-Waiting for deployment &quot;heatguard&quot; rollout to finish: 1 out of 3 new replicas have been updated...
-Waiting for deployment &quot;heatguard&quot; rollout to finish: 2 out of 3 new replicas have been updated...
-Waiting for deployment &quot;heatguard&quot; rollout to finish: 2 out of 3 new replicas have been updated...
-Waiting for deployment &quot;heatguard&quot; rollout to finish: 2 out of 3 new replicas have been updated...
-Waiting for deployment &quot;heatguard&quot; rollout to finish: 2 out of 3 new replicas have been updated...
-Waiting for deployment &quot;heatguard&quot; rollout to finish: 1 old replicas are pending termination...
-Waiting for deployment &quot;heatguard&quot; rollout to finish: 1 old replicas are pending termination...
-Waiting for deployment &quot;heatguard&quot; rollout to finish: 1 old replicas are pending termination...
-deployment &quot;heatguard&quot; successfully rolled out
-# availability during rollout: 39/40 health checks returned HTTP 200 (non-200: 1)
 $ kubectl get pods -o wide
-NAME                        READY   STATUS    RESTARTS   AGE   IP            NODE                      NOMINATED NODE   READINESS GATES
-heatguard-df89b7b5f-7msn6   1/1     Running   0          33s   10.244.0.12   heatguard-control-plane   &lt;none&gt;           &lt;none&gt;
-heatguard-df89b7b5f-czgdj   1/1     Running   0          14s   10.244.0.14   heatguard-control-plane   &lt;none&gt;           &lt;none&gt;
-heatguard-df89b7b5f-p2ck5   1/1     Running   0          21s   10.244.0.13   heatguard-control-plane   &lt;none&gt;           &lt;none&gt;
-$ kubectl rollout history deployment/heatguard
-deployment.apps/heatguard 
-REVISION  CHANGE-CAUSE
-2         &lt;none&gt;
-3         &lt;none&gt;
-4         &lt;none&gt;
+NAME                             READY   STATUS    RESTARTS   AGE   IP            NODE                      NOMINATED NODE   READINESS GATES
+heatguard-api-8c955c984-7kx69    1/1     Running   0          11s   10.244.0.11   heatguard-control-plane   &lt;none&gt;           &lt;none&gt;
+heatguard-api-8c955c984-82rsc    1/1     Running   0          73s   10.244.0.7    heatguard-control-plane   &lt;none&gt;           &lt;none&gt;
+heatguard-api-8c955c984-b7856    1/1     Running   0          73s   10.244.0.5    heatguard-control-plane   &lt;none&gt;           &lt;none&gt;
+heatguard-web-66cf47486d-8gml2   1/1     Running   0          11s   10.244.0.10   heatguard-control-plane   &lt;none&gt;           &lt;none&gt;
+heatguard-web-66cf47486d-8j8qb   1/1     Running   0          11s   10.244.0.9    heatguard-control-plane   &lt;none&gt;           &lt;none&gt;
+heatguard-web-66cf47486d-gb7hk   1/1     Running   0          73s   10.244.0.8    heatguard-control-plane   &lt;none&gt;           &lt;none&gt;
+heatguard-web-66cf47486d-s4cr5   1/1     Running   0          73s   10.244.0.2    heatguard-control-plane   &lt;none&gt;           &lt;none&gt;
+</pre>
+<pre class="log"><span class="src">experiments/results/exp3_kubernetes.log</span>
+### 4. Self-healing: delete a backend pod; the Deployment replaces it
+$ kubectl delete pod heatguard-api-8c955c984-7kx69 --wait=false
+pod &quot;heatguard-api-8c955c984-7kx69&quot; deleted from default namespace
 
-$ kubectl get deployment heatguard -o jsonpath=&quot;{.spec.template.spec.containers[0].image}&quot;
-docker.io/ayushiranjan27/heatguard:1.1
-# coastal check through the Service (Chennai, hottest 2024 week)
-[35.3, 37.2, 38.0, 39.0, 39.3, 40.8, 41.1]</pre>
-<figure><img src="screenshots/03_dashboard_kubernetes_nodeport_30080.png" style="width:80%"><figcaption>Figure 4. Dashboard through the Kubernetes NodePort Service (localhost:30080); 'Served by' shows the pod name. Jaipur, 26 May 2024: forecast 44.9 °C, Heatwave; actual 46.4 °C.</figcaption></figure>
-<p><b>Results.</b> The image was pulled from Docker Hub by the cluster; both pods became Ready; requests were spread across pods; scaling to 3
-worked; a deleted pod was replaced by the Deployment within about 16 s; a non-existent image tag stopped in <code>ImagePullBackOff</code>
-while the 3 old pods kept serving, and <code>kubectl rollout undo</code> restored the Deployment. During the rolling update to 1.1, 39 of 40
-health checks (every 0.5 s) returned HTTP 200 and one failed. A likely cause is a terminating pod still receiving a request before the Service
-endpoints were updated; a <code>preStop</code> delay is the usual remedy (not implemented).</p>
-<p><b>Conclusion.</b> Kubernetes provided declarative deployment, service discovery, scaling and recovery for the HeatGuard service.</p>
+$ kubectl get pods -l app=heatguard-api
+NAME                            READY   STATUS              RESTARTS   AGE
+heatguard-api-8c955c984-7kx69   1/1     Terminating         0          11s
+heatguard-api-8c955c984-82rsc   1/1     Running             0          73s
+heatguard-api-8c955c984-b7856   1/1     Running             0          73s
+heatguard-api-8c955c984-jj74h   0/1     ContainerCreating   0          0s
+
+$ kubectl get pods -l app=heatguard-api
+NAME                            READY   STATUS    RESTARTS   AGE
+heatguard-api-8c955c984-82rsc   1/1     Running   0          88s
+heatguard-api-8c955c984-b7856   1/1     Running   0          88s
+heatguard-api-8c955c984-jj74h   1/1     Running   0          15s
+
+$ kubectl get deployment heatguard-api
+NAME            READY   UP-TO-DATE   AVAILABLE   AGE
+heatguard-api   3/3     3            3           94s
+</pre>
+<pre class="log"><span class="src">experiments/results/exp3_kubernetes.log</span>
+### 5. Failure scenario: bad backend image -&gt; rollout blocked, old pods keep serving -&gt; rollback
+$ kubectl set image deployment/heatguard-api api=docker.io/ayushiranjan27/heatguard:does-not-exist
+deployment.apps/heatguard-api image updated
+
+$ kubectl get pods -l app=heatguard-api
+NAME                             READY   STATUS             RESTARTS   AGE
+heatguard-api-6b55ff974c-5dl96   0/1     ImagePullBackOff   0          26s
+heatguard-api-8c955c984-82rsc    1/1     Running            0          114s
+heatguard-api-8c955c984-b7856    1/1     Running            0          114s
+heatguard-api-8c955c984-jj74h    1/1     Running            0          41s
+
+$ curl -s http://localhost:30080/api/health
+{&quot;status&quot;:&quot;ok&quot;,&quot;version&quot;:&quot;2.0&quot;,&quot;model&quot;:&quot;ridge_regression&quot;,&quot;horizons&quot;:7,&quot;pod&quot;:&quot;heatguard-api-8c955c984-b7856&quot;}
+
+$ kubectl rollout undo deployment/heatguard-api
+Warning: resource deployments/heatguard-api was previously managed with &#x27;kubectl apply&#x27;. Rolling back will not update the kubectl.kubernetes.io/last-a
+deployment.apps/heatguard-api rolled back
+
+$ kubectl rollout status deployment/heatguard-api --timeout=180s
+Waiting for deployment spec update to be observed...
+Waiting for deployment &quot;heatguard-api&quot; rollout to finish: 1 old replicas are pending termination...
+deployment &quot;heatguard-api&quot; successfully rolled out
+
+$ kubectl get pods -l app=heatguard-api
+NAME                             READY   STATUS        RESTARTS   AGE
+heatguard-api-6b55ff974c-5dl96   0/1     Terminating   0          26s</pre>
+<pre class="log"><span class="src">experiments/results/exp3_kubernetes.log</span>
+### 6. Rolling update of the backend with continuous availability check
+# strategy maxSurge=1, maxUnavailable=0 and preStop sleep 5 (v1 without preStop: 39/40 OK)
+$ kubectl rollout restart deployment/heatguard-api &amp;&amp; kubectl rollout status deployment/heatguard-api
+Waiting for deployment &quot;heatguard-api&quot; rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment &quot;heatguard-api&quot; rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment &quot;heatguard-api&quot; rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment &quot;heatguard-api&quot; rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment &quot;heatguard-api&quot; rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment &quot;heatguard-api&quot; rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment &quot;heatguard-api&quot; rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment &quot;heatguard-api&quot; rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment &quot;heatguard-api&quot; rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment &quot;heatguard-api&quot; rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment &quot;heatguard-api&quot; rollout to finish: 1 old replicas are pending termination...
+deployment &quot;heatguard-api&quot; successfully rolled out
+# availability: 89/89 requests returned HTTP 200 (failed: 0)
+
+$ kubectl rollout restart deployment/heatguard-web &amp;&amp; kubectl rollout status deployment/heatguard-web
+Waiting for deployment &quot;heatguard-web&quot; rollout to finish: 1 out of 4 new replicas have been updated...
+Waiting for deployment &quot;heatguard-web&quot; rollout to finish: 1 out of 4 new replicas have been updated...
+Waiting for deployment &quot;heatguard-web&quot; rollout to finish: 1 out of 4 new replicas have been updated...
+Waiting for deployment &quot;heatguard-web&quot; rollout to finish: 2 out of 4 new replicas have been updated...
+Waiting for deployment &quot;heatguard-web&quot; rollout to finish: 2 out of 4 new replicas have been updated...
+Waiting for deployment &quot;heatguard-web&quot; rollout to finish: 2 out of 4 new replicas have been updated...</pre>
+<figure><img src="screenshots/05_frontend_via_kubernetes.png" style="width:100%"><figcaption>Figure 6. Frontend served through the Kubernetes NodePort (localhost:30080); the status pill shows the backend pod that answered.</figcaption></figure>
+<p><b>Results.</b> Both images were pulled from Docker Hub; all pods became Ready; the frontend reached the backend through the
+<code>heatguard-api</code> Service, with requests spread across backend pods; scaling (frontend 2→4, backend 2→3) worked; a deleted backend pod was
+replaced automatically; a non-existent image tag stopped in <code>ImagePullBackOff</code> while existing pods kept serving, and
+<code>kubectl rollout undo</code> restored the Deployment. Rolling updates with continuous checks every 0.25 s: 89/89 successful during the backend rollout; 114/114 successful during the frontend rollout.
+No request failed, so the preStop delay removed the single failure observed in v1 (39/40).</p>
+<p><b>Conclusion.</b> Kubernetes provided declarative deployment, service discovery between the two tiers, scaling, self-healing, safe rollback
+and rolling updates for HeatGuard.</p>
 
 <h3>Experiment 7: Cloud Cost Optimization through Resource Right-Sizing</h3>
 <p><b>Aim (manual):</b> analyse CPU and memory utilisation of an over-provisioned workload, apply right-sizing and measure cost and efficiency
-improvements without performance degradation. <b>Use-case connection:</b> the workload is the HeatGuard forecast API itself, loaded with
+improvements without performance degradation. <b>Use-case connection:</b> the workload is the HeatGuard v2 backend itself, answering 7-day
 forecast requests built from real 2024 IMD data.</p>
-<p><b>Procedure.</b> (1) Run the heatguard image with 2 vCPU / 2 GB (<code>docker run --cpus 2 --memory 2g</code>). (2) Send the fixed workload:
-15,000 <code>POST /predict</code> requests, 20 concurrent clients, 100 warm-up requests, fixed random seed (<code>loadtest/loadtest.py</code>), while
-sampling <code>docker stats</code> about once per second. (3) Repeat 3 times. (4) Right-size with the manual's rule, "slightly above peak with a
-safety buffer" (<code>experiments/rightsize.py</code>): CPU = peak × 1.25 rounded up to 0.25 vCPU; memory = peak × 1.5 rounded up to 64 MiB.
-(5) Re-run the same workload 3 times with the new limits. (6) Estimate cost.</p>
-<p><b>Right-sizing decision</b> (from <code>rightsizing_decision.json</code>): observed peak 0.566 cores and
-105.5 MiB → <b>0.75 vCPU / 192m</b>.</p>
-<table><tr><th>Configuration</th><th>CPU peak (% of 1 core)</th><th>CPU used (% of limit)</th><th>Memory peak (MiB)</th><th>Memory used (% of limit)</th><th>Throughput (req/s)</th><th>p50 latency (ms)</th><th>p95 latency (ms)</th><th>Errors</th><th>Est. USD / hour</th><th>Est. USD / 1M predictions</th></tr><tr><td><b>over-provisioned</b><br>2.0 vCPU / 2g</td><td>55.1 ± 2.5</td><td>27.5 ± 1.2</td><td>105.1 ± 0.5</td><td>5.1 ± 0.1</td><td>661.3 ± 19.9</td><td>15.0 ± 0.3</td><td>97.9 ± 3.0</td><td>0</td><td>0.0529</td><td>0.0222</td></tr><tr><td><b>right-sized</b><br>0.75 vCPU / 192m</td><td>47.0 ± 1.7</td><td>62.6 ± 2.3</td><td>115.5 ± 0.8</td><td>60.1 ± 0.4</td><td>590.5 ± 12.4</td><td>16.5 ± 0.4</td><td>108.6 ± 2.0</td><td>0</td><td>0.0184</td><td>0.0086</td></tr></table>
-<p>Change after right-sizing: throughput -10.7%, p50 latency +10.0%,
-p95 latency +10.9%, estimated hourly cost -65.2%,
-estimated cost per million predictions -61.3%. No errors and no
-out-of-memory kills in any run. The right-sized limits are used in the Kubernetes Deployment (Experiment 3).</p>
-<figure><img src="screenshots/exp7_rightsizing_chart.png" style="width:100%"><figcaption>Figure 5. Experiment 7: utilisation of the allocated resources and estimated hourly cost before and after right-sizing (mean ± std, 3 runs).</figcaption></figure>
+<p><b>Procedure.</b> (1) Run <code>ayushiranjan27/heatguard:2.0</code> with 2 vCPU / 2 GB (<code>docker run --cpus 2 --memory 2g</code>).
+(2) Send the fixed workload: 15,000 <code>POST /predict</code> requests, 20 concurrent clients, 100 warm-up requests, fixed seed
+(<code>loadtest/loadtest.py</code>), while sampling <code>docker stats</code> about once per second. (3) Repeat 3 times. (4) Right-size with the manual's rule,
+"slightly above peak with a safety buffer" (<code>experiments/rightsize.py</code>): CPU = peak × 1.25 rounded up to 0.25 vCPU; memory = peak × 1.5
+rounded up to 64 MiB. (5) Re-run the same workload 3 times with the new limits. (6) Estimate cost.</p>
+<p><b>Right-sizing decision:</b> observed peak 0.868 cores and 118.2 MiB →
+<b>1.25 vCPU / 192m</b>. These values are used as the backend limits in Kubernetes (Exp 3).</p>
+<table><tr><th>Configuration</th><th>CPU peak (% of 1 core)</th><th>CPU used (% of limit)</th><th>Memory peak (MiB)</th><th>Memory used (% of limit)</th><th>Throughput (req/s)</th><th>p50 latency (ms)</th><th>p95 latency (ms)</th><th>Errors</th><th>Est. USD / hour</th><th>Est. USD / 1M predictions</th></tr><tr><td><b>over-provisioned</b><br>2.0 vCPU / 2g</td><td>85.7 ± 1.3</td><td>42.8 ± 0.7</td><td>113.9 ± 6.9</td><td>5.6 ± 0.3</td><td>416.8 ± 13.6</td><td>21.6 ± 2.1</td><td>162.1 ± 5.6</td><td>0</td><td>0.0529</td><td>0.0353</td></tr><tr><td><b>right-sized</b><br>1.25 vCPU / 192m</td><td>99.1 ± 3.6</td><td>79.3 ± 2.9</td><td>106.5 ± 1.3</td><td>55.5 ± 0.7</td><td>436.4 ± 18.4</td><td>26.3 ± 3.2</td><td>152.1 ± 6.8</td><td>0</td><td>0.0303</td><td>0.0193</td></tr></table>
+<p>Change after right-sizing: throughput +4.7%, p50 latency +21.8%,
+p95 latency -6.2%, estimated hourly cost -42.7%,
+estimated cost per million predictions -45.3%.
+Errors: 0 and 0; out-of-memory kills: none.</p>
+<figure><img src="screenshots/exp7_rightsizing_chart.png" style="width:100%"><figcaption>Figure 7. Experiment 7: utilisation of the allocated resources and estimated hourly cost before and after right-sizing (mean ± std, 3 runs).</figcaption></figure>
 <p><b>Cost basis (estimate, not an actual charge):</b> AWS Fargate on-demand, Linux/ARM, Asia Pacific (Mumbai): USD 0.02383 per vCPU-hour and
-USD 0.00261 per GB-hour, read from the AWS public price list (publication date 2026-09-11), saved as
-<code>experiments/pricing/aws_ecs_ap-south-1_index.json</code>. Hourly cost = vCPU × 0.02383 + GB × 0.00261; cost per million predictions = hourly cost ÷
-(throughput × 3600) × 10<sup>6</sup>. No cloud account was used.</p>
-<p><b>Conclusion.</b> The service was heavily over-provisioned (≈ 28% of CPU and 5% of memory used). Right-sizing cut the estimated cost by
-about two-thirds for a ~11% throughput reduction, an acceptable trade-off for this service. The manual's "without performance
-degradation" is only approximately met: a small, measured degradation occurred.</p>
+USD 0.00261 per GB-hour, from the AWS public price list (publication date 2026-09-11), saved as <code>experiments/pricing/aws_ecs_ap-south-1_index.json</code>.
+Hourly cost = vCPU × 0.02383 + GB × 0.00261; cost per million predictions = hourly cost ÷ (throughput × 3600) × 10<sup>6</sup>. No cloud account was used.</p>
+<p><b>Conclusion.</b> The backend used under half of the 2 allocated CPUs (42.8% of the limit) and about
+6% of its memory; a single Uvicorn process cannot use more than about one core, so the extra CPU was idle.
+After right-sizing, throughput changed by +4.7% and p95 latency by -6.2%,
+but median (p50) latency rose by +21.8% (21.6 → 26.3 ms), so the manual's
+"without performance degradation" holds for throughput and tail latency but not fully for median latency. Given the
+-42.7% estimated cost change, this trade-off is acceptable for this service.</p>
 
 <h3>Experiment 8: FinOps Principles and Instance-Type Comparison</h3>
-<p><b>Aim (manual):</b> compare different instance (resource) configurations for the same workload and identify the most cost-efficient option
-without performance degradation. <b>Use-case connection:</b> chooses the cheapest size on which the heatwave API still meets its response-time target.</p>
-<p><b>Procedure</b> (manual algorithm steps 1–10). Workload: identical to Experiment 7. Candidates: three AWS Fargate-valid sizes, emulated with
-Docker limits. The <b>performance target was written down before running</b> (<code>experiments/exp8_configs.json</code>):
-p95 latency ≤ 150 ms, zero errors, no OOM kill. Each configuration ran 3 times.</p>
-<table><tr><th>Configuration</th><th>CPU peak (% of 1 core)</th><th>CPU used (% of limit)</th><th>Memory peak (MiB)</th><th>Memory used (% of limit)</th><th>Throughput (req/s)</th><th>p50 latency (ms)</th><th>p95 latency (ms)</th><th>Errors</th><th>Est. USD / hour</th><th>Est. USD / 1M predictions</th><th>Meets target</th></tr><tr><td><b>low</b><br>0.25 vCPU / 512m</td><td>25.9 ± 0.5</td><td>103.4 ± 1.8</td><td>118.2 ± 0.7</td><td>23.1 ± 0.1</td><td>316.2 ± 5.1</td><td>54.8 ± 3.2</td><td>112.0 ± 0.7</td><td>0</td><td>0.0073</td><td>0.0064</td><td>yes</td></tr><tr><td><b>medium</b><br>0.5 vCPU / 1g</td><td>42.5 ± 1.9</td><td>85.0 ± 3.8</td><td>106.0 ± 0.5</td><td>10.3 ± 0.1</td><td>580.1 ± 35.9</td><td>16.7 ± 1.1</td><td>108.9 ± 6.7</td><td>0</td><td>0.0145</td><td>0.0070</td><td>yes</td></tr><tr><td><b>high</b><br>1.0 vCPU / 2g</td><td>52.9 ± 1.1</td><td>52.9 ± 1.1</td><td>105.7 ± 0.4</td><td>5.2 ± 0.1</td><td>603.2 ± 8.1</td><td>16.0 ± 0.1</td><td>107.3 ± 2.5</td><td>0</td><td>0.0290</td><td>0.0134</td><td>yes</td></tr></table>
-<figure><img src="screenshots/exp8_finops_chart.png" style="width:100%"><figcaption>Figure 6. Experiment 8: throughput, p95 latency (dashed line = target) and estimated cost per million predictions (mean ± std, 3 runs).</figcaption></figure>
-<p><b>Result.</b> All three sizes met the pre-defined target; the most cost-efficient is <b>low (0.25 vCPU / 512m)</b>
-at an estimated USD 0.0064 per million predictions, about half the cost of the 1 vCPU size. It does so with
-roughly half the throughput and about 3× higher median latency. The target did not include a throughput requirement. As a
-<i>post-hoc sensitivity check</i> (not the pre-defined target): if ≥ 500 req/s were also required, the medium size would be chosen.</p>
-<p><b>Conclusion.</b> Doubling resources beyond 0.5 vCPU gave almost no extra performance (a single-process Python server uses at most
-about one core) but doubled the cost. FinOps decisions depend on stating the performance target explicitly.</p>
+<p><b>Aim (manual):</b> compare different instance (resource) configurations for the same workload and identify the most cost-efficient option without
+performance degradation. <b>Use-case connection:</b> chooses the cheapest size on which the heatwave API still meets its service target.</p>
+<p><b>Procedure</b> (manual algorithm steps 1–10). Workload identical to Experiment 7. Candidates: three AWS Fargate-valid sizes, emulated with Docker limits.
+The <b>performance target was written down before running</b> (<code>experiments/exp8_configs.json</code>), using the rule: At most 25% lower throughput and at most 50% higher p95 latency than the over-provisioned reference (2 vCPU / 2 GB: ~417 req/s, p95 ~162 ms), no errors, no OOM kill.
+This gives throughput ≥ 300 req/s, p95 latency ≤ 250 ms, zero errors and no OOM kill. Each configuration ran 3 times.</p>
+<table><tr><th>Configuration</th><th>CPU peak (% of 1 core)</th><th>CPU used (% of limit)</th><th>Memory peak (MiB)</th><th>Memory used (% of limit)</th><th>Throughput (req/s)</th><th>p50 latency (ms)</th><th>p95 latency (ms)</th><th>Errors</th><th>Est. USD / hour</th><th>Est. USD / 1M predictions</th><th>Meets target</th></tr><tr><td><b>low</b><br>0.25 vCPU / 512m</td><td>27.1 ± 0.1</td><td>108.4 ± 0.4</td><td>119.7 ± 0.3</td><td>23.4 ± 0.1</td><td>62.9 ± 0.8</td><td>289.4 ± 2.5</td><td>869.6 ± 49.2</td><td>0</td><td>0.0073</td><td>0.0320</td><td>no</td></tr><tr><td><b>medium</b><br>0.5 vCPU / 1g</td><td>50.8 ± 0.6</td><td>101.7 ± 1.1</td><td>118.3 ± 0.8</td><td>11.6 ± 0.1</td><td>302.7 ± 8.3</td><td>76.3 ± 1.1</td><td>109.2 ± 2.9</td><td>0</td><td>0.0145</td><td>0.0133</td><td>yes</td></tr><tr><td><b>high</b><br>1.0 vCPU / 2g</td><td>83.1 ± 5.9</td><td>83.1 ± 5.9</td><td>114.5 ± 7.2</td><td>5.6 ± 0.3</td><td>435.7 ± 7.3</td><td>22.2 ± 1.4</td><td>153.0 ± 3.1</td><td>0</td><td>0.0290</td><td>0.0185</td><td>yes</td></tr></table>
+<figure><img src="screenshots/exp8_finops_chart.png" style="width:100%"><figcaption>Figure 8. Experiment 8: throughput, p95 latency (dashed lines = targets) and estimated cost per million predictions (mean ± std, 3 runs).</figcaption></figure>
+<p><b>Result.</b> The most cost-efficient configuration meeting the target is <b>medium (0.5 vCPU / 1g)</b> at an estimated USD 0.0133 per million predictions.
+It passes on the mean of 3 runs, but only 2 of 3 individual runs reached 300 req/s (runs: 295.5, 300.7, 311.8 req/s), so it is a borderline choice with little headroom.
+low (0.25 vCPU) failed: throughput 62.9 &lt; 300 req/s, p95 869.6 &gt; 250 ms.
+At 0.25 vCPU the backend was CPU-saturated; its Docker health check timed out under load (the container was reported "unhealthy"), which in Kubernetes
+would trigger liveness-probe restarts.</p>
+<p><b>Conclusion.</b> The cheapest size per hour (low) was the most expensive per prediction, because it served so few requests; cost must be judged
+per unit of useful work. Moving from medium to high (1.0 vCPU) raised throughput by +43.9% at +39.1% cost per prediction; it would be the safer choice if more headroom above the target were wanted.
+Unlike v1, the target was defined with both a throughput and a latency requirement, closing the gap noted in the v1 analysis.</p>
 
-<h2>6. Testing and results</h2>
-<p><b>Automated tests</b> (<code>pytest -v</code>, result: <b>13 passed in 1.21s</b>):</p>
-<table><tr><th>Test</th><th>Type</th></tr><tr><td>test_health_reports_loaded_model</td><td>representative / rules</td></tr><tr><td>test_cities_list</td><td>representative / rules</td></tr><tr><td>test_observed_returns_real_imd_window</td><td>representative / rules</td></tr><tr><td>test_predict_hot_spell_raises_alert</td><td>representative / rules</td></tr><tr><td>test_predict_winter_is_normal</td><td>representative / rules</td></tr><tr><td>test_forecast_close_to_actual_on_real_day</td><td>representative / rules</td></tr><tr><td>test_unknown_city_404</td><td>invalid input / failure</td></tr><tr><td>test_wrong_number_of_values_422</td><td>invalid input / failure</td></tr><tr><td>test_implausible_temperature_422</td><td>invalid input / failure</td></tr><tr><td>test_non_numeric_and_bad_date_422</td><td>invalid input / failure</td></tr><tr><td>test_observed_outside_data_range_404</td><td>invalid input / failure</td></tr><tr><td>test_severity_rules</td><td>representative / rules</td></tr><tr><td>test_day_of_year_aligns_leap_and_non_leap</td><td>representative / rules</td></tr></table>
-<p><b>Failure scenarios demonstrated</b> on the running container and through Kubernetes: unknown city (404), 3 values instead of 7 (422),
-an IMD missing-value code 99.9 °C (422), invalid date (422), a non-existent image tag (ImagePullBackOff, rolled back), and a deleted pod
-(recreated). <b>Measurements:</b> forecast MAE/RMSE, alert recall/precision/F2, throughput, p50/p95 latency, CPU and memory utilisation
-and estimated cost, summarised in Sections 4 and 5.</p>
+<h2>7. Testing and results</h2>
+<p><b>Automated tests</b> (<code>pytest -v</code>, result: <b>18 passed in 2.38s</b>):</p>
+<table><tr><th>Test</th><th>Type</th></tr><tr><td>test_health_reports_loaded_model</td><td>representative / rules</td></tr><tr><td>test_cities_list</td><td>representative / rules</td></tr><tr><td>test_observed_returns_real_imd_window</td><td>representative / rules</td></tr><tr><td>test_observed_history_for_charts</td><td>representative / rules</td></tr><tr><td>test_predict_returns_7_consecutive_days</td><td>representative / rules</td></tr><tr><td>test_predict_hot_spell_raises_alert</td><td>representative / rules</td></tr><tr><td>test_predict_winter_is_normal</td><td>representative / rules</td></tr><tr><td>test_forecast_close_to_actual_on_real_day</td><td>representative / rules</td></tr><tr><td>test_outlook_covers_all_cities_sorted_by_risk</td><td>representative / rules</td></tr><tr><td>test_model_info_has_7_horizons</td><td>representative / rules</td></tr><tr><td>test_unknown_city_404</td><td>invalid input / failure</td></tr><tr><td>test_wrong_number_of_values_422</td><td>invalid input / failure</td></tr><tr><td>test_implausible_temperature_422</td><td>invalid input / failure</td></tr><tr><td>test_non_numeric_and_bad_date_422</td><td>invalid input / failure</td></tr><tr><td>test_observed_outside_data_range_404</td><td>invalid input / failure</td></tr><tr><td>test_observed_history_too_long_422</td><td>invalid input / failure</td></tr><tr><td>test_severity_rules</td><td>representative / rules</td></tr><tr><td>test_day_of_year_aligns_leap_and_non_leap</td><td>representative / rules</td></tr></table>
+<p><b>Failure scenarios demonstrated</b> on the running system: unknown city (404), 3 values instead of 7 (422), IMD missing-value code 99.9 °C (422),
+invalid date (422), date outside the data (404), backend stopped behind the frontend (gateway error, recovered on restart), non-existent image tag in
+Kubernetes (ImagePullBackOff, rolled back), deleted pod (recreated). In the frontend, rejected what-if values are shown as an error message.</p>
 
-<h2>7. Requirement-to-test checklist</h2>
-<table><tr><th>Requirement (assignment brief)</th><th>Implementation</th><th>Evidence</th><th>Status</th></tr><tr><td>Working prototype: input → processing → output</td><td>Dashboard + POST /predict (city, date, 7 Tmax → forecast, alert, advice)</td><td>exp2_run.log, screenshots 01–03, 05</td><td>Verified</td></tr><tr><td>AI/ML component appropriate to use case</td><td>Ridge regression next-day Tmax on IMD data; compared with GBM and persistence</td><td>metrics.json, train_output.txt</td><td>Verified</td></tr><tr><td>Rule-based part identified</td><td>IMD heatwave criteria (app/severity.py), labelled rule-based</td><td>test_severity_rules</td><td>Verified</td></tr><tr><td>Real / public dataset documented</td><td>IMD Pune 1° gridded Tmax 2014–2024, download script</td><td>data/processed/city_tmax.csv</td><td>Verified</td></tr><tr><td>Labelled architecture diagram</td><td>docs/architecture.html → 00_architecture_diagram.png</td><td>Figure 1</td><td>Verified</td></tr><tr><td>Exp 2: containerise, run, push to Docker Hub</td><td>Dockerfile, multi-arch push, pull-and-run check, nginx push</td><td>exp2_build/run/push logs, Docker Hub API + screenshot 04</td><td>Verified</td></tr><tr><td>Exp 3: deploy, expose, pod status, scaling/recovery</td><td>kind cluster, Deployment + NodePort, scale 2→3, pod delete, bad image rollback, rolling update</td><td>exp3_kubernetes.log, screenshots 03, 05</td><td>Verified</td></tr><tr><td>Exp 7: measure CPU/memory, right-size, compare</td><td>docker stats under fixed load, rule-based right-sizing, 3 repeats</td><td>exp7/*.csv, runs.jsonl, rightsizing_decision.json</td><td>Verified</td></tr><tr><td>Exp 8: same workload on configs, cheapest meeting target</td><td>3 Fargate-valid sizes, target fixed beforehand</td><td>exp8/*, exp8_configs.json, summary.md</td><td>Verified</td></tr><tr><td>Exp 7 & 8 same workload, cost basis stated</td><td>Same loadtest.py, seed, 15000 requests, 20 clients; AWS price list saved</td><td>pricing/aws_ecs_ap-south-1_index.json</td><td>Verified</td></tr><tr><td>Representative inputs tested</td><td>pytest + curl on real IMD windows (Delhi, Jaipur, Nagpur, Chennai)</td><td>pytest_output.txt</td><td>Verified</td></tr><tr><td>≥1 invalid-input / failure scenario</td><td>unknown city 404, 3 values 422, 99.9 °C 422, bad date 422, bad image tag in K8s</td><td>pytest_output.txt, exp2_run.log, exp3_kubernetes.log</td><td>Verified</td></tr><tr><td>Measurements (error, latency, throughput, CPU/mem, cost)</td><td>MAE/RMSE, recall/precision, req/s, p50/p95, docker stats, est. USD</td><td>metrics.json, summary.md</td><td>Verified</td></tr><tr><td>Clean-environment setup</td><td>Fresh git clone + new venv: pip install, 13/13 tests pass, retraining reproduces MAE 0.883 and margin 1.25; published image pulled and run after deleting local tag. Docker/K8s steps not repeated from scratch</td><td>exp2_push.log (pull + health); clean-clone check</td><td>Partially Verified</td></tr><tr><td>Demonstration video (5 min)</td><td>Plan in docs/DEMO_PLAN.md</td><td>to be recorded by student</td><td>Not Verified</td></tr></table>
+<h2>8. Requirement-to-test checklist</h2>
+<table><tr><th>Requirement (assignment brief)</th><th>Implementation</th><th>Evidence</th><th>Status</th></tr><tr><td>Working prototype: input → processing → output</td><td>Web frontend + API: city/date (or 7 typed values) → 7-day forecast, alerts, advice, map</td><td>exp2_docker.log, screenshots 01–04</td><td>Verified</td></tr><tr><td>AI/ML component appropriate to use case</td><td>7 ridge-regression models (one per forecast day) on IMD data, compared with GBM and 2 baselines</td><td>models/metrics.json, train_output.txt</td><td>Verified</td></tr><tr><td>Rule-based part identified</td><td>IMD heatwave criteria (app/severity.py), labelled rule-based</td><td>test_severity_rules</td><td>Verified</td></tr><tr><td>Real / public dataset documented</td><td>IMD Pune 1° gridded Tmax 2014–2024, download script</td><td>data/processed/city_tmax.csv</td><td>Verified</td></tr><tr><td>Labelled architecture diagram</td><td>docs/architecture.html → 00_architecture_diagram.png</td><td>Figure 1</td><td>Verified</td></tr><tr><td>Exp 2: containerise, run, push to Docker Hub</td><td>Backend + frontend images, Compose, multi-arch push, pull-and-run check</td><td>exp2_docker.log; archive_v1/exp2_manual_tasks.log (nginx, hello-world, ubuntu)</td><td>Verified</td></tr><tr><td>Exp 3: deploy, expose, pod status, scaling/recovery</td><td>kind: 2 Deployments, ClusterIP + NodePort, scaling, self-healing, bad-image rollback, rolling update with availability check</td><td>exp3_kubernetes.log, screenshot 05</td><td>Verified</td></tr><tr><td>Exp 7: measure CPU/memory, right-size, compare</td><td>docker stats under fixed load, rule-based right-sizing, 3 repeats each</td><td>exp7/*, rightsizing_decision.json</td><td>Verified</td></tr><tr><td>Exp 8: same workload on configs, cheapest meeting target</td><td>3 Fargate-valid sizes, target fixed before the runs</td><td>exp8/*, exp8_configs.json, summary.md</td><td>Verified</td></tr><tr><td>Exp 7 & 8 same workload, cost basis stated</td><td>Same loadtest.py, seed, 15,000 requests, 20 clients; AWS price list saved</td><td>pricing/aws_ecs_ap-south-1_index.json</td><td>Verified</td></tr><tr><td>Representative inputs tested</td><td>pytest + curl on real IMD windows; frontend scenarios (Delhi, Jaipur, Nagpur, Chennai, Lucknow)</td><td>pytest_output.txt, exp2_docker.log</td><td>Verified</td></tr><tr><td>≥1 invalid-input / failure scenario</td><td>unknown city 404, wrong length 422, 99.9 °C 422, bad date 422, date outside data 404, backend down, bad image tag, deleted pod</td><td>pytest_output.txt, exp2_docker.log, exp3_kubernetes.log</td><td>Verified</td></tr><tr><td>Measurements (error, latency, throughput, CPU/mem, cost)</td><td>MAE per horizon, alert recall/precision, req/s, p50/p95, docker stats, est. USD</td><td>metrics.json, summary.md</td><td>Verified</td></tr><tr><td>Clean-environment setup</td><td>v1: fresh clone + venv + tests + retrain reproduced results; v2: images pulled from Docker Hub and run with Compose. Full README not repeated on a second machine</td><td>exp2_docker.log §5</td><td>Partially Verified</td></tr><tr><td>Demonstration video (5 min)</td><td>Plan in docs/DEMO_PLAN.md</td><td>link: to be added</td><td>Not Verified</td></tr></table>
 
-<h2>8. Limitations, data privacy and improvements</h2>
+<h2>9. Limitations, data privacy and improvements</h2>
 <ul>
-<li><b>Spatial resolution:</b> 1° grid cells (~100 km) are averages, not station readings; city values are approximations.</li>
-<li><b>Forecast horizon:</b> one day ahead only; uses only past temperature (no humidity, wind or numerical weather model input).</li>
-<li><b>Heatwave rules:</b> applied per cell per day; IMD declares heatwaves when criteria hold at ≥ 2 stations of a sub-division for 2
-consecutive days. Normals come from 2014–2022 rather than IMD's 30-year station normals.</li>
-<li><b>Alert margin:</b> tuned on a validation year with only 14 heatwave city-days; precision is 0.57 (many false alarms).</li>
-<li><b>Experiments 7 and 8:</b> instance sizes were emulated with Docker limits on one laptop, not cloud VMs; the single Python load
-generator limited throughput to ~600 req/s; costs are estimates from public prices.</li>
-<li><b>Experiment 3:</b> single-node local cluster; one failed health check during the rolling update.</li>
-<li><b>Data privacy:</b> only public, non-personal meteorological data is processed; no user data is stored; the container runs as a
-non-root user; Docker Hub credentials were kept out of the code and repository (<code>.env.example</code> holds only the username variable).</li>
-<li><b>Improvements:</b> add humidity/heat-index and IMD forecast inputs; multi-day forecasts; consecutive-day rule; quantile regression for
-calibrated uncertainty; LLM-generated multilingual advisories with human review (use case §13); Horizontal Pod Autoscaler and
-<code>preStop</code> hooks; repeat Experiments 7–8 on real cloud instances.</li>
+<li><b>Spatial resolution:</b> 1° grid cells (~100 km) are averages, not station readings.</li>
+<li><b>Forecast inputs:</b> temperature history and season only (no humidity, wind or numerical weather model); skill at days 5–7 is close to climatology.</li>
+<li><b>Alerts:</b> per cell per day; IMD declares heatwaves when criteria hold at ≥ 2 stations of a sub-division for 2 consecutive days. Normals come from
+2014–2022, not 30-year station normals. Margins were tuned on a validation year with only 14 heatwave city-days; precision is low at longer horizons.</li>
+<li><b>Historical replay:</b> the dashboard forecasts from any date in 2014–2024 using IMD archives; it is not connected to a live data feed.</li>
+<li><b>Experiments 7 and 8:</b> instance sizes were emulated with Docker limits on one laptop; the single Python load generator limits throughput; costs are estimates.</li>
+<li><b>Experiment 3:</b> single-node local cluster, not a cloud VM.</li>
+<li><b>Data privacy:</b> only public, non-personal weather data; no user data stored; both containers run as non-root users; the backend is not exposed
+outside the cluster; no credentials in the repository.</li>
+<li><b>Improvements:</b> humidity/heat-index inputs and IMD forecast products; consecutive-day rule; calibrated uncertainty (quantile regression);
+scheduled data refresh; LLM multilingual advisories with human review (use case §13); Horizontal Pod Autoscaler; repeat Experiments 7–8 on real cloud instances.</li>
 </ul>
 
-<h2>9. Conclusion</h2>
-<p>A working heatwave early-warning prototype was built on real IMD data. Its ML forecaster beats a persistence baseline, and the
-validated alert margin raises heatwave detection on the unseen 2024 year from 29% to 90%.
-The same service was containerised and published (Exp 2), deployed and operated on Kubernetes (Exp 3), right-sized for an estimated
-65% cost reduction (Exp 7), and compared across instance sizes to
-choose the cheapest one meeting a stated target (Exp 8). Each experiment acts on the same artifact, so together they form one pipeline from
-model to cost-optimised deployment.</p>
+<h2>10. Version history</h2>
+<p><b>v1.0/1.1</b>: single FastAPI container with a built-in dashboard and a next-day forecast; v1.1 corrected the coastal heatwave rule.
+<b>v2.0</b> (this report): 7-day forecast, separate backend and frontend images, two-tier Kubernetes deployment with zero-downtime settings.
+All v1 experiment logs and measurements are kept unchanged in <code>experiments/results/archive_v1/</code>; every v2 experiment was re-run with the same scripts.</p>
 
-<h2>10. References</h2>
+<h2>11. Conclusion</h2>
+<p>HeatGuard turns real IMD observations into 7-day maximum-temperature forecasts and IMD-style heatwave alerts, with each day's reliability
+measured and shown to the user. The same two images were containerised and published (Exp 2), operated on Kubernetes with scaling, recovery and
+rolling updates (Exp 3), right-sized from measured usage (Exp 7) and sized against an explicit service target (Exp 8). Each experiment acts on the same
+artifacts, so together they form one pipeline from data and model to a cost-aware, resilient deployment.</p>
+
+<h2>12. References</h2>
 <ol class="refs">
 <li>Somaiya Vidyavihar University, AI Use Case KJS-CES-01: Climate Intelligence for Heatwave Monitoring, Prediction, and Early Warning (use-case document).</li>
 <li>Somaiya Vidyavihar University, Cloud Computing Experiment manuals 2, 3, 7 and 8 (KJSSE, 2025–26).</li>
@@ -540,15 +662,15 @@ model to cost-optimised deployment.</p>
 <li>India Meteorological Department, Heat wave definitions, https://mausam.imd.gov.in/pdfs/heatcolduser/Definition.pdf</li>
 <li>Amazon Web Services, AWS Price List (AmazonECS, ap-south-1), publication 2026-09-11, https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonECS/current/ap-south-1/index.json</li>
 <li>Docker documentation, https://docs.docker.com/ ; Kubernetes documentation, https://kubernetes.io/docs/ ; kind, https://kind.sigs.k8s.io/</li>
-<li>scikit-learn documentation, https://scikit-learn.org/ ; FastAPI documentation, https://fastapi.tiangolo.com/</li>
-<li>FinOps Foundation / Microsoft Learn, FinOps overview, https://learn.microsoft.com/en-us/cloud-computing/finops/overview</li>
+<li>scikit-learn, https://scikit-learn.org/ ; FastAPI, https://fastapi.tiangolo.com/ ; nginx, https://nginx.org/</li>
+<li>Chart.js, https://www.chartjs.org/ ; Leaflet, https://leafletjs.com/ ; Natural Earth (India point-of-view boundaries), https://www.naturalearthdata.com/</li>
+<li>FinOps overview, Microsoft Learn, https://learn.microsoft.com/en-us/cloud-computing/finops/overview</li>
 </ol>
 
-<h2>11. Acknowledgement of AI-assisted work</h2>
-<p>This project was developed with the help of Claude (Anthropic), an AI assistant, used for analysing the assignment documents,
-writing code and scripts, and drafting this report. All code was executed on the student's machine; all results, logs and screenshots
-were produced by real runs and were checked by the student. The student created the Docker Hub account and performed the
-<code>docker login</code> herself. Command outputs in this report are copied verbatim from the log files in
-<code>experiments/results/</code>; screenshots of the dashboard and Docker Hub were captured with headless Google Chrome from the
-running services.</p>
+<h2>13. Acknowledgement of AI-assisted work</h2>
+<p>This project was developed with the help of Claude (Anthropic), an AI assistant, used for analysing the assignment documents, writing code and
+scripts, and drafting this report. All code was executed on the student's machine; all results, logs and screenshots were produced by real runs and
+were checked by the student. The student created the Docker Hub account and performed the <code>docker login</code> herself. Command outputs in this report
+are copied verbatim from the log files in <code>experiments/results/</code> (Docker build progress lines omitted for length); screenshots of the frontend and
+Docker Hub were captured with headless Google Chrome from the running services.</p>
 </body></html>

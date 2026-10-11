@@ -1,14 +1,16 @@
 """Feature construction shared by training (scripts/train.py) and serving (app/main.py).
 
 Input for one forecast: the last 7 observed daily Tmax values for a city
-(oldest first, newest = "today") and today's date. The model predicts
-Tmax for tomorrow.
+(oldest first, newest = "today") and today's date. One model per horizon
+h = 1..7 predicts Tmax for day today + h (direct multi-horizon forecasting);
+the features differ between horizons only in the target day's season and normal.
 """
 from datetime import date, timedelta
 
 import numpy as np
 
 WINDOW = 7
+HORIZONS = 7
 FEATURE_NAMES = (
     [f"lag{k}" for k in range(WINDOW)]  # lag0 = today, lag6 = six days ago
     + ["mean7", "doy_sin", "doy_cos", "normal", "lat", "lon"]
@@ -25,12 +27,14 @@ def day_of_year(d: date) -> int:
     return doy
 
 
-def build_features(recent_tmax, today: date, lat: float, lon: float, normals) -> np.ndarray:
-    """Return one feature row. `normals` is a length-367 array indexed by day_of_year."""
+def build_features(recent_tmax, today: date, lat: float, lon: float, normals,
+                   horizon: int = 1) -> np.ndarray:
+    """Return one feature row for the forecast of day `today + horizon`.
+    `normals` is a length-367 array indexed by day_of_year."""
     recent = np.asarray(recent_tmax, dtype=float)
     if recent.shape != (WINDOW,):
         raise ValueError(f"expected {WINDOW} recent values, got {recent.shape}")
-    target = today + timedelta(days=1)
+    target = today + timedelta(days=horizon)
     doy = day_of_year(target)
     angle = 2 * np.pi * doy / 366.0
     lags = recent[::-1]  # newest first

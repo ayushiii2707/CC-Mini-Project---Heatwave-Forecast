@@ -3,20 +3,25 @@ platform darwin -- Python 3.13.5, pytest-9.1.1, pluggy-1.6.0 -- /Users/ayushiran
 cachedir: .pytest_cache
 rootdir: /Users/ayushiranjan/Library/Application Support/Claude/scratch-workspaces/8fb7ff58-1f5b-43eb-9cf1-1ab76934e1d7/e09d3f1f-d913-4a6f-bfb0-7fd5177035bd/scratch-2026-10-11-712bf5
 plugins: anyio-4.15.1
-collecting ... collected 13 items
+collecting ... collected 18 items
 
-tests/test_api.py::test_health_reports_loaded_model PASSED               [  7%]
-tests/test_api.py::test_cities_list PASSED                               [ 15%]
-tests/test_api.py::test_observed_returns_real_imd_window PASSED          [ 23%]
-tests/test_api.py::test_predict_hot_spell_raises_alert PASSED            [ 30%]
+tests/test_api.py::test_health_reports_loaded_model PASSED               [  5%]
+tests/test_api.py::test_cities_list PASSED                               [ 11%]
+tests/test_api.py::test_observed_returns_real_imd_window PASSED          [ 16%]
+tests/test_api.py::test_observed_history_for_charts PASSED               [ 22%]
+tests/test_api.py::test_predict_returns_7_consecutive_days PASSED        [ 27%]
+tests/test_api.py::test_predict_hot_spell_raises_alert PASSED            [ 33%]
 tests/test_api.py::test_predict_winter_is_normal PASSED                  [ 38%]
-tests/test_api.py::test_forecast_close_to_actual_on_real_day PASSED      [ 46%]
-tests/test_api.py::test_unknown_city_404 PASSED                          [ 53%]
-tests/test_api.py::test_wrong_number_of_values_422 PASSED                [ 61%]
-tests/test_api.py::test_implausible_temperature_422 PASSED               [ 69%]
-tests/test_api.py::test_non_numeric_and_bad_date_422 PASSED              [ 76%]
-tests/test_api.py::test_observed_outside_data_range_404 PASSED           [ 84%]
-tests/test_api.py::test_severity_rules PASSED                            [ 92%]
+tests/test_api.py::test_forecast_close_to_actual_on_real_day PASSED      [ 44%]
+tests/test_api.py::test_outlook_covers_all_cities_sorted_by_risk PASSED  [ 50%]
+tests/test_api.py::test_model_info_has_7_horizons PASSED                 [ 55%]
+tests/test_api.py::test_unknown_city_404 PASSED                          [ 61%]
+tests/test_api.py::test_wrong_number_of_values_422 PASSED                [ 66%]
+tests/test_api.py::test_implausible_temperature_422 PASSED               [ 72%]
+tests/test_api.py::test_non_numeric_and_bad_date_422 PASSED              [ 77%]
+tests/test_api.py::test_observed_outside_data_range_404 PASSED           [ 83%]
+tests/test_api.py::test_observed_history_too_long_422 PASSED             [ 88%]
+tests/test_api.py::test_severity_rules PASSED                            [ 94%]
 tests/test_api.py::test_day_of_year_aligns_leap_and_non_leap PASSED      [100%]
 
-============================== 13 passed in 1.21s ==============================
+============================== 18 passed in 2.38s ==============================

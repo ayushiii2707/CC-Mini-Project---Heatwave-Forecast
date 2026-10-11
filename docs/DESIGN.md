@@ -1,5 +1,10 @@
 # HeatGuard: Heatwave Forecast & Early-Warning Prototype — Technical Design
 
+> **v2 update (current):** 7-day forecast (one ridge model per forecast day, per-day alert margin and
+> confidence), separate backend (`heatguard`, FastAPI) and web frontend (`heatguard-web`, nginx + JS),
+> Docker Compose, two-tier Kubernetes deployment with zero-downtime rollout settings. The sections below
+> describe the original v1 design; v1 evidence is archived in `experiments/results/archive_v1/`.
+
 **Student:** Ayushi Ranjan | **Roll No:** 16014223028 | **Batch:** B1 | **Individual submission**
 **Use case:** KJS-CES-01 — Climate Intelligence for Heatwave Monitoring, Prediction and Early Warning (case 5)
 **Cloud Computing experiments:** 2 (Docker & Docker Hub), 3 (Kubernetes), 7 (Right-sizing), 8 (FinOps instance comparison)

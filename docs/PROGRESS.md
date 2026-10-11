@@ -2,20 +2,20 @@
 
 | Stage | Status | Evidence |
 |---|---|---|
-| Data: IMD 2014–2024 Tmax downloaded (2017 needed 3 attempts) and parsed (10 cities, 40,180 rows) | Verified | `data/processed/city_tmax.csv` |
-| AI: Ridge forecaster, test MAE 0.883 °C vs persistence 0.940 °C | Verified | `models/metrics.json`, `experiments/train_output.txt` |
-| AI: alert margin 1.25 °C (chosen on 2023): 2024 heatwave recall 0.896, precision 0.566 | Verified | `models/metrics.json` |
-| IMD coastal rule corrected after checking IMD definitions (v1.1); forecast errors unchanged | Verified | `app/severity.py`, `exp2_push_v1.1.log` |
-| API + dashboard; 13 pytest tests incl. invalid-input/failure | Verified | `experiments/results/pytest_output.txt` |
-| Exp 2: build, run, failures, nginx/hello-world/ubuntu, multi-arch push 1.0 and 1.1, pull-and-run | Verified | `exp2_*.log`, screenshot 04 |
-| Exp 3: kind, Hub image, service, load balancing, scale, self-healing, bad-image rollback, rolling update | Verified | `exp3_kubernetes.log`, screenshots 03, 05 |
-| Exp 7: 2 vCPU/2 GB → 0.75 vCPU/192 MiB; est. cost/hour −65.2%, throughput −10.7% | Verified | `exp7/`, `summary.md` |
-| Exp 8: low/medium/high; cheapest meeting pre-set target = low | Verified | `exp8/`, `summary.md` |
-| Report PDF, README, checklist, demo plan, source ZIP, GitHub push | Done | `docs/` |
-| Demonstration video | Not done: to be recorded by student | `docs/DEMO_PLAN.md` |
+| Data: IMD 2014–2024 Tmax (2017 needed 3 attempts), 10 cities, 40,180 rows | Verified | `data/processed/city_tmax.csv` |
+| v1: next-day forecast, single container, Exp 2/3/7/8 | Verified, archived | `experiments/results/archive_v1/` |
+| v2 AI: 7 ridge models; test MAE 0.88 (day 1) → 1.54 °C (day 7); days 1–4 validated alerts | Verified | `models/metrics.json`, `experiments/results/train_output.txt` |
+| v2 backend API + frontend (nginx), Docker Compose; 18/18 tests | Verified | `pytest_output.txt`, screenshots 01–04 |
+| Exp 2 v2: build, compose, failure cases, multi-arch push, pull-and-run | Verified | `exp2_docker.log` |
+| Exp 7 v2: 2 vCPU/2 GB → 1.25 vCPU/192 MiB, est. cost −42.7% | Verified | `exp7/`, `summary.md` |
+| Exp 8 v2: target fixed beforehand; medium cheapest passing (borderline) | Verified | `exp8/`, `summary.md` |
+| Exp 3 v2: two tiers, scaling, self-healing, rollback, rolling updates 89/89 + 114/114 | Verified | `exp3_kubernetes.log`, screenshot 05 |
+| Report PDF, README, checklist, demo plan, ZIP, GitHub push | Done | `docs/` |
+| Demonstration video | To be recorded by student; link goes in `docs/video_link.txt` | `docs/DEMO_PLAN.md` |
 
 ## Known issues
 - IMD server is slow; bare domain times out, `www.` works.
-- Exp 7/8 throughput limited by the single Python load generator (~600 req/s).
-- Exp 8 target had no throughput requirement; post-hoc sensitivity reported separately.
-- One failed health check (1/40) during the Exp 3 rolling update; preStop hook not implemented.
+- Online map tile servers were unreachable on this network; the map uses a bundled Natural Earth outline (India view).
+- Exp 7: median latency +21.8% after right-sizing (throughput and p95 not worse).
+- Exp 8: medium passes on the mean; 1 of 3 runs at 295.5 req/s (< 300).
+- At 0.25 vCPU the backend's health check times out under load.

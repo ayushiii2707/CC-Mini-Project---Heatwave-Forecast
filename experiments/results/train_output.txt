@@ -1,0 +1,16 @@
+h=1: persistence_baseline val 0.924 test 0.94  climatology_baseline val 1.849 test 1.575  ridge_regression val 0.888 test 0.883  gradient_boosting val 0.895 test 0.902
+h=2: persistence_baseline val 1.398 test 1.379  climatology_baseline val 1.849 test 1.575  ridge_regression val 1.299 test 1.235  gradient_boosting val 1.305 test 1.262
+h=3: persistence_baseline val 1.704 test 1.652  climatology_baseline val 1.849 test 1.575  ridge_regression val 1.515 test 1.396  gradient_boosting val 1.527 test 1.438
+h=4: persistence_baseline val 1.927 test 1.84  climatology_baseline val 1.849 test 1.575  ridge_regression val 1.645 test 1.475  gradient_boosting val 1.665 test 1.536
+h=5: persistence_baseline val 2.075 test 1.976  climatology_baseline val 1.849 test 1.575  ridge_regression val 1.715 test 1.514  gradient_boosting val 1.735 test 1.562
+h=6: persistence_baseline val 2.184 test 2.086  climatology_baseline val 1.849 test 1.575  ridge_regression val 1.761 test 1.534  gradient_boosting val 1.781 test 1.586
+h=7: persistence_baseline val 2.281 test 2.155  climatology_baseline val 1.849 test 1.575  ridge_regression val 1.79 test 1.542  gradient_boosting val 1.809 test 1.587
+mean validation MAE: {'ridge_regression': 1.516142857142857, 'gradient_boosting': 1.5310000000000001} -> selected ridge_regression
+h=1: margin 1.25 C (val F2 0.618, validated) -> test recall 0.896 precision 0.566
+h=2: margin 2.75 C (val F2 0.38, validated) -> test recall 0.979 precision 0.299
+h=3: margin 3.0 C (val F2 0.388, validated) -> test recall 0.854 precision 0.295
+h=4: margin 3.25 C (val F2 0.381, validated) -> test recall 0.729 precision 0.257
+h=5: margin 3.75 C (val F2 0.276, low) -> test recall 0.771 precision 0.164
+h=6: margin 3.25 C (val F2 0.26, low) -> test recall 0.354 precision 0.23
+h=7: margin 3.5 C (val F2 0.294, low) -> test recall 0.396 precision 0.184
+saved models/model.joblib and models/metrics.json

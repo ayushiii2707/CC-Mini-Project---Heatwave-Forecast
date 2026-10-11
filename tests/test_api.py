@@ -15,7 +15,7 @@ GOOD = {"city": "Delhi", "date": "2024-05-27",
 # ---- representative inputs -------------------------------------------------
 def test_health_reports_loaded_model():
     r = client.get("/health")
-    assert r.status_code == 200 and r.json()["status"] == "ok"
+    assert r.status_code == 200 and r.json()["status"] == "ok" and r.json()["horizons"] == 7
 
 
 def test_cities_list():
@@ -28,28 +28,55 @@ def test_observed_returns_real_imd_window():
     assert r.status_code == 200
     body = r.json()
     assert len(body["recent_tmax"]) == 7 and body["actual_next_day_tmax"] is not None
+    assert len(body["actual_next_7"]) == 7
+
+
+def test_observed_history_for_charts():
+    r = client.get("/observed", params={"city": "Delhi", "date": "2024-05-27", "days": 30})
+    hist = r.json()["history"]
+    assert len(hist) == 30 and hist[-1]["date"] == "2024-05-27" and hist[-1]["normal"] is not None
+
+
+def test_predict_returns_7_consecutive_days():
+    body = client.post("/predict", json=GOOD).json()
+    assert [d["day"] for d in body["days"]] == [1, 2, 3, 4, 5, 6, 7]
+    assert [d["date"] for d in body["days"]] == [f"2024-05-{d}" for d in range(28, 32)] + \
+        ["2024-06-01", "2024-06-02", "2024-06-03"]
+    assert all(35 <= d["forecast_tmax"] <= 52 for d in body["days"])
+    assert {d["alert_confidence"] for d in body["days"]} <= {"validated", "low"}
 
 
 def test_predict_hot_spell_raises_alert():
-    r = client.post("/predict", json=GOOD)
-    assert r.status_code == 200
-    body = r.json()
-    assert body["forecast_date"] == "2024-05-28"
-    assert 35 <= body["forecast_tmax"] <= 52
-    assert body["alert"] in ("Heatwave", "Severe heatwave")
+    body = client.post("/predict", json=GOOD).json()
+    assert body["days"][0]["alert"] in ("Heatwave", "Severe heatwave")
+    assert body["highest_validated_alert"] != "Normal" and body["first_alert_day"] == 1
 
 
 def test_predict_winter_is_normal():
     r = client.post("/predict", json={"city": "Delhi", "date": "2024-01-10",
                                       "recent_tmax": [16, 17, 15, 16, 18, 17, 16]})
-    assert r.status_code == 200 and r.json()["alert"] == "Normal"
+    assert r.status_code == 200 and r.json()["highest_alert"] == "Normal"
 
 
 def test_forecast_close_to_actual_on_real_day():
     obs = client.get("/observed", params={"city": "Nagpur", "date": "2024-04-15"}).json()
     pred = client.post("/predict", json={"city": "Nagpur", "date": "2024-04-15",
                                          "recent_tmax": obs["recent_tmax"]}).json()
-    assert abs(pred["forecast_tmax"] - obs["actual_next_day_tmax"]) < 5
+    assert abs(pred["days"][0]["forecast_tmax"] - obs["actual_next_day_tmax"]) < 5
+
+
+def test_outlook_covers_all_cities_sorted_by_risk():
+    body = client.get("/outlook", params={"date": "2024-05-27"}).json()
+    assert len(body["cities"]) == 10
+    order = ["Severe heatwave", "Heatwave", "Normal"]
+    ranks = [order.index(c["highest_alert"]) for c in body["cities"]]
+    assert ranks == sorted(ranks)
+
+
+def test_model_info_has_7_horizons():
+    h = client.get("/model-info").json()["horizons"]
+    assert [x["day"] for x in h] == list(range(1, 8))
+    assert all(x["test_mae"]["ridge_regression"] < x["test_mae"]["persistence_baseline"] for x in h)
 
 
 # ---- invalid input / failure scenarios ------------------------------------
@@ -76,6 +103,12 @@ def test_non_numeric_and_bad_date_422():
 def test_observed_outside_data_range_404():
     r = client.get("/observed", params={"city": "Delhi", "date": "2030-05-01"})
     assert r.status_code == 404
+    assert client.get("/outlook", params={"date": "2030-05-01"}).status_code == 404
+
+
+def test_observed_history_too_long_422():
+    r = client.get("/observed", params={"city": "Delhi", "date": "2024-05-27", "days": 500})
+    assert r.status_code == 422
 
 
 # ---- rule-based severity (IMD criteria) ------------------------------------

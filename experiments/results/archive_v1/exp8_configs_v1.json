@@ -1,0 +1,9 @@
+{
+  "note": "Defined BEFORE running Exp 8. Same image, same loadtest (15000 requests, 20 concurrent clients, seed 7) as Exp 7.",
+  "performance_target": {"max_p95_latency_ms": 150, "max_errors": 0, "oom_killed": false},
+  "configs": [
+    {"name": "low",    "cpus": 0.25, "memory": "512m", "fargate_equivalent": "0.25 vCPU / 0.5 GB"},
+    {"name": "medium", "cpus": 0.5,  "memory": "1g",   "fargate_equivalent": "0.5 vCPU / 1 GB"},
+    {"name": "high",   "cpus": 1.0,  "memory": "2g",   "fargate_equivalent": "1 vCPU / 2 GB"}
+  ]
+}

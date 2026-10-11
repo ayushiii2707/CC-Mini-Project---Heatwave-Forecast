@@ -1,218 +1,271 @@
+# backend limits from Experiment 7 right-sizing: cpu=1250m memory=192Mi
+
+$ kind create cluster --config k8s/kind-config.yaml
+Creating cluster "heatguard" ...
+ • Ensuring node image (kindest/node:v1.37.0) 🖼️  ...
+ ✓ Ensuring node image (kindest/node:v1.37.0) 🖼️
+ • Preparing nodes 📦   ...
+ ✓ Preparing nodes 📦 
+ • Writing configuration 📜  ...
+ ✓ Writing configuration 📜
+ • Starting control-plane 🕹️  ...
+ ✓ Starting control-plane 🕹️
+ • Installing CNI 🔌  ...
+ ✓ Installing CNI 🔌
+ • Installing StorageClass 💾  ...
+ ✓ Installing StorageClass 💾
+Set kubectl context to "kind-heatguard"
+You can now use your cluster with:
+
+kubectl cluster-info --context kind-heatguard
+
+Thanks for using kind! 😊
+
 $ kubectl cluster-info --context kind-heatguard
-Kubernetes control plane is running at https://127.0.0.1:60633
-CoreDNS is running at https://127.0.0.1:60633/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+Kubernetes control plane is running at https://127.0.0.1:62976
+CoreDNS is running at https://127.0.0.1:62976/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
 
 To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 
 $ kubectl get nodes -o wide
-NAME                      STATUS   ROLES           AGE   VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE                       KERNEL-VERSION            CONTAINER-RUNTIME
-heatguard-control-plane   Ready    control-plane   11m   v1.37.0   172.18.0.2    <none>        Debian GNU/Linux 13 (trixie)   7.0.12-linuxkit (arm64)   containerd://2.3.4
+NAME                      STATUS     ROLES           AGE   VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE                       KERNEL-VERSION            CONTAINER-RUNTIME
+heatguard-control-plane   NotReady   control-plane   5s    v1.37.0   172.18.0.2    <none>        Debian GNU/Linux 13 (trixie)   7.0.12-linuxkit (arm64)   containerd://2.3.4
 
-### 1. Deploy (image pulled from Docker Hub) and expose
-$ kubectl apply -f /tmp/heatguard-deployment.yaml
-deployment.apps/heatguard created
+### 1. Deploy backend (ClusterIP) and frontend (NodePort) from Docker Hub
+$ kubectl apply -f /tmp/heatguard-api.yaml -f /tmp/heatguard-web.yaml
+deployment.apps/heatguard-api created
+service/heatguard-api created
+deployment.apps/heatguard-web created
+service/heatguard-web created
 
-$ kubectl apply -f k8s/service.yaml
-service/heatguard created
+$ kubectl rollout status deployment/heatguard-api --timeout=300s
+Waiting for deployment spec update to be observed...
+Waiting for deployment spec update to be observed...
+Waiting for deployment "heatguard-api" rollout to finish: 0 out of 2 new replicas have been updated...
+Waiting for deployment "heatguard-api" rollout to finish: 0 of 2 updated replicas are available...
+Waiting for deployment "heatguard-api" rollout to finish: 1 of 2 updated replicas are available...
+deployment "heatguard-api" successfully rolled out
 
-$ kubectl rollout status deployment/heatguard --timeout=300s
-Waiting for deployment "heatguard" rollout to finish: 0 of 2 updated replicas are available...
-Waiting for deployment "heatguard" rollout to finish: 1 of 2 updated replicas are available...
-deployment "heatguard" successfully rolled out
+$ kubectl rollout status deployment/heatguard-web --timeout=300s
+deployment "heatguard-web" successfully rolled out
 
-$ kubectl get deployment heatguard
-NAME        READY   UP-TO-DATE   AVAILABLE   AGE
-heatguard   2/2     2            2           11s
+$ kubectl get deployments,pods,services -o wide
+NAME                            READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES                                       SELECTOR
+deployment.apps/heatguard-api   2/2     2            2           67s   api          docker.io/ayushiranjan27/heatguard:2.0       app=heatguard-api
+deployment.apps/heatguard-web   2/2     2            2           67s   web          docker.io/ayushiranjan27/heatguard-web:2.0   app=heatguard-web
 
-$ kubectl get pods -o wide
-NAME                        READY   STATUS    RESTARTS   AGE   IP           NODE                      NOMINATED NODE   READINESS GATES
-heatguard-9ddf56c84-jxrpf   1/1     Running   0          11s   10.244.0.7   heatguard-control-plane   <none>           <none>
-heatguard-9ddf56c84-wkhkq   1/1     Running   0          11s   10.244.0.8   heatguard-control-plane   <none>           <none>
+NAME                                 READY   STATUS    RESTARTS   AGE   IP           NODE                      NOMINATED NODE   READINESS GATES
+pod/heatguard-api-8c955c984-82rsc    1/1     Running   0          61s   10.244.0.7   heatguard-control-plane   <none>           <none>
+pod/heatguard-api-8c955c984-b7856    1/1     Running   0          61s   10.244.0.5   heatguard-control-plane   <none>           <none>
+pod/heatguard-web-66cf47486d-gb7hk   1/1     Running   0          61s   10.244.0.8   heatguard-control-plane   <none>           <none>
+pod/heatguard-web-66cf47486d-s4cr5   1/1     Running   0          61s   10.244.0.2   heatguard-control-plane   <none>           <none>
 
-$ kubectl get service heatguard
-NAME        TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
-heatguard   NodePort   10.96.84.104   <none>        80:30080/TCP   10s
+NAME                    TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE   SELECTOR
+service/heatguard-api   ClusterIP   10.96.212.217   <none>        8000/TCP       67s   app=heatguard-api
+service/heatguard-web   NodePort    10.96.57.17     <none>        80:30080/TCP   67s   app=heatguard-web
+service/kubernetes      ClusterIP   10.96.0.1       <none>        443/TCP        71s   <none>
 
-$ kubectl describe pod heatguard-9ddf56c84-jxrpf | grep -E 'Image:|Pulled|Limits|cpu|memory'
-    Image:          docker.io/ayushiranjan27/heatguard:1.0
+$ kubectl describe pod heatguard-api-8c955c984-82rsc | grep -E 'Image:|Limits|Requests|cpu|memory|Pulled|preStop'
+    Image:          docker.io/ayushiranjan27/heatguard:2.0
     Limits:
-      cpu:     750m
+      cpu:     1250m
       memory:  192Mi
     Requests:
       cpu:        250m
       memory:     128Mi
-  Normal  Pulled     5s    kubelet            spec.containers{heatguard}: Successfully pulled image "docker.io/ayushiranjan27/heatguard:1.0" in 1.465s (4.559s including waiting). Image size: 135874819 bytes.
+  Normal   Pulled            6s    kubelet            spec.containers{api}: Successfully pulled image "docker.io/ayushiranjan27/heatguard:2.0" in 1.433s (44.2s including waiting). Image size: 135881724 bytes.
 
-### 2. Service access + load balancing across pods
-{"status":"ok","model":"ridge_regression","pod":"heatguard-9ddf56c84-jxrpf"}
-{"status":"ok","model":"ridge_regression","pod":"heatguard-9ddf56c84-jxrpf"}
-{"status":"ok","model":"ridge_regression","pod":"heatguard-9ddf56c84-wkhkq"}
-{"status":"ok","model":"ridge_regression","pod":"heatguard-9ddf56c84-jxrpf"}
-{"status":"ok","model":"ridge_regression","pod":"heatguard-9ddf56c84-wkhkq"}
-{"status":"ok","model":"ridge_regression","pod":"heatguard-9ddf56c84-jxrpf"}
+$ kubectl get deployment heatguard-api -o jsonpath='{.spec.strategy}'
+{"rollingUpdate":{"maxSurge":1,"maxUnavailable":0},"type":"RollingUpdate"}
 
-$ curl -X POST http://localhost:30080/predict (Delhi, real IMD values for 21-27 May 2024)
-{"city":"Delhi","forecast_date":"2024-05-28","forecast_tmax":44.1,"upper_forecast_tmax":45.3,"alert_margin_c":1.25,"normal_tmax":40.6,"alert":"Heatwave","departure_from_normal":4.8,"rule":"departure +4.8 C from normal 40.6 C","advisory":"Heatwave conditions likely. Avoid sun exposure 12-3 pm, drink water often, check on elderly people, children and outdoor workers.","model":"ridge_regression","inference_ms":8.47,"pod":"heatguard-9ddf56c84-wkhkq","note":"Educational prototype. Official warnings: India Meteorological Department."}
+### 2. Service access: browser -> NodePort 30080 -> frontend -> heatguard-api Service -> backend pods
+$ curl -s http://localhost:30080/healthz
+ok
 
-# invalid input through the Service
+# backend pod answering each request (load-balanced by the heatguard-api Service):
+{"status":"ok","version":"2.0","model":"ridge_regression","horizons":7,"pod":"heatguard-api-8c955c984-82rsc"}
+{"status":"ok","version":"2.0","model":"ridge_regression","horizons":7,"pod":"heatguard-api-8c955c984-82rsc"}
+{"status":"ok","version":"2.0","model":"ridge_regression","horizons":7,"pod":"heatguard-api-8c955c984-82rsc"}
+{"status":"ok","version":"2.0","model":"ridge_regression","horizons":7,"pod":"heatguard-api-8c955c984-b7856"}
+{"status":"ok","version":"2.0","model":"ridge_regression","horizons":7,"pod":"heatguard-api-8c955c984-b7856"}
+{"status":"ok","version":"2.0","model":"ridge_regression","horizons":7,"pod":"heatguard-api-8c955c984-b7856"}
+{"status":"ok","version":"2.0","model":"ridge_regression","horizons":7,"pod":"heatguard-api-8c955c984-b7856"}
+{"status":"ok","version":"2.0","model":"ridge_regression","horizons":7,"pod":"heatguard-api-8c955c984-82rsc"}
+
+$ curl -s -X POST http://localhost:30080/api/predict   (Delhi, real IMD values 21-27 May 2024)
+highest alert: Heatwave | validated: Heatwave | first alert day: 1 | served by heatguard-api-8c955c984-b7856 in 8.32 ms
+  day 1 2024-05-28   44.1 C (+/-0.888)  alert basis  45.3 C  Heatwave         validated
+  day 2 2024-05-29   43.2 C (+/-1.299)  alert basis  45.9 C  Heatwave         validated
+  day 3 2024-05-30   42.5 C (+/-1.515)  alert basis  45.5 C  Heatwave         validated
+  day 4 2024-05-31   42.1 C (+/-1.645)  alert basis  45.4 C  Heatwave         validated
+  day 5 2024-06-01   42.0 C (+/-1.715)  alert basis  45.7 C  Heatwave         low
+  day 6 2024-06-02   41.9 C (+/-1.761)  alert basis  45.1 C  Heatwave         low
+  day 7 2024-06-03   41.8 C (+/-1.79)  alert basis  45.3 C  Heatwave         low
+
+# invalid input through the cluster
 {"detail":"unknown city 'Atlantis'. Supported: Delhi, Jaipur, Lucknow, Patna, Ahmedabad, Nagpur, Kolkata, Bhubaneswar, Hyderabad, Chennai"} HTTP 404
 
-### 3. Scaling 2 -> 3 replicas
-$ kubectl scale deployment heatguard --replicas=3
-deployment.apps/heatguard scaled
+# the backend is not exposed outside the cluster (type ClusterIP, no NodePort):
+$ kubectl get service heatguard-api -o jsonpath={.spec.type} {.spec.ports}
+ClusterIP [{"port":8000,"protocol":"TCP","targetPort":8000}]
 
-$ kubectl rollout status deployment/heatguard --timeout=120s
-Waiting for deployment "heatguard" rollout to finish: 2 of 3 updated replicas are available...
-deployment "heatguard" successfully rolled out
+### 3. Horizontal scaling: frontend 2 -> 4, backend 2 -> 3
+$ kubectl scale deployment heatguard-web --replicas=4
+deployment.apps/heatguard-web scaled
 
-$ kubectl get pods -o wide
-NAME                        READY   STATUS    RESTARTS   AGE   IP           NODE                      NOMINATED NODE   READINESS GATES
-heatguard-9ddf56c84-br798   1/1     Running   0          8s    10.244.0.9   heatguard-control-plane   <none>           <none>
-heatguard-9ddf56c84-jxrpf   1/1     Running   0          19s   10.244.0.7   heatguard-control-plane   <none>           <none>
-heatguard-9ddf56c84-wkhkq   1/1     Running   0          19s   10.244.0.8   heatguard-control-plane   <none>           <none>
+$ kubectl scale deployment heatguard-api --replicas=3
+deployment.apps/heatguard-api scaled
 
-### 4. Self-healing: delete a pod, the Deployment recreates it
-$ kubectl delete pod heatguard-9ddf56c84-br798 --wait=false
-pod "heatguard-9ddf56c84-br798" deleted from default namespace
+$ kubectl rollout status deployment/heatguard-web --timeout=120s
+Waiting for deployment "heatguard-web" rollout to finish: 2 of 4 updated replicas are available...
+Waiting for deployment "heatguard-web" rollout to finish: 3 of 4 updated replicas are available...
+deployment "heatguard-web" successfully rolled out
 
-$ kubectl get pods
-NAME                        READY   STATUS              RESTARTS   AGE
-heatguard-9ddf56c84-br798   1/1     Terminating         0          8s
-heatguard-9ddf56c84-jxrpf   1/1     Running             0          19s
-heatguard-9ddf56c84-ltqpr   0/1     ContainerCreating   0          0s
-heatguard-9ddf56c84-wkhkq   1/1     Running             0          19s
-
-$ kubectl get pods
-NAME                        READY   STATUS    RESTARTS   AGE
-heatguard-9ddf56c84-jxrpf   1/1     Running   0          35s
-heatguard-9ddf56c84-ltqpr   1/1     Running   0          16s
-heatguard-9ddf56c84-wkhkq   1/1     Running   0          35s
-
-$ kubectl get deployment heatguard
-NAME        READY   UP-TO-DATE   AVAILABLE   AGE
-heatguard   3/3     3            3           35s
-
-{"status":"ok","model":"ridge_regression","pod":"heatguard-9ddf56c84-ltqpr"}
-{"status":"ok","model":"ridge_regression","pod":"heatguard-9ddf56c84-wkhkq"}
-{"status":"ok","model":"ridge_regression","pod":"heatguard-9ddf56c84-jxrpf"}
-
-### 5. Failure scenario: bad image tag -> rollout blocked, old pods keep serving -> rollback
-$ kubectl set image deployment/heatguard heatguard=docker.io/ayushiranjan27/heatguard:does-not-exist
-deployment.apps/heatguard image updated
-
-$ kubectl get pods
-NAME                         READY   STATUS             RESTARTS   AGE
-heatguard-68fc79f464-vmgq5   0/1     ImagePullBackOff   0          25s
-heatguard-9ddf56c84-jxrpf    1/1     Running            0          60s
-heatguard-9ddf56c84-ltqpr    1/1     Running            0          41s
-heatguard-9ddf56c84-wkhkq    1/1     Running            0          60s
-
-$ curl -s http://localhost:30080/health
-{"status":"ok","model":"ridge_regression","pod":"heatguard-9ddf56c84-ltqpr"}
-
-$ kubectl rollout undo deployment/heatguard
-Warning: resource deployments/heatguard was previously managed with 'kubectl apply'. Rolling back will not update the kubectl.kubernetes.io/last-applied-configuration annotation, which may cause unexpected behavior on future 'kubectl apply' operations. Consider using 'kubectl apply' with your previous configuration file instead.
-deployment.apps/heatguard rolled back
-
-$ kubectl rollout status deployment/heatguard --timeout=180s
-deployment "heatguard" successfully rolled out
-
-$ kubectl rollout history deployment/heatguard
-deployment.apps/heatguard 
-REVISION  CHANGE-CAUSE
-2         <none>
-3         <none>
-
+$ kubectl rollout status deployment/heatguard-api --timeout=120s
+Waiting for deployment "heatguard-api" rollout to finish: 2 of 3 updated replicas are available...
+deployment "heatguard-api" successfully rolled out
 
 $ kubectl get pods -o wide
-NAME                         READY   STATUS        RESTARTS   AGE   IP            NODE                      NOMINATED NODE   READINESS GATES
-heatguard-68fc79f464-vmgq5   0/1     Terminating   0          25s   10.244.0.11   heatguard-control-plane   <none>           <none>
-heatguard-9ddf56c84-jxrpf    1/1     Running       0          60s   10.244.0.7    heatguard-control-plane   <none>           <none>
-heatguard-9ddf56c84-ltqpr    1/1     Running       0          41s   10.244.0.10   heatguard-control-plane   <none>           <none>
-heatguard-9ddf56c84-wkhkq    1/1     Running       0          60s   10.244.0.8    heatguard-control-plane   <none>           <none>
+NAME                             READY   STATUS    RESTARTS   AGE   IP            NODE                      NOMINATED NODE   READINESS GATES
+heatguard-api-8c955c984-7kx69    1/1     Running   0          11s   10.244.0.11   heatguard-control-plane   <none>           <none>
+heatguard-api-8c955c984-82rsc    1/1     Running   0          73s   10.244.0.7    heatguard-control-plane   <none>           <none>
+heatguard-api-8c955c984-b7856    1/1     Running   0          73s   10.244.0.5    heatguard-control-plane   <none>           <none>
+heatguard-web-66cf47486d-8gml2   1/1     Running   0          11s   10.244.0.10   heatguard-control-plane   <none>           <none>
+heatguard-web-66cf47486d-8j8qb   1/1     Running   0          11s   10.244.0.9    heatguard-control-plane   <none>           <none>
+heatguard-web-66cf47486d-gb7hk   1/1     Running   0          73s   10.244.0.8    heatguard-control-plane   <none>           <none>
+heatguard-web-66cf47486d-s4cr5   1/1     Running   0          73s   10.244.0.2    heatguard-control-plane   <none>           <none>
 
-### 6. Logs and events
-$ kubectl logs heatguard-68fc79f464-vmgq5 --tail=5
-Error from server (BadRequest): container "heatguard" in pod "heatguard-68fc79f464-vmgq5" is waiting to start: ContainerCreating
+### 4. Self-healing: delete a backend pod; the Deployment replaces it
+$ kubectl delete pod heatguard-api-8c955c984-7kx69 --wait=false
+pod "heatguard-api-8c955c984-7kx69" deleted from default namespace
 
-$ kubectl get events --sort-by=.lastTimestamp | tail -25
-55s         Normal    Pulled                    pod/heatguard-9ddf56c84-jxrpf     Successfully pulled image "docker.io/ayushiranjan27/heatguard:1.0" in 1.465s (4.559s including waiting). Image size: 135874819 bytes.
-50s         Normal    Scheduled                 pod/heatguard-9ddf56c84-br798     Successfully assigned default/heatguard-9ddf56c84-br798 to heatguard-control-plane
-50s         Normal    SuccessfulCreate          replicaset/heatguard-9ddf56c84    Created pod: heatguard-9ddf56c84-br798
-50s         Normal    ScalingReplicaSet         deployment/heatguard              Scaled up replica set heatguard-9ddf56c84 from 2 to 3
-49s         Normal    Pulling                   pod/heatguard-9ddf56c84-br798     Pulling image "docker.io/ayushiranjan27/heatguard:1.0"
-48s         Normal    Pulled                    pod/heatguard-9ddf56c84-br798     Successfully pulled image "docker.io/ayushiranjan27/heatguard:1.0" in 1.225s (1.225s including waiting). Image size: 135874819 bytes.
-48s         Normal    Started                   pod/heatguard-9ddf56c84-br798     Container started
-48s         Normal    Created                   pod/heatguard-9ddf56c84-br798     Container created
-42s         Normal    Scheduled                 pod/heatguard-9ddf56c84-ltqpr     Successfully assigned default/heatguard-9ddf56c84-ltqpr to heatguard-control-plane
-42s         Normal    SuccessfulCreate          replicaset/heatguard-9ddf56c84    Created pod: heatguard-9ddf56c84-ltqpr
-41s         Normal    Pulling                   pod/heatguard-9ddf56c84-ltqpr     Pulling image "docker.io/ayushiranjan27/heatguard:1.0"
-41s         Normal    Killing                   pod/heatguard-9ddf56c84-br798     Stopping container heatguard
-40s         Normal    Pulled                    pod/heatguard-9ddf56c84-ltqpr     Successfully pulled image "docker.io/ayushiranjan27/heatguard:1.0" in 1.298s (1.298s including waiting). Image size: 135874819 bytes.
-40s         Normal    Created                   pod/heatguard-9ddf56c84-ltqpr     Container created
-40s         Normal    Started                   pod/heatguard-9ddf56c84-ltqpr     Container started
-26s         Normal    Scheduled                 pod/heatguard-68fc79f464-vmgq5    Successfully assigned default/heatguard-68fc79f464-vmgq5 to heatguard-control-plane
-26s         Normal    SuccessfulCreate          replicaset/heatguard-68fc79f464   Created pod: heatguard-68fc79f464-vmgq5
-26s         Normal    ScalingReplicaSet         deployment/heatguard              Scaled up replica set heatguard-68fc79f464 from 0 to 1
-24s         Warning   Failed                    pod/heatguard-68fc79f464-vmgq5    Error: ImagePullBackOff
-24s         Normal    BackOff                   pod/heatguard-68fc79f464-vmgq5    Back-off pulling image "docker.io/ayushiranjan27/heatguard:does-not-exist"
-8s          Normal    Pulling                   pod/heatguard-68fc79f464-vmgq5    Pulling image "docker.io/ayushiranjan27/heatguard:does-not-exist"
-7s          Warning   Failed                    pod/heatguard-68fc79f464-vmgq5    Error: ErrImagePull
-7s          Warning   Failed                    pod/heatguard-68fc79f464-vmgq5    Failed to pull image "docker.io/ayushiranjan27/heatguard:does-not-exist": rpc error: code = NotFound desc = failed to pull and unpack image "docker.io/ayushiranjan27/heatguard:does-not-exist": failed to resolve reference "docker.io/ayushiranjan27/heatguard:does-not-exist": docker.io/ayushiranjan27/heatguard:does-not-exist: not found
-1s          Normal    SuccessfulDelete          replicaset/heatguard-68fc79f464   Deleted pod: heatguard-68fc79f464-vmgq5
-1s          Normal    ScalingReplicaSet         deployment/heatguard              Scaled down replica set heatguard-68fc79f464 from 1 to 0
+$ kubectl get pods -l app=heatguard-api
+NAME                            READY   STATUS              RESTARTS   AGE
+heatguard-api-8c955c984-7kx69   1/1     Terminating         0          11s
+heatguard-api-8c955c984-82rsc   1/1     Running             0          73s
+heatguard-api-8c955c984-b7856   1/1     Running             0          73s
+heatguard-api-8c955c984-jj74h   0/1     ContainerCreating   0          0s
 
-### 6b. (separate run after the script above, fixed pod selection) final state and logs
-$ kubectl get deployment,pods,svc
-NAME                        READY   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/heatguard   3/3     3            3           69s
-
+$ kubectl get pods -l app=heatguard-api
 NAME                            READY   STATUS    RESTARTS   AGE
-pod/heatguard-9ddf56c84-jxrpf   1/1     Running   0          69s
-pod/heatguard-9ddf56c84-ltqpr   1/1     Running   0          50s
-pod/heatguard-9ddf56c84-wkhkq   1/1     Running   0          69s
+heatguard-api-8c955c984-82rsc   1/1     Running   0          88s
+heatguard-api-8c955c984-b7856   1/1     Running   0          88s
+heatguard-api-8c955c984-jj74h   1/1     Running   0          15s
 
-NAME                 TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
-service/heatguard    NodePort    10.96.84.104   <none>        80:30080/TCP   68s
-service/kubernetes   ClusterIP   10.96.0.1      <none>        443/TCP        12m
+$ kubectl get deployment heatguard-api
+NAME            READY   UP-TO-DATE   AVAILABLE   AGE
+heatguard-api   3/3     3            3           94s
 
-$ kubectl logs heatguard-9ddf56c84-jxrpf --tail=6
-INFO:     10.244.0.1:37120 - "GET /health HTTP/1.1" 200 OK
-INFO:     10.244.0.1:37130 - "GET /health HTTP/1.1" 200 OK
-INFO:     10.244.0.1:37142 - "GET /health HTTP/1.1" 200 OK
-INFO:     10.244.0.1:33768 - "GET /health HTTP/1.1" 200 OK
-INFO:     10.244.0.1:33774 - "GET /health HTTP/1.1" 200 OK
-INFO:     10.244.0.1:33780 - "GET /health HTTP/1.1" 200 OK
+### 5. Failure scenario: bad backend image -> rollout blocked, old pods keep serving -> rollback
+$ kubectl set image deployment/heatguard-api api=docker.io/ayushiranjan27/heatguard:does-not-exist
+deployment.apps/heatguard-api image updated
 
-### 7. Rolling update 1.0 -> 1.1 (coastal heatwave rule fix), with availability check during rollout
-$ kubectl set image deployment/heatguard heatguard=docker.io/ayushiranjan27/heatguard:1.1
-deployment.apps/heatguard image updated
-$ kubectl rollout status deployment/heatguard
-Waiting for deployment "heatguard" rollout to finish: 1 out of 3 new replicas have been updated...
-Waiting for deployment "heatguard" rollout to finish: 1 out of 3 new replicas have been updated...
-Waiting for deployment "heatguard" rollout to finish: 1 out of 3 new replicas have been updated...
-Waiting for deployment "heatguard" rollout to finish: 2 out of 3 new replicas have been updated...
-Waiting for deployment "heatguard" rollout to finish: 2 out of 3 new replicas have been updated...
-Waiting for deployment "heatguard" rollout to finish: 2 out of 3 new replicas have been updated...
-Waiting for deployment "heatguard" rollout to finish: 2 out of 3 new replicas have been updated...
-Waiting for deployment "heatguard" rollout to finish: 1 old replicas are pending termination...
-Waiting for deployment "heatguard" rollout to finish: 1 old replicas are pending termination...
-Waiting for deployment "heatguard" rollout to finish: 1 old replicas are pending termination...
-deployment "heatguard" successfully rolled out
-# availability during rollout: 39/40 health checks returned HTTP 200 (non-200: 1)
-$ kubectl get pods -o wide
-NAME                        READY   STATUS    RESTARTS   AGE   IP            NODE                      NOMINATED NODE   READINESS GATES
-heatguard-df89b7b5f-7msn6   1/1     Running   0          33s   10.244.0.12   heatguard-control-plane   <none>           <none>
-heatguard-df89b7b5f-czgdj   1/1     Running   0          14s   10.244.0.14   heatguard-control-plane   <none>           <none>
-heatguard-df89b7b5f-p2ck5   1/1     Running   0          21s   10.244.0.13   heatguard-control-plane   <none>           <none>
-$ kubectl rollout history deployment/heatguard
-deployment.apps/heatguard 
+$ kubectl get pods -l app=heatguard-api
+NAME                             READY   STATUS             RESTARTS   AGE
+heatguard-api-6b55ff974c-5dl96   0/1     ImagePullBackOff   0          26s
+heatguard-api-8c955c984-82rsc    1/1     Running            0          114s
+heatguard-api-8c955c984-b7856    1/1     Running            0          114s
+heatguard-api-8c955c984-jj74h    1/1     Running            0          41s
+
+$ curl -s http://localhost:30080/api/health
+{"status":"ok","version":"2.0","model":"ridge_regression","horizons":7,"pod":"heatguard-api-8c955c984-b7856"}
+
+$ kubectl rollout undo deployment/heatguard-api
+Warning: resource deployments/heatguard-api was previously managed with 'kubectl apply'. Rolling back will not update the kubectl.kubernetes.io/last-applied-configuration annotation, which may cause unexpected behavior on future 'kubectl apply' operations. Consider using 'kubectl apply' with your previous configuration file instead.
+deployment.apps/heatguard-api rolled back
+
+$ kubectl rollout status deployment/heatguard-api --timeout=180s
+Waiting for deployment spec update to be observed...
+Waiting for deployment "heatguard-api" rollout to finish: 1 old replicas are pending termination...
+deployment "heatguard-api" successfully rolled out
+
+$ kubectl get pods -l app=heatguard-api
+NAME                             READY   STATUS        RESTARTS   AGE
+heatguard-api-6b55ff974c-5dl96   0/1     Terminating   0          26s
+heatguard-api-8c955c984-82rsc    1/1     Running       0          114s
+heatguard-api-8c955c984-b7856    1/1     Running       0          114s
+heatguard-api-8c955c984-jj74h    1/1     Running       0          41s
+
+### 6. Rolling update of the backend with continuous availability check
+# strategy maxSurge=1, maxUnavailable=0 and preStop sleep 5 (v1 without preStop: 39/40 OK)
+$ kubectl rollout restart deployment/heatguard-api && kubectl rollout status deployment/heatguard-api
+Waiting for deployment "heatguard-api" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "heatguard-api" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "heatguard-api" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "heatguard-api" rollout to finish: 1 out of 3 new replicas have been updated...
+Waiting for deployment "heatguard-api" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "heatguard-api" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "heatguard-api" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "heatguard-api" rollout to finish: 2 out of 3 new replicas have been updated...
+Waiting for deployment "heatguard-api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "heatguard-api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "heatguard-api" rollout to finish: 1 old replicas are pending termination...
+deployment "heatguard-api" successfully rolled out
+# availability: 89/89 requests returned HTTP 200 (failed: 0)
+
+$ kubectl rollout restart deployment/heatguard-web && kubectl rollout status deployment/heatguard-web
+Waiting for deployment "heatguard-web" rollout to finish: 1 out of 4 new replicas have been updated...
+Waiting for deployment "heatguard-web" rollout to finish: 1 out of 4 new replicas have been updated...
+Waiting for deployment "heatguard-web" rollout to finish: 1 out of 4 new replicas have been updated...
+Waiting for deployment "heatguard-web" rollout to finish: 2 out of 4 new replicas have been updated...
+Waiting for deployment "heatguard-web" rollout to finish: 2 out of 4 new replicas have been updated...
+Waiting for deployment "heatguard-web" rollout to finish: 2 out of 4 new replicas have been updated...
+Waiting for deployment "heatguard-web" rollout to finish: 2 out of 4 new replicas have been updated...
+Waiting for deployment "heatguard-web" rollout to finish: 3 out of 4 new replicas have been updated...
+Waiting for deployment "heatguard-web" rollout to finish: 3 out of 4 new replicas have been updated...
+Waiting for deployment "heatguard-web" rollout to finish: 3 out of 4 new replicas have been updated...
+Waiting for deployment "heatguard-web" rollout to finish: 3 out of 4 new replicas have been updated...
+Waiting for deployment "heatguard-web" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "heatguard-web" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "heatguard-web" rollout to finish: 1 old replicas are pending termination...
+deployment "heatguard-web" successfully rolled out
+# availability: 114/114 requests returned HTTP 200 (failed: 0)
+
+$ kubectl rollout history deployment/heatguard-api
+deployment.apps/heatguard-api 
 REVISION  CHANGE-CAUSE
 2         <none>
 3         <none>
 4         <none>
 
-$ kubectl get deployment heatguard -o jsonpath="{.spec.template.spec.containers[0].image}"
-docker.io/ayushiranjan27/heatguard:1.1
-# coastal check through the Service (Chennai, hottest 2024 week)
-[35.3, 37.2, 38.0, 39.0, 39.3, 40.8, 41.1]
+
+$ kubectl get pods -o wide
+NAME                             READY   STATUS        RESTARTS   AGE    IP            NODE                      NOMINATED NODE   READINESS GATES
+heatguard-api-658cd79f5b-9npc9   1/1     Running       0          57s    10.244.0.14   heatguard-control-plane   <none>           <none>
+heatguard-api-658cd79f5b-ljn7h   1/1     Running       0          49s    10.244.0.15   heatguard-control-plane   <none>           <none>
+heatguard-api-658cd79f5b-xmkv6   1/1     Running       0          42s    10.244.0.16   heatguard-control-plane   <none>           <none>
+heatguard-web-66cf47486d-8j8qb   1/1     Terminating   0          109s   10.244.0.9    heatguard-control-plane   <none>           <none>
+heatguard-web-6f8bd4c886-6865b   1/1     Running       0          32s    10.244.0.17   heatguard-control-plane   <none>           <none>
+heatguard-web-6f8bd4c886-6tvnl   1/1     Running       0          17s    10.244.0.19   heatguard-control-plane   <none>           <none>
+heatguard-web-6f8bd4c886-cmfnh   1/1     Running       0          10s    10.244.0.20   heatguard-control-plane   <none>           <none>
+heatguard-web-6f8bd4c886-kc9b8   1/1     Running       0          24s    10.244.0.18   heatguard-control-plane   <none>           <none>
+
+### 7. Logs and events
+$ kubectl logs heatguard-api-658cd79f5b-9npc9 --tail=5
+INFO:     10.244.0.1:49108 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.19:47136 - "GET /health HTTP/1.0" 200 OK
+INFO:     10.244.0.1:49112 - "GET /health HTTP/1.1" 200 OK
+INFO:     10.244.0.9:40154 - "GET /health HTTP/1.0" 200 OK
+INFO:     10.244.0.19:47184 - "GET /health HTTP/1.0" 200 OK
+
+$ kubectl get events --sort-by=.lastTimestamp | tail -20
+18s         Normal    ScalingReplicaSet         deployment/heatguard-web              Scaled down replica set heatguard-web-66cf47486d from 3 to 2
+18s         Normal    Killing                   pod/heatguard-web-66cf47486d-8gml2    Stopping container web
+18s         Normal    SuccessfulDelete          replicaset/heatguard-web-66cf47486d   Deleted pod: heatguard-web-66cf47486d-8gml2
+18s         Normal    Pulling                   pod/heatguard-web-6f8bd4c886-6tvnl    Pulling image "docker.io/ayushiranjan27/heatguard-web:2.0"
+16s         Normal    Started                   pod/heatguard-web-6f8bd4c886-6tvnl    Container started
+16s         Normal    Created                   pod/heatguard-web-6f8bd4c886-6tvnl    Container created
+16s         Normal    Pulled                    pod/heatguard-web-6f8bd4c886-6tvnl    Successfully pulled image "docker.io/ayushiranjan27/heatguard-web:2.0" in 1.34s (1.34s including waiting). Image size: 21996930 bytes.
+11s         Normal    Scheduled                 pod/heatguard-web-6f8bd4c886-cmfnh    Successfully assigned default/heatguard-web-6f8bd4c886-cmfnh to heatguard-control-plane
+11s         Normal    SuccessfulCreate          replicaset/heatguard-web-6f8bd4c886   Created pod: heatguard-web-6f8bd4c886-cmfnh
+11s         Normal    SuccessfulDelete          replicaset/heatguard-web-66cf47486d   Deleted pod: heatguard-web-66cf47486d-s4cr5
+11s         Normal    ScalingReplicaSet         deployment/heatguard-web              Scaled down replica set heatguard-web-66cf47486d from 2 to 1
+11s         Normal    ScalingReplicaSet         deployment/heatguard-web              Scaled up replica set heatguard-web-6f8bd4c886 from 3 to 4
+11s         Normal    Killing                   pod/heatguard-web-66cf47486d-s4cr5    Stopping container web
+10s         Normal    Pulling                   pod/heatguard-web-6f8bd4c886-cmfnh    Pulling image "docker.io/ayushiranjan27/heatguard-web:2.0"
+9s          Normal    Pulled                    pod/heatguard-web-6f8bd4c886-cmfnh    Successfully pulled image "docker.io/ayushiranjan27/heatguard-web:2.0" in 1.349s (1.349s including waiting). Image size: 21996930 bytes.
+9s          Normal    Started                   pod/heatguard-web-6f8bd4c886-cmfnh    Container started
+9s          Normal    Created                   pod/heatguard-web-6f8bd4c886-cmfnh    Container created
+4s          Normal    SuccessfulDelete          replicaset/heatguard-web-66cf47486d   Deleted pod: heatguard-web-66cf47486d-8j8qb
+4s          Normal    Killing                   pod/heatguard-web-66cf47486d-8j8qb    Stopping container web
+4s          Normal    ScalingReplicaSet         deployment/heatguard-web              (combined from similar events): Scaled down replica set heatguard-web-66cf47486d from 1 to 0

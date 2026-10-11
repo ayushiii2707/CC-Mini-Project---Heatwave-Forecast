@@ -1,6 +1,7 @@
 {
-  "note": "Defined BEFORE running Exp 8. Same image, same loadtest (15000 requests, 20 concurrent clients, seed 7) as Exp 7.",
-  "performance_target": {"max_p95_latency_ms": 150, "max_errors": 0, "oom_killed": false},
+  "note": "v2. Defined BEFORE running Exp 8 v2, after the Exp 7 v2 over-provisioned reference runs. Same image (heatguard:2.0) and same loadtest (15000 requests, 20 concurrent clients, seed 7) as Exp 7.",
+  "target_rule": "At most 25% lower throughput and at most 50% higher p95 latency than the over-provisioned reference (2 vCPU / 2 GB: ~417 req/s, p95 ~162 ms), no errors, no OOM kill.",
+  "performance_target": {"min_throughput_rps": 300, "max_p95_latency_ms": 250, "max_errors": 0, "oom_killed": false},
   "configs": [
     {"name": "low",    "cpus": 0.25, "memory": "512m", "fargate_equivalent": "0.25 vCPU / 0.5 GB"},
     {"name": "medium", "cpus": 0.5,  "memory": "1g",   "fargate_equivalent": "0.5 vCPU / 1 GB"},

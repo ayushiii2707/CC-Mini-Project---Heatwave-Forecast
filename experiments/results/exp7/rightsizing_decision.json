@@ -4,15 +4,15 @@
     "memory": "2g"
   },
   "observed_peak": {
-    "cpu_cores": 0.566,
-    "memory_mib": 105.5
+    "cpu_cores": 0.868,
+    "memory_mib": 118.2
   },
   "buffer": {
     "cpu": 1.25,
     "memory": 1.5
   },
   "right_sized": {
-    "cpus": 0.75,
+    "cpus": 1.25,
     "memory": "192m"
   }
 }

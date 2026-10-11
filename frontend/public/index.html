@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HeatGuard · 7-day Heatwave Early Warning</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='9' fill='%23ff6a2b'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="vendor/leaflet.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="logo" aria-hidden="true"></div>
+    <div>
+      <h1>HeatGuard</h1>
+      <p>7-day heatwave forecast &amp; early warning · IMD gridded data</p>
+    </div>
+  </div>
+  <div class="controls">
+    <label>City<select id="city"></select></label>
+    <label>As of date<input id="date" type="date" min="2014-01-07" max="2024-12-31"></label>
+    <span id="api-status" class="status-pill">connecting…</span>
+  </div>
+</header>
+
+<nav class="presets" aria-label="Example scenarios">
+  <span>Try:</span>
+  <button data-city="Delhi" data-date="2024-05-27">Delhi heatwave · May 2024</button>
+  <button data-city="Jaipur" data-date="2024-05-24">Jaipur · May 2024</button>
+  <button data-city="Nagpur" data-date="2024-05-25">Nagpur · May 2024</button>
+  <button data-city="Chennai" data-date="2024-05-31">Chennai (coastal) · May 2024</button>
+  <button data-city="Lucknow" data-date="2024-01-10">Lucknow · winter</button>
+</nav>
+
+<div id="error" class="error" role="alert" hidden></div>
+
+<main>
+  <section id="banner" class="banner level-normal">
+    <div>
+      <div class="banner-kicker" id="banner-kicker">7-day outlook</div>
+      <div class="banner-title" id="banner-title">Loading…</div>
+      <p class="banner-text" id="banner-text"></p>
+    </div>
+    <div class="banner-side">
+      <div class="banner-badge" id="banner-badge">–</div>
+      <div class="banner-meta" id="banner-meta"></div>
+    </div>
+  </section>
+
+  <section class="kpis">
+    <div class="kpi"><span>Observed today</span><strong id="k-today">–</strong><em id="k-today-sub"></em></div>
+    <div class="kpi"><span>Peak forecast (7 days)</span><strong id="k-peak">–</strong><em id="k-peak-sub"></em></div>
+    <div class="kpi"><span>Normal for today</span><strong id="k-normal">–</strong><em id="k-normal-sub"></em></div>
+    <div class="kpi"><span>Alert days</span><strong id="k-alerts">–</strong><em id="k-alerts-sub"></em></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <h2>7-day forecast</h2>
+      <p class="hint">Each day: ML forecast ± typical error · IMD rule applied to forecast + safety margin · actual IMD value when known</p>
+    </div>
+    <div id="days" class="days"></div>
+  </section>
+
+  <section class="grid-2">
+    <div class="card">
+      <div class="card-head">
+        <h2>Temperature trend &amp; forecast</h2>
+        <p class="hint" id="chart-hint">Last 30 days observed vs normal, then the 7-day forecast</p>
+      </div>
+      <div class="chart-box"><canvas id="trend"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <h2>All-India outlook</h2>
+        <p class="hint">Highest alert in the next 7 days · click a city</p>
+      </div>
+      <div id="map"></div>
+      <div class="legend">
+        <span><i class="dot normal"></i>Normal</span><span><i class="dot heatwave"></i>Heatwave</span><span><i class="dot severe"></i>Severe heatwave</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid-2">
+    <div class="card">
+      <div class="card-head">
+        <h2>Regional ranking</h2>
+        <p class="hint">Cities ordered by risk · squares = day 1 → day 7</p>
+      </div>
+      <table class="ranking"><thead><tr><th>City</th><th>Today</th><th>Peak</th><th>Next 7 days</th></tr></thead><tbody id="ranking"></tbody></table>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <h2>What-if forecast</h2>
+        <p class="hint">Enter your own last 7 daily maximum temperatures (°C), oldest → newest</p>
+      </div>
+      <div id="whatif" class="whatif"></div>
+      <div class="whatif-actions">
+        <button id="whatif-run" class="primary">Run forecast</button>
+        <button id="whatif-reset" class="ghost">Reset to IMD values</button>
+      </div>
+      <p class="whatif-note" id="whatif-note">Values outside −10…55 °C are rejected by the backend (HTTP 422).</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <h2>How reliable is it?</h2>
+      <p class="hint">Measured on 2024, a year the models never saw (trained 2014–2022, tuned on 2023)</p>
+    </div>
+    <div class="grid-2 inner">
+      <div class="chart-box small"><canvas id="mae"></canvas></div>
+      <div>
+        <table class="perf"><thead><tr><th>Day</th><th>Forecast error (MAE)</th><th>Heatwaves caught</th><th>Alerts correct</th><th>Alert confidence</th></tr></thead><tbody id="perf"></tbody></table>
+        <div class="explain">
+          <div><b class="tag ml">ML</b> Ridge regression, one model per forecast day, using the last 7 days, season, climatological normal and location.</div>
+          <div><b class="tag rule">Rules</b> IMD heatwave criteria applied to the forecast plus a safety margin tuned on 2023 data. Days 5–7 are shown as low-confidence.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span>Data: IMD Pune 1°×1° gridded daily maximum temperature, 2014–2024. Heatwave rules: IMD definitions.</span>
+  <span><b>Educational prototype.</b> Official warnings are issued by the India Meteorological Department.</span>
+  <span id="served-by"></span>
+</footer>
+
+<script src="vendor/chart.umd.min.js"></script>
+<script src="vendor/leaflet.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
